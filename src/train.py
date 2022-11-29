@@ -11,6 +11,7 @@ from .hoc_fairlearn import *
 from .train_state import test_step, get_train_step, create_train_state, infl_step
 from .metrics import compute_metrics
 from .utils import set_global_seed, make_dirs, log_and_save_args
+from . import global_var
 import os
 os.environ["XLA_PYTHON_CLIENT_PREALLOCATE"] = "false"   # This disables the preallocation behavior. JAX will instead allocate GPU memory as needed, potentially decreasing the overall memory usage.
 # os.environ["XLA_PYTHON_CLIENT_MEM_FRACTION"] = ".20" # If preallocation is enabled, this makes JAX preallocate XX% of currently-available GPU memory, instead of the default 90%.
@@ -192,7 +193,6 @@ def train(args):
     if epoch_i == args.warm_epoch:
       state_reg = create_train_state(model, args, params=state.params) # use the full model
     for example in train_loader:
-      # pdb.set_trace()
       bsz = example[args.feature_key].shape[0]
       noisy_attribute_sel = noisy_attribute[num_sample_cur:num_sample_cur + bsz]
       num_sample_cur += bsz

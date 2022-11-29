@@ -23,6 +23,8 @@ def preprocess_func_celeba_torch(example, args, noisy_attribute = None):
 
 
   image, group, label = example[args.feature_key].numpy(), example[args.attr_key][:,args.group_key].numpy().astype(np.uint8), example[args.attr_key][:,args.label_key].numpy().astype(np.uint8)
+
+  # use str to avoid error in Jax tree
   args.feature_key, args.label_key, args.group_key = f'{args.feature_key}', f'{args.label_key}', f'{args.group_key}' 
   
   if noisy_attribute is None:
