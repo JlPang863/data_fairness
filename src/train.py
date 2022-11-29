@@ -3,7 +3,7 @@ import jax
 from jax import numpy as jnp
 import numpy as np
 import time
-from .data import  load_celeba_dataset, preprocess_func_celeba, load_celeba_dataset_torch, preprocess_func_celeba_torch
+from .data import  load_celeba_dataset_torch, preprocess_func_celeba_torch
 from .models import get_model
 from .recorder import init_recorder, record_train_stats, save_recorder, record_test, save_checkpoint
 import pdb
