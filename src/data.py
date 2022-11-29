@@ -1,5 +1,5 @@
-import tensorflow as tf
-import tensorflow_datasets as tfds
+# import tensorflow as tf
+# import tensorflow_datasets as tfds
 from . import global_var
 import numpy as np
 import jax.numpy as jnp

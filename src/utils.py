@@ -2,7 +2,7 @@ import json
 import numpy as np
 import os
 import shutil
-import tensorflow as tf
+# import tensorflow as tf
 from types import SimpleNamespace
 # from .models import get_apply_fn_test, get_model
 # from .train_state import get_train_state
