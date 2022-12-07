@@ -139,7 +139,7 @@ def train_dynamic_lmd(state, batch, lmd = 1.0, T = None):
   """
   dynamic-lambda training
   """
-  pdb.set_trace()
+  # pdb.set_trace()
 
   args = global_var.get_value('args')
   loss_fn = get_loss_lmd_dynamic(state, batch, per_sample=False, T = T)

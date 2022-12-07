@@ -224,8 +224,8 @@ def train(args):
       if args.method == 'plain':
         state, train_metric = train_step(state, batch)
       elif args.method in ['fix_lmd','dynamic_lmd']:
-        pdb.set_trace()
-        state, train_metric, lmd = train_step(state, batch, lmd = lmd, T=T)
+        # pdb.set_trace()
+        state, train_metric, lmd = train_step(state, batch, lmd = lmd, T=None)
       elif args.method == 'admm':
         if epoch_i < args.warm_epoch: 
           train_step_warmup = get_train_step(method = 'plain')
