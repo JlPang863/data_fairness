@@ -25,7 +25,8 @@ RUN = 0
 META_MODEL_SEED, META_TRAIN_SEED, SEED_INCR = 42, 4242, 424242
 EP_STEPS = 200
 # DATA_DIR = ROOT + './fair-eval/celeba/data'
-DATA_DIR = ROOT + '/data'
+# DATA_DIR = ROOT + '/data'
+DATA_DIR = '/data2/data'
 EXPS_DIR = ROOT + '/exps'
 
 # arguments
