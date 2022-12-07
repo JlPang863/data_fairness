@@ -114,54 +114,54 @@ def train(args):
 
   
   
-  # /root/fair-eval/celeba/smile_gender_Facenet512_0.0_0.0.pt
-  if args.feature_extractor == 'None':
-    T_rec = None
-    data_path = f'/root/fair-eval/celeba/smile_gender_Facenet_0.0_0.0.pt'
-    import torch
-    data = torch.load(data_path)
-    noisy_attribute = np.transpose(data['train_noisy_gender'])
-  else:
-    data_path = f'/root/fair-eval/celeba/smile_gender_{args.feature_extractor}_0.0_0.0.pt'
-    import torch
-    data = torch.load(data_path)
-    noisy_attribute = np.transpose(data['train_noisy_gender'])
-    num_sample = noisy_attribute.shape[0]
-    true_attribute = np.array(data['train_gender'])[:num_sample]
-    y_pred = np.array(data['train_pred'])[:num_sample]
-    y_true = np.array(data['train_label'])[:num_sample]
-    args.max_iter = 1000
-    args.G = 50
-    T_est, p_est, T_true, p_true = get_T_p(args, noisy_attribute, lr = 0.1, true_attribute = true_attribute)
-    # exit()
-    data_eval = {'y_pred': y_pred,
-              'y_true': y_true,
-              'noisy_attribute': noisy_attribute,
-              'true_attribute': true_attribute,
-              'T_est': T_est,
-              'p_est': p_est,
-              'T_true': T_true,
-              'p_true': p_true }
-    T_est, p_est, T_true, p_true = [], [], [], []
-    for k in np.unique(y_pred):
-        loc = y_pred == k
-        T_est_tmp, p_est_tmp, T_true_tmp, p_true_tmp = get_T_p(args, noisy_attribute[loc], lr = 0.1, true_attribute = true_attribute[loc])
-        T_est.append(T_est_tmp)
-        p_est.append(p_est_tmp)
-        T_true.append(T_true_tmp)
-        p_true.append(p_true_tmp)
-    p = data_eval['p_est']
-    T = T_est
-    cnt = 0
-    T_rec = []
-    for k in np.unique(y_pred):  
-        noisy_p = np.diag(np.array([np.mean((noisy_attribute==i)*1.0) for i in np.unique(noisy_attribute)]))
-        diag_p_inv = np.linalg.inv(np.diag(p.reshape(-1)))
-        T_trans_inv = np.linalg.inv(np.transpose(T[cnt]))
+  # # /root/fair-eval/celeba/smile_gender_Facenet512_0.0_0.0.pt
+  # if args.feature_extractor == 'None':
+  #   T_rec = None
+  #   data_path = f'/root/fair-eval/celeba/smile_gender_Facenet_0.0_0.0.pt'
+  #   import torch
+  #   data = torch.load(data_path)
+  #   noisy_attribute = np.transpose(data['train_noisy_gender'])
+  # else:
+  #   data_path = f'/root/fair-eval/celeba/smile_gender_{args.feature_extractor}_0.0_0.0.pt'
+  #   import torch
+  #   data = torch.load(data_path)
+  #   noisy_attribute = np.transpose(data['train_noisy_gender'])
+  #   num_sample = noisy_attribute.shape[0]
+  #   true_attribute = np.array(data['train_gender'])[:num_sample]
+  #   y_pred = np.array(data['train_pred'])[:num_sample]
+  #   y_true = np.array(data['train_label'])[:num_sample]
+  #   args.max_iter = 1000
+  #   args.G = 50
+  #   T_est, p_est, T_true, p_true = get_T_p(args, noisy_attribute, lr = 0.1, true_attribute = true_attribute)
+  #   # exit()
+  #   data_eval = {'y_pred': y_pred,
+  #             'y_true': y_true,
+  #             'noisy_attribute': noisy_attribute,
+  #             'true_attribute': true_attribute,
+  #             'T_est': T_est,
+  #             'p_est': p_est,
+  #             'T_true': T_true,
+  #             'p_true': p_true }
+  #   T_est, p_est, T_true, p_true = [], [], [], []
+  #   for k in np.unique(y_pred):
+  #       loc = y_pred == k
+  #       T_est_tmp, p_est_tmp, T_true_tmp, p_true_tmp = get_T_p(args, noisy_attribute[loc], lr = 0.1, true_attribute = true_attribute[loc])
+  #       T_est.append(T_est_tmp)
+  #       p_est.append(p_est_tmp)
+  #       T_true.append(T_true_tmp)
+  #       p_true.append(p_true_tmp)
+  #   p = data_eval['p_est']
+  #   T = T_est
+  #   cnt = 0
+  #   T_rec = []
+  #   for k in np.unique(y_pred):  
+  #       noisy_p = np.diag(np.array([np.mean((noisy_attribute==i)*1.0) for i in np.unique(noisy_attribute)]))
+  #       diag_p_inv = np.linalg.inv(np.diag(p.reshape(-1)))
+  #       T_trans_inv = np.linalg.inv(np.transpose(T[cnt]))
 
-        correct_T = np.dot( np.dot(diag_p_inv, T_trans_inv),  noisy_p)
-        T_rec.append(correct_T)
-        cnt += 1
+  #       correct_T = np.dot( np.dot(diag_p_inv, T_trans_inv),  noisy_p)
+  #       T_rec.append(correct_T)
+  #       cnt += 1
 
 
   # info
@@ -179,7 +179,7 @@ def train(args):
 
     # get T during training 
     # T = None # TODO
-    T = T_rec
+    # T = T_rec
     # without conditional independence
 
         
@@ -194,9 +194,9 @@ def train(args):
       state_reg = create_train_state(model, args, params=state.params) # use the full model
     for example in train_loader:
       bsz = example[args.feature_key].shape[0]
-      noisy_attribute_sel = noisy_attribute[num_sample_cur:num_sample_cur + bsz]
+      # noisy_attribute_sel = noisy_attribute[num_sample_cur:num_sample_cur + bsz]
       num_sample_cur += bsz
-      example = preprocess_func_celeba_torch(example, args, noisy_attribute_sel)
+      example = preprocess_func_celeba_torch(example, args, noisy_attribute = None)
       args = global_var.get_value('args')
       t += 1
       # load data
