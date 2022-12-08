@@ -23,27 +23,28 @@ def preprocess_func_celeba_torch(example, args, noisy_attribute = None):
 
 
   image, group, label = example[args.feature_key].numpy(), example[args.attr_key][:,args.group_key].numpy().astype(np.uint8), example[args.attr_key][:,args.label_key].numpy().astype(np.uint8)
-
+  # pdb.set_trace()
+  image = image.transpose((0, 2, 3, 1)) 
   # use str to avoid error in Jax tree
-  args.feature_key, args.label_key, args.group_key = f'{args.feature_key}', f'{args.label_key}', f'{args.group_key}' 
+  # args.feature_key, args.label_key, args.group_key = f'{args.feature_key}', f'{args.label_key}', f'{args.group_key}' 
   
   if noisy_attribute is None:
     data = {
-      args.feature_key: image,
-      args.label_key: label,
-      args.group_key: group,
+      'feature': image,
+      'label': label,
+      'group': group,
       'index': example[args.idx_key].numpy()
     }
   else:
     noisy_attribute = noisy_attribute[:,0]
     data = {
-      args.feature_key: image,
-      args.label_key: label,
-      args.group_key: noisy_attribute,
+      'feature': image,
+      'label': label,
+      'group': noisy_attribute,
       'index': example[args.idx_key].numpy()
     }
     # print(np.mean((noisy_attribute==group)*1.0))
-  global_var.set_value('args', args)
+  # global_var.set_value('args', args)
   return data
 
 
@@ -69,6 +70,10 @@ class my_celeba(torchvision.datasets.CelebA):
 
       if self.transform is not None:
           X = self.transform(X)
+          # import pdb
+          # pdb.set_trace()
+          # print(X.shape)
+          # X = X.transpose((1, 2, 0))  # convert to HWC
 
       if target:
           target = tuple(target) if len(target) > 1 else target[0]

@@ -103,7 +103,7 @@ args.idx_key = 2
 # args.label_key = "Smiling" 
 # args.label_key = "Attractive" 
 args.group_key = "Male"
-args.img_size = 28
+args.img_size = 32
 args.balance_batch = False
 
 method_list = [

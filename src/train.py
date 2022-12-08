@@ -76,12 +76,13 @@ def test(args, state, data):
   """
   logits, labels, groups = [], [], []
   for example in data:
-    batch = preprocess_func_celeba(example, args)
+    # batch = preprocess_func_celeba(example, args)
+    batch = preprocess_func_celeba_torch(example, args, noisy_attribute = None)
     # batch = example
     logit= test_step(state, batch)
     logits.append(logit)
-    labels.append(batch[args.label_key])
-    groups.append(batch[args.group_key])
+    labels.append(batch['label'])
+    groups.append(batch['group'])
 
   return compute_metrics(
     logits=jnp.concatenate(logits),
@@ -96,6 +97,7 @@ def train(args):
   make_dirs(args)
 
   train_loader = load_celeba_dataset_torch(args, shuffle_files=False, split='train', batch_size=256)
+  test_loader = load_celeba_dataset_torch(args, shuffle_files=False, split='test', batch_size=256)
 
   # ds_train = load_celeba_dataset(args, shuffle_files=False, batch_size=args.train_batch_size)
   # ds_test = load_celeba_dataset(args, shuffle_files=False, split='test', batch_size=args.test_batch_size)
@@ -193,15 +195,16 @@ def train(args):
     if epoch_i == args.warm_epoch:
       state_reg = create_train_state(model, args, params=state.params) # use the full model
     for example in train_loader:
-      bsz = example[args.feature_key].shape[0]
+      # pdb.set_trace()
+      bsz = example[0].shape[0]
       # noisy_attribute_sel = noisy_attribute[num_sample_cur:num_sample_cur + bsz]
       num_sample_cur += bsz
       example = preprocess_func_celeba_torch(example, args, noisy_attribute = None)
-      args = global_var.get_value('args')
+      # args = global_var.get_value('args')
       t += 1
       # load data
       if args.balance_batch:
-        image, group, label = example[args.feature_key], example[args.group_key], example[args.label_key]
+        image, group, label = example['feature'], example['group'], example['label']
         num_a, num_b = jnp.sum((group == 0) * 1.0), jnp.sum((group == 1) * 1.0)
         min_num = min(num_a, num_b).astype(int)
         total_idx = jnp.arange(len(group))
@@ -212,7 +215,7 @@ def train(args):
           group_b = group_b.repeat(args.train_batch_size//2//len(group_b)+1)[:args.train_batch_size//2]
 
           sel_idx = jnp.concatenate((group_a,group_b))
-          batch = {args.feature_key: jnp.array(image[sel_idx]), args.label_key: jnp.array(label[sel_idx]), args.group_key: jnp.array(group[sel_idx])}
+          batch = {'feature': jnp.array(image[sel_idx]), 'label': jnp.array(label[sel_idx]), 'group': jnp.array(group[sel_idx])}
         else:
           print(f'current batch only contains one group')
           continue
@@ -254,7 +257,7 @@ def train(args):
       if t % args.log_steps == 0:
         # test
         
-        test_metric = test(args, state, ds_test)
+        test_metric = test(args, state, test_loader)
         rec, time_now = record_test(rec, t+args.datasize*epoch_i//args.train_batch_size, args.datasize*args.num_epochs//args.train_batch_size, time_now, time_start, train_metric, test_metric)
         # print(lmd)
         if args.method == 'admm':

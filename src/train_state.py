@@ -179,12 +179,12 @@ def train_dynamic_lmd(state, batch, lmd = 1.0, T = None):
   # else:
     
   # pdb.set_trace()
-  metrics = compute_metrics(logits=logits, labels=batch[args.label_key], groups = batch[args.group_key])
+  metrics = compute_metrics(logits=logits, labels=batch['label'], groups = batch['group'])
   if state.batch_stats:
     new_state = state.apply_gradients(grads=grads, batch_stats=new_model_state['batch_stats'])
   else:
     new_state = state.apply_gradients(grads=grads)
-  print('grad backward down')
+  print('grad backward done')
   return new_state, metrics, lmd
 
 @jax.jit
@@ -248,13 +248,13 @@ def test_step(state, batch):
   """
   Test for a single step.
   """
-  args = global_var.get_value('args')
+  # args = global_var.get_value('args')
   if state.batch_stats:
     variables = {'params': state.params, 'batch_stats': state.batch_stats}
   else:
     variables = {'params': state.params}
   logits = state.apply_fn(
-      variables, batch[args.feature_key], train=False, mutable=False)
+      variables, batch['feature'], train=False, mutable=False)
   if len(logits) == 2:
     logits = logits[0]
   return logits
