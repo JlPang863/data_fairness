@@ -96,75 +96,19 @@ def train(args):
   set_global_seed()
   make_dirs(args)
 
-  train_loader = load_celeba_dataset_torch(args, shuffle_files=False, split='train', batch_size=256)
+  train_loader = load_celeba_dataset_torch(args, shuffle_files=True, split='train', batch_size=256)
   test_loader = load_celeba_dataset_torch(args, shuffle_files=False, split='test', batch_size=256)
-
-  # ds_train = load_celeba_dataset(args, shuffle_files=False, batch_size=args.train_batch_size)
-  # ds_test = load_celeba_dataset(args, shuffle_files=False, split='test', batch_size=args.test_batch_size)
-  # indices = tf.data.Dataset.from_tensor_slices(tf.range(args.datasize))
-  # total_dataset = tf.data.Dataset.zip((ds_train, indices)) # TODO: implement this with iterable dataset
-
 
   args.image_shape = args.img_size
   # setup
   model, model_linear = get_model(args)
   args.hidden_size = model_linear.hidden_size
   state = create_train_state(model, args)
-  state_reg = create_train_state(model, args) # use the full model (ADMM)
+
 
   rec = init_recorder()
 
   
-  
-  # # /root/fair-eval/celeba/smile_gender_Facenet512_0.0_0.0.pt
-  # if args.feature_extractor == 'None':
-  #   T_rec = None
-  #   data_path = f'/root/fair-eval/celeba/smile_gender_Facenet_0.0_0.0.pt'
-  #   import torch
-  #   data = torch.load(data_path)
-  #   noisy_attribute = np.transpose(data['train_noisy_gender'])
-  # else:
-  #   data_path = f'/root/fair-eval/celeba/smile_gender_{args.feature_extractor}_0.0_0.0.pt'
-  #   import torch
-  #   data = torch.load(data_path)
-  #   noisy_attribute = np.transpose(data['train_noisy_gender'])
-  #   num_sample = noisy_attribute.shape[0]
-  #   true_attribute = np.array(data['train_gender'])[:num_sample]
-  #   y_pred = np.array(data['train_pred'])[:num_sample]
-  #   y_true = np.array(data['train_label'])[:num_sample]
-  #   args.max_iter = 1000
-  #   args.G = 50
-  #   T_est, p_est, T_true, p_true = get_T_p(args, noisy_attribute, lr = 0.1, true_attribute = true_attribute)
-  #   # exit()
-  #   data_eval = {'y_pred': y_pred,
-  #             'y_true': y_true,
-  #             'noisy_attribute': noisy_attribute,
-  #             'true_attribute': true_attribute,
-  #             'T_est': T_est,
-  #             'p_est': p_est,
-  #             'T_true': T_true,
-  #             'p_true': p_true }
-  #   T_est, p_est, T_true, p_true = [], [], [], []
-  #   for k in np.unique(y_pred):
-  #       loc = y_pred == k
-  #       T_est_tmp, p_est_tmp, T_true_tmp, p_true_tmp = get_T_p(args, noisy_attribute[loc], lr = 0.1, true_attribute = true_attribute[loc])
-  #       T_est.append(T_est_tmp)
-  #       p_est.append(p_est_tmp)
-  #       T_true.append(T_true_tmp)
-  #       p_true.append(p_true_tmp)
-  #   p = data_eval['p_est']
-  #   T = T_est
-  #   cnt = 0
-  #   T_rec = []
-  #   for k in np.unique(y_pred):  
-  #       noisy_p = np.diag(np.array([np.mean((noisy_attribute==i)*1.0) for i in np.unique(noisy_attribute)]))
-  #       diag_p_inv = np.linalg.inv(np.diag(p.reshape(-1)))
-  #       T_trans_inv = np.linalg.inv(np.transpose(T[cnt]))
-
-  #       correct_T = np.dot( np.dot(diag_p_inv, T_trans_inv),  noisy_p)
-  #       T_rec.append(correct_T)
-  #       cnt += 1
-
 
   # info
   log_and_save_args(args)
@@ -179,13 +123,6 @@ def train(args):
   train_step = get_train_step(args.method)
   for epoch_i in range(args.num_epochs):
 
-    # get T during training 
-    # T = None # TODO
-    # T = T_rec
-    # without conditional independence
-
-        
-
 
     t = 0
     num_sample_cur = 0
@@ -197,10 +134,9 @@ def train(args):
     for example in train_loader:
       # pdb.set_trace()
       bsz = example[0].shape[0]
-      # noisy_attribute_sel = noisy_attribute[num_sample_cur:num_sample_cur + bsz]
+
       num_sample_cur += bsz
       example = preprocess_func_celeba_torch(example, args, noisy_attribute = None)
-      # args = global_var.get_value('args')
       t += 1
       # load data
       if args.balance_batch:
@@ -229,28 +165,8 @@ def train(args):
       elif args.method in ['fix_lmd','dynamic_lmd']:
         # pdb.set_trace()
         state, train_metric, lmd = train_step(state, batch, lmd = lmd, T=None)
-      elif args.method == 'admm':
-        if epoch_i < args.warm_epoch: 
-          train_step_warmup = get_train_step(method = 'plain')
-          state, train_metric = train_step_warmup(state, batch)
-          
-        else:
-          # print(lmd)
-          state, state_reg, train_metric, lmd, loss, aux_all = train_step(state, state_reg, batch, lmd = lmd, mu = args.mu)
-          # print(loss)
-          loss = loss.item()
-          loss_rec.append(loss)
-          # print(jnp.sort(jnp.round(jnp.abs(aux_reg[0]-aux_reg[1]),2))[100:])
-          # print(jnp.round(aux_reg[1],2))
-          # print('-----')
-          # print(f'lmd is {lmd}')
-          # weight_params = jax.tree_util.tree_leaves(state.params)
-          # weight_params_reg = jax.tree_util.tree_leaves(state_reg.params)
-          # weight_para_vec = jnp.concatenate([x.reshape(-1) for x in weight_params]) 
-          # weight_para_vec_reg = jnp.concatenate([x.reshape(-1) for x in weight_params_reg]) 
-          # # print(f'[MAIN] model gap vector: {(weight_para_vec - weight_para_vec_reg)}' )
-          # print(f'[MAIN] model gap max: {jnp.max(jnp.abs(weight_para_vec - weight_para_vec_reg))}' )
-          # print('-----')
+      else:
+        raise NameError('Undefined optimization mechanism')
 
       rec = record_train_stats(rec, t-1, train_metric, 0)
      
@@ -260,31 +176,9 @@ def train(args):
         test_metric = test(args, state, test_loader)
         rec, time_now = record_test(rec, t+args.datasize*epoch_i//args.train_batch_size, args.datasize*args.num_epochs//args.train_batch_size, time_now, time_start, train_metric, test_metric)
         # print(lmd)
-        if args.method == 'admm':
-          print(f'average train loss is {np.mean(loss_rec)}')
-          loss_rec = [loss]
-          if epoch_i >= args.warm_epoch: 
-            aux_reg = aux_all[0]
-            print(f'model confidence: {jnp.sort(jnp.round(jnp.abs(aux_reg[0][0]-0.5),2))[:50]}')
-            print(f'ef: {jnp.abs(aux_reg[0][1])}, ez: {jnp.abs(aux_reg[0][2])}, efz: {jnp.abs(aux_reg[0][3])}')
-            print(f'loss_conf: {(aux_reg[1])}, loss_reg: {(aux_reg[2])}, loss_model_gap: {(aux_reg[3])}')
-            # weight_params = jax.tree_util.tree_leaves(state.params)
-            # weight_params_reg = jax.tree_util.tree_leaves(state_reg.params)
-            # weight_para_vec = jnp.concatenate([x.reshape(-1) for x in weight_params]) 
-            # weight_para_vec_reg = jnp.concatenate([x.reshape(-1) for x in weight_params_reg]) 
-            # print(f'model gap check: {jnp.sum((weight_para_vec - weight_para_vec_reg)**2)}' )
-
-            aux_main = aux_all[1]
-            print(f'[MAIN] model confidence: {jnp.sort(jnp.round(jnp.abs(aux_main[0][0]-0.5),2))[:50]}')
-            print(f'[MAIN] ef: {jnp.abs(aux_main[0][1])}, ez: {jnp.abs(aux_main[0][2])}, efz: {jnp.abs(aux_main[0][3])}')
-            print(f'[MAIN] loss_conf: {(aux_main[1])}, loss_reg: {(aux_main[2])}, loss_model_gap: {(aux_main[3])}')
-            weight_params = jax.tree_util.tree_leaves(state.params)
-            weight_params_reg = jax.tree_util.tree_leaves(state_reg.params)
-            weight_para_vec = jnp.concatenate([x.reshape(-1) for x in weight_params]) 
-            weight_para_vec_reg = jnp.concatenate([x.reshape(-1) for x in weight_params_reg]) 
-            print(f'[MAIN] model gap check: {jnp.sum((weight_para_vec - weight_para_vec_reg)**2)}' )
+        
         print(f'lmd is {lmd}')
-            # pdb.set_trace()
+
 
 
     rec = save_checkpoint(args.save_dir, t+args.datasize*epoch_i//args.train_batch_size, state, rec, save=False)
