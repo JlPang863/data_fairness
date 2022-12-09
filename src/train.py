@@ -21,21 +21,21 @@ os.environ["XLA_PYTHON_CLIENT_PREALLOCATE"] = "false"   # This disables the prea
 
 
      
-def get_T_p(config, noisy_attribute, lr = 0.1, true_attribute = None):
+# def get_T_p(config, noisy_attribute, lr = 0.1, true_attribute = None):
 
-  # Estimate T and P with HOC
-  T_est, p_est = get_T_global_min(config, noisy_attribute, lr = lr)
-  print(f'\n\n-----------------------------------------')
-  print(f'Estimation finished!')
-  # np.set_printoptions(precision=1)
-  print(f'The estimated T (*100) is \n{np.round(T_est*100,1)}')
-  print(f'The estimated p (*100) is \n{np.round(p_est*100,1)}')
-  if true_attribute is not None:
-      T_true, p_true = check_T(KINDS=config.num_classes, clean_label=true_attribute, noisy_label=noisy_attribute)
-      # print(f'T_inv: \nest: \n{np.linalg.inv(T_est)}\ntrue:\n{np.linalg.inv(T_true)}')
-      print(f'T_true: {T_true},\n T_est: {T_est}')
-      print(f'p_true: {p_true},\n p_est: {p_est}')
-  return T_est, p_est, T_true, p_true.reshape(-1,1)
+#   # Estimate T and P with HOC
+#   T_est, p_est = get_T_global_min(config, noisy_attribute, lr = lr)
+#   print(f'\n\n-----------------------------------------')
+#   print(f'Estimation finished!')
+#   # np.set_printoptions(precision=1)
+#   print(f'The estimated T (*100) is \n{np.round(T_est*100,1)}')
+#   print(f'The estimated p (*100) is \n{np.round(p_est*100,1)}')
+#   if true_attribute is not None:
+#       T_true, p_true = check_T(KINDS=config.num_classes, clean_label=true_attribute, noisy_label=noisy_attribute)
+#       # print(f'T_inv: \nest: \n{np.linalg.inv(T_est)}\ntrue:\n{np.linalg.inv(T_true)}')
+#       print(f'T_true: {T_true},\n T_est: {T_est}')
+#       print(f'p_true: {p_true},\n p_est: {p_est}')
+#   return T_est, p_est, T_true, p_true.reshape(-1,1)
 
 def get_infl(args, state, val_data, unlabeled_data):
   """
@@ -45,7 +45,7 @@ def get_infl(args, state, val_data, unlabeled_data):
   num_samples = 0.0
   grad_avg = 0.0
   for example in val_data: # Need to run on the validation dataset to aviod the negative effect of distribution shift, e.g., DP is not robust to distribution shift.
-    batch = preprocess_func_celeba(example, args)
+    batch = preprocess_func_celeba_torch(example, args)
     grads_each_sample = infl_step(state, batch)
 
     # moving average
@@ -54,7 +54,7 @@ def get_infl(args, state, val_data, unlabeled_data):
     grad_avg /= num_samples
   grad_avg = grad_avg.reshape(-1,1)
   for example in unlabeled_data:
-    batch = preprocess_func_celeba(example, args)
+    batch = preprocess_func_celeba_torch(example, args)
     grads_each_sample = infl_step(state, batch)
     score = jnp.matmul(grads_each_sample) # bsz * 1
     # TODO
