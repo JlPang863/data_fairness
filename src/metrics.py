@@ -33,6 +33,23 @@ def constraints_eod(logits, attributes, labels):
 
   return jnp.array([group_a0 - group_b0, group_a1 - group_b1]), (group_a1, group_b1)
 
+def constraints_acc(logits, attributes, labels):
+  EPS = 1e-8
+  prob = jax.nn.softmax(logits) 
+
+  # multi-class, multi-attributes
+  num_groups = 3
+  num_class = 10
+  relaxed_acc_pergroup = []
+  for group in range(num_groups):
+    relaxed_acc_pergroup.append(jnp.sum((attributes == group) * prob[range(len(labels)), labels] ) / jnp.sum(  (attributes == group) * 1.0 + EPS))
+  relaxed_acc_pergroup = jnp.array(relaxed_acc_pergroup)
+  rnd_idx = jnp.arange(num_groups)
+  jnp.random.shuffle(rnd_idx)
+
+  loss_arr = relaxed_acc_pergroup - relaxed_acc_pergroup[rnd_idx]
+
+  return loss_arr, relaxed_acc_pergroup
 
 def constraints_eop(logits, attributes, labels):
   EPS = 1e-8
