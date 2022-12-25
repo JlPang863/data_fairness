@@ -6,7 +6,7 @@ import pdb
 import torchvision
 import torchvision.transforms as transforms
 import torch
-
+import random
 from typing import Any, Tuple
 import PIL
 import os
@@ -86,20 +86,20 @@ class my_celeba(torchvision.datasets.CelebA):
       return X, target, index
 
 
-def load_celeba_dataset_torch(args, shuffle_files=False, split='train', batch_size=128):
+def load_celeba_dataset_torch(args, shuffle_files=False, split='train', batch_size=128, ratio = 0.1):
 
   train_transform = transforms.Compose([
       transforms.Resize(32),
       transforms.RandomCrop(32, padding=4), 
       transforms.RandomHorizontalFlip(),
       transforms.ToTensor(),
-      transforms.Normalize((0.5, 0.5, 0.5), (1.0, 1.0, 1.0)),
+      transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
   ])
 
   test_transform = transforms.Compose([
       transforms.Resize(32),
       transforms.ToTensor(),
-      transforms.Normalize((0.5, 0.5, 0.5), (1.0, 1.0, 1.0)),
+      transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
   ])
 
   if split == 'train':
@@ -108,10 +108,30 @@ def load_celeba_dataset_torch(args, shuffle_files=False, split='train', batch_si
     transform = test_transform
 
   ds = my_celeba(root = args.data_dir, split = split, target_type = 'attr', transform = transform, download = True)
-  dataloader = torch.utils.data.DataLoader(ds,
+
+  # data split
+  # train --> train_labeled (1) + train_unlabeled (2), ratio is for train_labeled
+  # test --> val (1) + test (2), ratio is for val
+  # if split == 'train':
+  idx = list(range(len(ds)))
+  random.Random(args.train_seed).shuffle(idx)
+  num = int(len(ds) * ratio)
+  part1 = idx[:num]
+  part2 = idx[num:]
+
+  ds_1 = torch.utils.data.Subset(ds, part1)
+  ds_2 = torch.utils.data.Subset(ds, part2)
+
+
+  dataloader_1 = torch.utils.data.DataLoader(ds_1,
                                             batch_size=batch_size,
                                             shuffle=shuffle_files,
                                             num_workers=4,
                                             drop_last=False)
+  dataloader_2 = torch.utils.data.DataLoader(ds_2,
+                                          batch_size=batch_size,
+                                          shuffle=shuffle_files,
+                                          num_workers=4,
+                                          drop_last=False)
 
-  return dataloader
+  return [dataloader_1, dataloader_2]

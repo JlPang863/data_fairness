@@ -57,6 +57,7 @@ def get_infl(args, state, val_data, unlabeled_data):
     batch = preprocess_func_celeba_torch(example, args)
     grads_each_sample = infl_step(state, batch)
     score = jnp.matmul(grads_each_sample) # bsz * 1
+    pdb.set_trace()
     # TODO
 
 
@@ -93,11 +94,11 @@ def test(args, state, data):
 
 def train(args):
   # setup
-  set_global_seed()
+  set_global_seed(args.train_seed)
   make_dirs(args)
 
-  train_loader = load_celeba_dataset_torch(args, shuffle_files=True, split='train', batch_size=256)
-  test_loader = load_celeba_dataset_torch(args, shuffle_files=False, split='test', batch_size=256)
+  train_loader_labeled, train_loader_unlabeled = load_celeba_dataset_torch(args, shuffle_files=True, split='train', batch_size=args.train_batch_size, ratio = args.label_ratio)
+  val_loader, test_loader = load_celeba_dataset_torch(args, shuffle_files=False, split='test', batch_size=args.test_batch_size, ratio = args.val_ratio)
 
   args.image_shape = args.img_size
   # setup
@@ -121,63 +122,70 @@ def train(args):
   loss = 0.0
   loss_rec = [loss]
   train_step = get_train_step(args.method)
+  # epoch_pre = 0
   for epoch_i in range(args.num_epochs):
 
 
     t = 0
     num_sample_cur = 0
     print(f'Epoch {epoch_i}')
-    if epoch_i < args.warm_epoch: 
-      print(f'warmup epoch = {epoch_i+1}/{args.warm_epoch}')
-    if epoch_i == args.warm_epoch:
-      state_reg = create_train_state(model, args, params=state.params) # use the full model
-    for example in train_loader:
-      # pdb.set_trace()
-      bsz = example[0].shape[0]
-
-      num_sample_cur += bsz
-      example = preprocess_func_celeba_torch(example, args, noisy_attribute = None)
-      t += 1
-      # load data
-      if args.balance_batch:
-        image, group, label = example['feature'], example['group'], example['label']
-        num_a, num_b = jnp.sum((group == 0) * 1.0), jnp.sum((group == 1) * 1.0)
-        min_num = min(num_a, num_b).astype(int)
-        total_idx = jnp.arange(len(group))
-        if min_num > 0:
-          group_a = total_idx[group == 0]
-          group_b = total_idx[group == 1]
-          group_a = group_a.repeat(args.train_batch_size//2//len(group_a)+1)[:args.train_batch_size//2]
-          group_b = group_b.repeat(args.train_batch_size//2//len(group_b)+1)[:args.train_batch_size//2]
-
-          sel_idx = jnp.concatenate((group_a,group_b))
-          batch = {'feature': jnp.array(image[sel_idx]), 'label': jnp.array(label[sel_idx]), 'group': jnp.array(group[sel_idx])}
-        else:
-          print(f'current batch only contains one group')
-          continue
-
-      else:
-        batch = example
-
-      # train
-      if args.method == 'plain':
-        state, train_metric = train_step(state, batch)
-      elif args.method in ['fix_lmd','dynamic_lmd']:
+    # if epoch_i < args.warm_epoch: 
+    #   print(f'warmup epoch = {epoch_i+1}/{args.warm_epoch}')
+    # if epoch_i == args.warm_epoch:
+    #   state_reg = create_train_state(model, args, params=state.params) # use the full model
+    while t * args.train_batch_size < args.datasize:
+      for example in train_loader_labeled:
         # pdb.set_trace()
-        state, train_metric, lmd = train_step(state, batch, lmd = lmd, T=None)
-      else:
-        raise NameError('Undefined optimization mechanism')
+        bsz = example[0].shape[0]
 
-      rec = record_train_stats(rec, t-1, train_metric, 0)
-     
-      if t % args.log_steps == 0:
-        # test
-        
-        test_metric = test(args, state, test_loader)
-        rec, time_now = record_test(rec, t+args.datasize*epoch_i//args.train_batch_size, args.datasize*args.num_epochs//args.train_batch_size, time_now, time_start, train_metric, test_metric)
-        # print(lmd)
-        
-        print(f'lmd is {lmd}')
+        num_sample_cur += bsz
+        example = preprocess_func_celeba_torch(example, args, noisy_attribute = None)
+        t += 1
+        if t * args.train_batch_size > args.datasize:
+          break
+        # load data
+        if args.balance_batch:
+          image, group, label = example['feature'], example['group'], example['label']
+          num_a, num_b = jnp.sum((group == 0) * 1.0), jnp.sum((group == 1) * 1.0)
+          min_num = min(num_a, num_b).astype(int)
+          total_idx = jnp.arange(len(group))
+          if min_num > 0:
+            group_a = total_idx[group == 0]
+            group_b = total_idx[group == 1]
+            group_a = group_a.repeat(args.train_batch_size//2//len(group_a)+1)[:args.train_batch_size//2]
+            group_b = group_b.repeat(args.train_batch_size//2//len(group_b)+1)[:args.train_batch_size//2]
+
+            sel_idx = jnp.concatenate((group_a,group_b))
+            batch = {'feature': jnp.array(image[sel_idx]), 'label': jnp.array(label[sel_idx]), 'group': jnp.array(group[sel_idx])}
+          else:
+            print(f'current batch only contains one group')
+            continue
+
+        else:
+          batch = example
+
+        # train
+        if args.method == 'plain':
+          state, train_metric = train_step(state, batch)
+        elif args.method in ['fix_lmd','dynamic_lmd']:
+          # pdb.set_trace()
+          state, train_metric, lmd = train_step(state, batch, lmd = lmd, T=None)
+        else:
+          raise NameError('Undefined optimization mechanism')
+
+        rec = record_train_stats(rec, t-1, train_metric, 0)
+      
+        if t % args.log_steps == 0:
+          # test
+          # epoch_pre = epoch_i
+          test_metric = test(args, state, test_loader)
+          rec, time_now = record_test(rec, t+args.datasize*epoch_i//args.train_batch_size, args.datasize*args.num_epochs//args.train_batch_size, time_now, time_start, train_metric, test_metric)
+
+          # infl 
+          # get_infl(args, state, val_loader, train_loader_unlabeled)
+          # print(lmd)
+          
+          print(f'lmd is {lmd}')
 
 
 

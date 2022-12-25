@@ -109,7 +109,7 @@ def train_plain(state, batch):
   grad_fn = jax.value_and_grad(loss_fn, has_aux=True)
   aux, grads = grad_fn(state.params)
   new_model_state, logits = aux[1]
-  metrics = compute_metrics(logits=logits, labels=batch[args.label_key], groups = batch[args.group_key])
+  metrics = compute_metrics(logits=logits, labels=batch['label'], groups = batch['group'])
   if state.batch_stats:
     new_state = state.apply_gradients(grads=grads, batch_stats=new_model_state['batch_stats'])
   else:
@@ -126,7 +126,7 @@ def train_fix_lmd(state, batch, lmd):
   grad_fn = jax.value_and_grad(loss_fn, has_aux=True)
   aux, grads = grad_fn(state.params, lmd)
   new_model_state, logits, _ = aux[1]
-  metrics = compute_metrics(logits=logits, labels=batch[args.label_key], groups = batch[args.group_key])
+  metrics = compute_metrics(logits=logits, labels=batch['label'], groups = batch['group'])
   if state.batch_stats:
     new_state = state.apply_gradients(grads=grads, batch_stats=new_model_state['batch_stats'])
   else:
@@ -187,47 +187,6 @@ def train_dynamic_lmd(state, batch, lmd = 1.0, T = None):
   print('grad backward done')
   return new_state, metrics, lmd
 
-@jax.jit
-def train_dynamic_admm(state, state_reg, batch, lmd = 1): 
-  """
-  ADMM dual network training
-  state: full model
-  state_reg: last linear layer
-  """
-  args = global_var.get_value('args')
-  # ADMM Step 1:
-  loss_fn = get_loss_admm_org(state, batch)
-  grad_fn = jax.value_and_grad(loss_fn, has_aux=True, argnums = 0) # differentiate wrt position 0
-  aux, grads = grad_fn(state.params, state_reg.params, lmd=lmd)
-  new_model_state, logits= aux[1]
-  metrics = compute_metrics(logits=logits, labels=batch[args.label_key], groups = batch[args.group_key])
-  if state.batch_stats:
-    new_state = state.apply_gradients(grads=grads, batch_stats=new_model_state['batch_stats'])
-  else:
-    new_state = state.apply_gradients(grads=grads)
-  
-  # ADMM Step 2:
-  loss_reg = get_loss_admm_reg(new_state, state_reg, batch)
-  
-  grad_reg = jax.value_and_grad(loss_reg, has_aux=True, argnums=1) # differentiate wrt position 1
-  aux, grads = grad_reg(new_state.params, state_reg.params, lmd=lmd) # grad is calculated wrt the first arg 
-  new_model_state_reg, _, _, aux_reg = aux[1]
-  # print(aux[0])
-  # metrics = compute_metrics(logits=logits, labels=batch[args.label_key], groups = batch[args.group_key])
-  if state.batch_stats:
-    new_state_reg = state_reg.apply_gradients(grads=grads, batch_stats=new_model_state_reg['batch_stats'])
-  else:
-    new_state_reg = state_reg.apply_gradients(grads=grads)
-
-  # ADMM Step 3 update lmd  # very unstable
-  # weight_params = jax.tree_util.tree_leaves(new_state.params)
-  # weight_params_reg = jax.tree_util.tree_leaves(new_state_reg.params)
-  # weight_para_vec = (jnp.concatenate([x.reshape(-1) for x in weight_params]) )
-  # weight_para_vec_reg = (jnp.concatenate([x.reshape(-1) for x in weight_params_reg]) )
-  # lmd = lmd + mu * (weight_para_vec - weight_para_vec_reg)
-
-  return new_state, new_state_reg, metrics, lmd, aux[0], aux_reg
-
 
 def get_train_step(method):
   """
@@ -240,8 +199,7 @@ def get_train_step(method):
     return train_fix_lmd
   elif method == 'dynamic_lmd':
     return train_dynamic_lmd
-  elif method == 'admm':
-    return train_dynamic_admm
+
 
 @jax.jit
 def test_step(state, batch):
