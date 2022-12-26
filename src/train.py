@@ -47,7 +47,7 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num, sel_layer):
   for example in val_data: # Need to run on the validation dataset to avoid the negative effect of distribution shift, e.g., DP is not robust to distribution shift. For fairness, val data may be iid as test data 
     batch = preprocess_func_celeba_torch(example, args)
     grads_each_sample = np.asarray(infl_step(state, batch, sel_layer))
-    print(grads_each_sample.shape)
+    # print(grads_each_sample.shape)
     # pdb.set_trace()
 
     # moving average
