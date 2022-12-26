@@ -47,7 +47,7 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
   for example in val_data: # Need to run on the validation dataset to avoid the negative effect of distribution shift, e.g., DP is not robust to distribution shift. For fairness, val data may be iid as test data 
     batch = preprocess_func_celeba_torch(example, args)
     grads_each_sample = np.asarray(infl_step(state, batch))
-    # pdb.set_trace()
+    
 
     # moving average
     grad_sum += np.sum(grads_each_sample, axis=0)
@@ -55,16 +55,15 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
     
     # grad_sum /= num_samples
   grad_avg = (grad_sum/num_samples).reshape(-1,1)
-
+  # pdb.set_trace()
   # check unlabeled data
   score = []
   for example in unlabeled_data:
     batch = preprocess_func_celeba_torch(example, args)
-    grads_each_sample = infl_step(state, batch)
-    score = np.matmul(grads_each_sample, grad_avg) # bsz * 1
-    pdb.set_trace()
-    # TODO
+    grads_each_sample = np.asarray(infl_step(state, batch))
+    score += np.matmul(grads_each_sample, grad_avg).reshape(-1).tolist()
 
+  print(f'score (first 100) is {np.round(score[:100], 3)}')
   print('calculating influence -- done')
 
 
