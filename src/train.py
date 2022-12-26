@@ -111,6 +111,7 @@ def train(args):
   # get model size
   flat_tree = jax.tree_util.tree_leaves(state.params)
   model_size = np.sum([len(x.reshape(-1)) for x in flat_tree]) 
+  print(f'model size {model_size}')
 
   rec = init_recorder()
 
