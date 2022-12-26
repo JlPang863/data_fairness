@@ -28,7 +28,7 @@ ROOT = '.'
 EXP = 'exps'
 RUN = 0
 META_MODEL_SEED, META_TRAIN_SEED, SEED_INCR = 42, 4242, 424242
-EP_STEPS = 10  # 200
+EP_STEPS = 200  # 200
 # DATA_DIR = ROOT + './fair-eval/celeba/data'
 # DATA_DIR = ROOT + '/data'
 DATA_DIR = '/data2/data'
@@ -78,13 +78,13 @@ args.scheduler = OrderedDict(
     name = "cosine_decay_schedule",
     config = OrderedDict(
         init_value = args.lr,
-        decay_steps = 2000,  # previous: 5000, 10 epochs
+        decay_steps = 5000,  # previous: 5000, 10 epochs
         alpha = 0.95,
     )
 )
 
 # training
-args.num_epochs = 5
+args.num_epochs = 10
 args.EP_STEPS = EP_STEPS
 args.train_seed = META_TRAIN_SEED + RUN * SEED_INCR
 args.train_batch_size = 256
@@ -111,7 +111,7 @@ args.group_key = "Male"
 args.img_size = 32
 args.balance_batch = False
 args.new_data_each_round = 128
-args.sampling_rounds = 10
+args.sampling_rounds = args.num_epochs * 2
 
 
 method_list = [
