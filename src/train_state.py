@@ -234,7 +234,7 @@ def infl_step(state, batch):
 
   # loss_fn_per_sample = get_loss_lmd_dynamic(state, batch, per_sample=True)
   loss_fn_per_sample = get_loss_fn(state, batch, per_sample=True)
-  pdb.set_trace()
+  # pdb.set_trace()
   
   grads_per_sample_tree, aux = jax.jacrev(loss_fn_per_sample, argnums=0, has_aux=True)(state.params)
   grad_flat_tree = jax.tree_util.tree_leaves(grads_per_sample_tree)
