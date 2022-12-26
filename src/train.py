@@ -37,7 +37,7 @@ os.environ["XLA_PYTHON_CLIENT_PREALLOCATE"] = "false"   # This disables the prea
 #       print(f'p_true: {p_true},\n p_est: {p_est}')
 #   return T_est, p_est, T_true, p_true.reshape(-1,1)
 
-def sample_by_infl(args, state, val_data, unlabeled_data, num, strategy = 2):
+def sample_by_infl(args, state, val_data, unlabeled_data, num):
   """
   Get influence score of each unlabeled_data on val_data, then sample according to scores
   """
@@ -69,16 +69,16 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num, strategy = 2):
     grads_each_sample = np.asarray(infl_step(state, batch_unlabeled))
     infl = - np.matmul(grads_each_sample, grad_avg) # new_loss - cur_los
     # Strategy 1 (baseline): random
-    if strategy == 1:
+    if args.strategy == 1:
       pass
     # Strategy 2 (idea 1): find the label with least absolute influence, then find the sample with largest abs infl
-    elif strategy == 2:
+    elif args.strategy == 2:
       label_expected = np.argmin(abs(infl), 1).reshape(-1)
       score += abs(infl[range(infl.shape[0]), label_expected]).reshape(-1).tolist()
       expected_label += label_expected.tolist()
       true_label += batch['label'].tolist()
     # Strategy 3 (idea 2): find the label with minimal influence values (most negative), then find the sample with most negative infl 
-    elif strategy == 3:
+    elif args.strategy == 3:
       label_expected = np.argmin(infl, 1).reshape(-1)
       score += infl[range(infl.shape[0]), label_expected].reshape(-1).tolist()
       expected_label += label_expected.tolist()
@@ -87,34 +87,32 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num, strategy = 2):
 
     idx += batch['index'].tolist()
     print(len(score))
-    if len(score) >= num * 100:
+    if len(score) >= num * 20:
       break
-  pdb.set_trace()
-  if strategy == 1:
+  # pdb.set_trace()
+  if args.strategy == 1:
     sel_idx = list(range(len(score)))
     random.Random(args.infl_random_seed).shuffle(sel_idx)
     sel_idx = sel_idx[:num]
 
   # Strategy 2 (idea 1): find the label with least absolute influence, then find the sample with largest abs infl
-  elif strategy == 2:
+  elif args.strategy == 2:
     sel_idx = np.argsort(score)[-num:]
 
   # Strategy 3 (idea 2): find the label with minimal influence values (most negative), then find the sample with most negative infl 
-  elif strategy == 3:
+  elif args.strategy == 3:
     sel_idx = np.argsort(score)[:num]
 
-  if strategy in [2, 3]:
+  if args.strategy in [2, 3]:
     # check labels
     true_label = np.asarray(true_label)[sel_idx]
     expected_label = np.asarray(expected_label)[sel_idx]
-    print(f'[Strategy {strategy}] Expected label {expected_label}')  
-    print(f'[Strategy {strategy}] True label {true_label}')  
+    print(f'[Strategy {args.strategy}] Expected label {expected_label}')  
+    print(f'[Strategy {args.strategy}] True label {true_label}')  
 
   sel_org_idx = np.asarray(idx)[sel_idx].tolist()
   print('calculating influence -- done')
   return sel_org_idx 
-
-
 
 
 
