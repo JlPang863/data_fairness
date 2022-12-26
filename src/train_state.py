@@ -238,6 +238,7 @@ def infl_step(state, batch):
   
   grads_per_sample_tree, aux = jax.jacrev(loss_fn_per_sample, argnums=0, has_aux=True)(state.params)
   grad_flat_tree = jax.tree_util.tree_leaves(grads_per_sample_tree)
-  grads_per_sample = jnp.concatenate([x.reshape(x.shape[0],-1) for x in grad_flat_tree], axis=-1) 
+  # grads_per_sample = jnp.concatenate([x.reshape(x.shape[0],-1) for x in grad_flat_tree], axis=-1) 
+  grads_per_sample = jnp.concatenate([np.sum(x, 0).reshape(-1) for x in grad_flat_tree], axis=-1) 
 
   return np.sum(grads_per_sample, 0)
