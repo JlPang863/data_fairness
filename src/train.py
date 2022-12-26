@@ -37,7 +37,7 @@ os.environ["XLA_PYTHON_CLIENT_PREALLOCATE"] = "false"   # This disables the prea
 #       print(f'p_true: {p_true},\n p_est: {p_est}')
 #   return T_est, p_est, T_true, p_true.reshape(-1,1)
 
-def sample_by_infl(args, state, val_data, unlabeled_data, num, sel_node):
+def sample_by_infl(args, state, val_data, unlabeled_data, num, sel_layer):
   """
   Get influence score of each unlabeled_data on val_data, then sample according to scores
   """
@@ -46,7 +46,7 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num, sel_node):
   grad_sum = 0.0
   for example in val_data: # Need to run on the validation dataset to avoid the negative effect of distribution shift, e.g., DP is not robust to distribution shift. For fairness, val data may be iid as test data 
     batch = preprocess_func_celeba_torch(example, args)
-    grads_each_sample = np.asarray(infl_step(state, batch, sel_node))
+    grads_each_sample = np.asarray(infl_step(state, batch, sel_layer))
     print(grads_each_sample.shape)
     # pdb.set_trace()
 
@@ -61,7 +61,7 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num, sel_node):
   score = []
   for example in unlabeled_data:
     batch = preprocess_func_celeba_torch(example, args)
-    grads_each_sample = np.asarray(infl_step(state, batch, sel_node))
+    grads_each_sample = np.asarray(infl_step(state, batch, sel_layer))
     score += np.matmul(grads_each_sample, grad_avg).reshape(-1).tolist()
 
   print(f'score (first 100) is {np.round(score[:100], 3)}')
@@ -110,8 +110,8 @@ def train(args):
 
   # get model size
   flat_tree = jax.tree_util.tree_leaves(state.params)
-  model_size = np.sum([len(x.reshape(-1)) for x in flat_tree]) 
-  print(f'model size {model_size}')
+  num_layers = len(flat_tree)
+  print(f'Numer of layers {num_layers}')
 
   rec = init_recorder()
 
@@ -187,10 +187,10 @@ def train(args):
           rec, time_now = record_test(rec, t+args.datasize*epoch_i//args.train_batch_size, args.datasize*args.num_epochs//args.train_batch_size, time_now, time_start, train_metric, test_metric)
           if epoch_i > args.warm_epoch:
             # infl 
-            # sel_node = list(range(model_size))
-            # random.Random(args.train_seed + t).shuffle(sel_node)
-            # sel_node = sel_node[: int(len(sel_node) * 0.1)]
-            sampled_idx = sample_by_infl(args, state, val_loader, train_loader_unlabeled, num = args.new_data_each_round, sel_node = None)
+            sel_layer = list(range(num_layers))
+            random.Random(args.train_seed + t).shuffle(sel_layer)
+            sel_layer = sel_layer[:5] # only use five layers to improve speed
+            sampled_idx = sample_by_infl(args, state, val_loader, train_loader_unlabeled, num = args.new_data_each_round, sel_layer = sel_layer)
 
             train_loader_labeled, train_loader_unlabeled = load_celeba_dataset_torch(args, shuffle_files=True, split='train', batch_size=args.train_batch_size, ratio = args.label_ratio, sampled_idx=sampled_idx)
 
