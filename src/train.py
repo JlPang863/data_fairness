@@ -37,7 +37,7 @@ os.environ["XLA_PYTHON_CLIENT_PREALLOCATE"] = "false"   # This disables the prea
 #       print(f'p_true: {p_true},\n p_est: {p_est}')
 #   return T_est, p_est, T_true, p_true.reshape(-1,1)
 
-def sample_by_infl(args, state, val_data, unlabeled_data, num, sel_layer):
+def sample_by_infl(args, state, val_data, unlabeled_data, num, sel_layer = 4):
   """
   Get influence score of each unlabeled_data on val_data, then sample according to scores
   """
@@ -62,6 +62,7 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num, sel_layer):
   idx = []
   for example in unlabeled_data:
     batch = preprocess_func_celeba_torch(example, args)
+    batch['label'] = None # get grad for each label. We do not know labels of samples in unlabeled data
     grads_each_sample = np.asarray(infl_step(state, batch, sel_layer))
     score += np.matmul(grads_each_sample, grad_avg).reshape(-1).tolist()
     idx += batch['index'].tolist()
@@ -196,7 +197,7 @@ def train(args):
             # sel_layer = list(range(num_layers))
             # random.Random(args.train_seed + t).shuffle(sel_layer)
             # sel_layer = sel_layer[:2] # only use two layers to improve speed
-            sampled_idx = sample_by_infl(args, state, val_loader, train_loader_unlabeled, num = args.new_data_each_round, sel_layer = None)
+            sampled_idx = sample_by_infl(args, state, val_loader, train_loader_unlabeled, num = args.new_data_each_round)
 
             train_loader_labeled, train_loader_unlabeled = load_celeba_dataset_torch(args, shuffle_files=True, split='train', batch_size=args.train_batch_size, ratio = args.label_ratio, sampled_idx=sampled_idx)
 
