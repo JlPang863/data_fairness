@@ -64,8 +64,10 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num, sel_layer):
     grads_each_sample = np.asarray(infl_step(state, batch, sel_layer))
     score += np.matmul(grads_each_sample, grad_avg).reshape(-1).tolist()
     print(len(score))
+    if len(score) > num * 100:
+      break
 
-  print(f'score (first 100) is {np.round(score[:100], 3)}')
+  print(f'score (first {num}) is {np.round(score[:num], 3)}')
   print('calculating influence -- done')
 
 
