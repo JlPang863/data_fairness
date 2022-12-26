@@ -5,7 +5,8 @@ from . import global_var
 
 
 
-def get_loss_fn(args, state, batch, per_sample = False):
+def get_loss_fn(state, batch, per_sample = False):
+  args = global_var.get_value('args')
   constraints_confidence = constraints_dict[args.conf]
   def loss_fn(params):
     if state.batch_stats:
@@ -18,7 +19,7 @@ def get_loss_fn(args, state, batch, per_sample = False):
     loss += constraints_confidence(logits)
     return loss, (new_model_state, logits)
 
-  def loss_fn_per_sample(params, lmd): 
+  def loss_fn_per_sample(params): 
     if state.batch_stats:
         logits, new_model_state = state.apply_fn({'params': params, 'batch_stats': state.batch_stats}, batch['feature'], mutable=['batch_stats'])
     else:
@@ -26,7 +27,7 @@ def get_loss_fn(args, state, batch, per_sample = False):
     if len(logits) == 2: # logits and embeddings
         logits = logits[0]
     loss = cross_entropy_loss_per_sample(logits=logits, labels=batch['label']) 
-    loss += constraints_confidence(logits)
+    # loss += constraints_confidence_per_sample(logits)
     return loss, (new_model_state, logits)
 
   if per_sample:
@@ -34,21 +35,21 @@ def get_loss_fn(args, state, batch, per_sample = False):
   else:
     return loss_fn
 
-def get_loss_lmd_fix(args, state, batch):
-  constraints_fair = constraints_dict[args.metric]
-  constraints_confidence = constraints_dict[args.conf]
-  def loss_fn(params, lmd):
-    if state.batch_stats:
-      logits, new_model_state = state.apply_fn({'params': params, 'batch_stats': state.batch_stats}, batch['feature'], mutable=['batch_stats'])
-    else:
-      logits, new_model_state = state.apply_fn({'params': params}, batch['feature'], mutable=['batch_stats'])
-    if len(logits) == 2: # logits and embeddings
-      logits = logits[0]
-    loss_reg, _ = constraints_fair(logits, batch['group'], batch['label'])
-    loss = cross_entropy_loss(logits=logits, labels=batch['label']) + lmd * jnp.sum(jnp.abs(loss_reg))
-    loss += constraints_confidence(logits)
-    return loss, (new_model_state, logits, lmd)
-  return loss_fn
+# def get_loss_lmd_fix(args, state, batch):
+#   constraints_fair = constraints_dict[args.metric]
+#   constraints_confidence = constraints_dict[args.conf]
+#   def loss_fn(params, lmd):
+#     if state.batch_stats:
+#       logits, new_model_state = state.apply_fn({'params': params, 'batch_stats': state.batch_stats}, batch['feature'], mutable=['batch_stats'])
+#     else:
+#       logits, new_model_state = state.apply_fn({'params': params}, batch['feature'], mutable=['batch_stats'])
+#     if len(logits) == 2: # logits and embeddings
+#       logits = logits[0]
+#     loss_reg, _ = constraints_fair(logits, batch['group'], batch['label'])
+#     loss = cross_entropy_loss(logits=logits, labels=batch['label']) + lmd * jnp.sum(jnp.abs(loss_reg))
+#     loss += constraints_confidence(logits)
+#     return loss, (new_model_state, logits, lmd)
+#   return loss_fn
 
 def get_loss_lmd_dynamic(state, batch, per_sample = False, T = None):
   args = global_var.get_value('args')
