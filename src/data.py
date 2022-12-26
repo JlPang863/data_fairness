@@ -115,10 +115,15 @@ def load_celeba_dataset_torch(args, shuffle_files=False, split='train', batch_si
   # if split == 'train':
   idx = list(range(len(ds)))
   random.Random(args.train_seed).shuffle(idx)
-  print(idx[:20])
   num = int(len(ds) * ratio)
   part1 = idx[:num]
   part2 = idx[num:]
+
+  if sampled_idx is not None:
+    part1 += sampled_idx
+    part2 = list(set(part2) - set(sampled_idx))
+  print(f'{len(part1)} labeled samples and {len(part2)} unlabeled samples. Total: {len(part1) + len(part2)}')
+
 
   ds_1 = torch.utils.data.Subset(ds, part1)
   ds_2 = torch.utils.data.Subset(ds, part2)

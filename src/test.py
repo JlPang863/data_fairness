@@ -14,11 +14,12 @@
 
 import numpy as np
 
-a = np.array([[1,2,3],[4,5,6],[6,8,9],[10,11,12]])
-print(a)
-sel = np.array([0,1,2, 2])
-# 
-rnd_idx = np.arange(len(sel))
-np.random.shuffle(rnd_idx)
-num = a[range(len(a)),sel]
-print(num - num[rnd_idx])
+# a = np.array([[1,2,3],[4,5,6],[6,8,9],[10,11,12]])
+# print(a)
+# sel = np.array([0,1,2, 2])
+# # 
+# rnd_idx = np.arange(len(sel))
+# np.random.shuffle(rnd_idx)
+# num = a[range(len(a)),sel]
+# print(num - num[rnd_idx])
+# a = [1,3]

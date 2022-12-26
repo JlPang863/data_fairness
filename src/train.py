@@ -37,11 +37,11 @@ os.environ["XLA_PYTHON_CLIENT_PREALLOCATE"] = "false"   # This disables the prea
 #       print(f'p_true: {p_true},\n p_est: {p_est}')
 #   return T_est, p_est, T_true, p_true.reshape(-1,1)
 
-def get_infl(args, state, val_data, unlabeled_data):
+def sample_by_infl(args, state, val_data, unlabeled_data, num):
   """
-  Get influence score of each unlabeled_data on val_data
+  Get influence score of each unlabeled_data on val_data, then sample according to scores
   """
-  logits, labels, groups = [], [], []
+
   num_samples = 0.0
   grad_sum = 0.0
   for example in val_data: # Need to run on the validation dataset to avoid the negative effect of distribution shift, e.g., DP is not robust to distribution shift. For fairness, val data may be iid as test data 
@@ -53,6 +53,9 @@ def get_infl(args, state, val_data, unlabeled_data):
     num_samples += grads_each_sample.shape[0]
     # grad_sum /= num_samples
   grad_avg = (grad_sum/num_samples).reshape(-1,1)
+
+  # check unlabeled data
+  score = []
   for example in unlabeled_data:
     batch = preprocess_func_celeba_torch(example, args)
     grads_each_sample = infl_step(state, batch)
@@ -64,11 +67,6 @@ def get_infl(args, state, val_data, unlabeled_data):
 
 
 
-  return compute_metrics(
-    logits=jnp.concatenate(logits),
-    labels=jnp.concatenate(labels),
-    groups=jnp.concatenate(groups),
-  )
 
 
 def test(args, state, data):
@@ -98,7 +96,6 @@ def train(args):
   make_dirs(args)
 
   train_loader_labeled, train_loader_unlabeled = load_celeba_dataset_torch(args, shuffle_files=True, split='train', batch_size=args.train_batch_size, ratio = args.label_ratio)
-  pdb.set_trace()
   val_loader, test_loader = load_celeba_dataset_torch(args, shuffle_files=False, split='test', batch_size=args.test_batch_size, ratio = args.val_ratio)
 
   args.image_shape = args.img_size
@@ -182,7 +179,9 @@ def train(args):
           rec, time_now = record_test(rec, t+args.datasize*epoch_i//args.train_batch_size, args.datasize*args.num_epochs//args.train_batch_size, time_now, time_start, train_metric, test_metric)
           if epoch_i > args.warm_epoch:
             # infl 
-            get_infl(args, state, val_loader, train_loader_unlabeled)
+            sampled_idx = sample_by_infl(args, state, val_loader, train_loader_unlabeled)
+
+            train_loader_labeled, train_loader_unlabeled = load_celeba_dataset_torch(args, shuffle_files=True, split='train', batch_size=args.train_batch_size, ratio = args.label_ratio, sampled_idx=sampled_idx)
 
           
           print(f'lmd is {lmd}')
