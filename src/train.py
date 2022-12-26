@@ -63,6 +63,7 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num, sel_layer):
     batch = preprocess_func_celeba_torch(example, args)
     grads_each_sample = np.asarray(infl_step(state, batch, sel_layer))
     score += np.matmul(grads_each_sample, grad_avg).reshape(-1).tolist()
+    print(len(score))
 
   print(f'score (first 100) is {np.round(score[:100], 3)}')
   print('calculating influence -- done')
