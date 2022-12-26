@@ -104,8 +104,8 @@ def train_plain(state, batch):
   """
   plain training
   """
-  args = global_var.get_value('args')
-  loss_fn = get_loss_fn(args, state, batch)
+  # args = global_var.get_value('args')
+  loss_fn = get_loss_fn(state, batch)
   grad_fn = jax.value_and_grad(loss_fn, has_aux=True)
   aux, grads = grad_fn(state.params)
   new_model_state, logits = aux[1]
@@ -116,22 +116,22 @@ def train_plain(state, batch):
     new_state = state.apply_gradients(grads=grads)
   return new_state, metrics
 
-@jax.jit
-def train_fix_lmd(state, batch, lmd): 
-  """
-  fixed-lambda training
-  """
-  args = global_var.get_value('args')
-  loss_fn = get_loss_lmd_fix(args, state, batch)
-  grad_fn = jax.value_and_grad(loss_fn, has_aux=True)
-  aux, grads = grad_fn(state.params, lmd)
-  new_model_state, logits, _ = aux[1]
-  metrics = compute_metrics(logits=logits, labels=batch['label'], groups = batch['group'])
-  if state.batch_stats:
-    new_state = state.apply_gradients(grads=grads, batch_stats=new_model_state['batch_stats'])
-  else:
-    new_state = state.apply_gradients(grads=grads)
-  return new_state, metrics, lmd
+# @jax.jit
+# def train_fix_lmd(state, batch, lmd): 
+#   """
+#   fixed-lambda training
+#   """
+#   args = global_var.get_value('args')
+#   loss_fn = get_loss_lmd_fix(args, state, batch)
+#   grad_fn = jax.value_and_grad(loss_fn, has_aux=True)
+#   aux, grads = grad_fn(state.params, lmd)
+#   new_model_state, logits, _ = aux[1]
+#   metrics = compute_metrics(logits=logits, labels=batch['label'], groups = batch['group'])
+#   if state.batch_stats:
+#     new_state = state.apply_gradients(grads=grads, batch_stats=new_model_state['batch_stats'])
+#   else:
+#     new_state = state.apply_gradients(grads=grads)
+#   return new_state, metrics, lmd
 
 # @partial(jax.jit, static_argnames=['args'])
 @jax.jit
@@ -196,7 +196,8 @@ def get_train_step(method):
   if method == 'plain':
     return train_plain
   elif method == 'fix_lmd':
-    return train_fix_lmd
+    raise NameError('Undefined')
+    # return train_fix_lmd
   elif method == 'dynamic_lmd':
     return train_dynamic_lmd
 
