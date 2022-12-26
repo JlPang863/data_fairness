@@ -49,7 +49,7 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
     grads_each_sample = infl_step(state, batch)
 
     # moving average
-    grad_sum += jnp.sum(grads_each_sample, axis=0)
+    grad_sum += np.sum(grads_each_sample, axis=0)
     num_samples += grads_each_sample.shape[0]
     # grad_sum /= num_samples
   grad_avg = (grad_sum/num_samples).reshape(-1,1)
