@@ -182,7 +182,7 @@ def train(args):
             # infl 
             sampled_idx = sample_by_infl(args, state, val_loader, train_loader_unlabeled)
 
-            train_loader_labeled, train_loader_unlabeled = load_celeba_dataset_torch(args, shuffle_files=True, split='train', batch_size=args.train_batch_size, ratio = args.label_ratio, sampled_idx=sampled_idx)
+            train_loader_labeled, train_loader_unlabeled = load_celeba_dataset_torch(args, shuffle_files=True, split='train', batch_size=args.train_batch_size, ratio = args.label_ratio, sampled_idx=sampled_idx, num = args.new_data_each_round)
 
           
           print(f'lmd is {lmd}')
