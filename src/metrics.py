@@ -12,7 +12,7 @@ def cross_entropy_loss(logits, labels):
 
 def cross_entropy_loss_per_sample(logits, labels):
   if labels is None:
-    pass # TODO
+    return - jax.nn.log_softmax(logits, axis=-1)
   else:
     return optax.softmax_cross_entropy_with_integer_labels(logits=logits, labels=labels)
 
