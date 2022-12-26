@@ -37,7 +37,7 @@ os.environ["XLA_PYTHON_CLIENT_PREALLOCATE"] = "false"   # This disables the prea
 #       print(f'p_true: {p_true},\n p_est: {p_est}')
 #   return T_est, p_est, T_true, p_true.reshape(-1,1)
 
-def sample_by_infl(args, state, val_data, unlabeled_data, num, strategy = 1):
+def sample_by_infl(args, state, val_data, unlabeled_data, num, strategy = 2):
   """
   Get influence score of each unlabeled_data on val_data, then sample according to scores
   """
