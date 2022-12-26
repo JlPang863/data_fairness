@@ -243,4 +243,4 @@ def infl_step(state, batch):
   grads_per_sample = jnp.concatenate([x.reshape(x.shape[0],-1) for x in grad_flat_tree], axis=-1) 
   # grads_per_sample = jnp.concatenate([jnp.sum(x, 0).reshape(-1) for x in grad_flat_tree], axis=-1) 
 
-  return np.asarray(grads_per_sample)
+  return grads_per_sample
