@@ -37,7 +37,7 @@ os.environ["XLA_PYTHON_CLIENT_PREALLOCATE"] = "false"   # This disables the prea
 #       print(f'p_true: {p_true},\n p_est: {p_est}')
 #   return T_est, p_est, T_true, p_true.reshape(-1,1)
 
-def sample_by_infl(args, state, val_data, unlabeled_data, num):
+def sample_by_infl(args, state, val_data, unlabeled_data, num, strategy = 1):
   """
   Get influence score of each unlabeled_data on val_data, then sample according to scores
   """
@@ -56,24 +56,63 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
     
     # grad_sum /= num_samples
   grad_avg = (grad_sum/num_samples).reshape(-1,1)
-  # pdb.set_trace()
+
   # check unlabeled data
   score = []
   idx = []
+  expected_label = []
+  true_label = []
   for example in unlabeled_data:
     batch = preprocess_func_celeba_torch(example, args)
-    batch['label'] = None # get grad for each label. We do not know labels of samples in unlabeled data
-    grads_each_sample = np.asarray(infl_step(state, batch))
-    pdb.set_trace()
-    score += np.matmul(grads_each_sample, grad_avg).reshape(-1).tolist()
+    batch_unlabeled = batch.copy()
+    batch_unlabeled['label'] = None # get grad for each label. We do not know labels of samples in unlabeled data
+    grads_each_sample = np.asarray(infl_step(state, batch_unlabeled))
+    infl = - np.matmul(grads_each_sample, grad_avg) # new_loss - cur_los
+    # Strategy 1 (baseline): random
+    if strategy == 1:
+      pass
+    # Strategy 2 (idea 1): find the label with least absolute influence, then find the sample with largest abs infl
+    elif strategy == 2:
+      label_expected = np.argmin(abs(infl), 1)
+      score += abs(infl[range(infl.shape[0]), label_expected]).reshape(-1).tolist()
+      expected_label += label_expected.tolist()
+      true_label += batch['label'].tolist()
+    # Strategy 3 (idea 2): find the label with minimal influence values (most negative), then find the sample with most negative infl 
+    elif strategy == 3:
+      label_expected = np.argmin(infl, 1).reshape(-1)
+      score += infl[range(infl.shape[0]), label_expected].reshape(-1).tolist()
+      expected_label += label_expected.tolist()
+      true_label += batch['label'].tolist()
+
+
     idx += batch['index'].tolist()
     print(len(score))
-    if len(score) > num * 100:
+    if len(score) >= num * 100:
       break
+  pdb.set_trace()
+  if strategy == 1:
+    sel_idx = list(range(len(score)))
+    random.Random(args.infl_random_seed).shuffle(sel_idx)
+    sel_idx = sel_idx[:num]
 
-  print(f'score (first {num}) is {np.round(score[:num], 3)}')
+  # Strategy 2 (idea 1): find the label with least absolute influence, then find the sample with largest abs infl
+  elif strategy == 2:
+    sel_idx = np.argsort(score)[-num:]
+
+  # Strategy 3 (idea 2): find the label with minimal influence values (most negative), then find the sample with most negative infl 
+  elif strategy == 3:
+    sel_idx = np.argsort(score)[:num]
+
+  if strategy in [2, 3]:
+    # check labels
+    true_label = np.asarray(true_label)[sel_idx]
+    expected_label = np.asarray(expected_label)[sel_idx]
+    print(f'[Strategy {strategy}] Expected label {expected_label}')  
+    print(f'[Strategy {strategy}] True label {true_label}')  
+
+  sel_org_idx = np.asarray(idx)[sel_idx].tolist()
   print('calculating influence -- done')
-  return None # TODO
+  return sel_org_idx 
 
 
 
@@ -195,6 +234,7 @@ def train(args):
           rec, time_now = record_test(rec, t+args.datasize*epoch_i//args.train_batch_size, args.datasize*args.num_epochs//args.train_batch_size, time_now, time_start, train_metric, test_metric)
           if epoch_i > args.warm_epoch:
             # infl 
+            args.infl_random_seed = t + args.train_seed
             sampled_idx = sample_by_infl(args, state, val_loader, train_loader_unlabeled, num = args.new_data_each_round)
 
             train_loader_labeled, train_loader_unlabeled = load_celeba_dataset_torch(args, shuffle_files=True, split='train', batch_size=args.train_batch_size, ratio = args.label_ratio, sampled_idx=sampled_idx)
