@@ -73,7 +73,7 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num, strategy = 2):
       pass
     # Strategy 2 (idea 1): find the label with least absolute influence, then find the sample with largest abs infl
     elif strategy == 2:
-      label_expected = np.argmin(abs(infl), 1)
+      label_expected = np.argmin(abs(infl), 1).reshape(-1)
       score += abs(infl[range(infl.shape[0]), label_expected]).reshape(-1).tolist()
       expected_label += label_expected.tolist()
       true_label += batch['label'].tolist()
