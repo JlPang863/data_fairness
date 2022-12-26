@@ -59,7 +59,7 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
   for example in unlabeled_data:
     batch = preprocess_func_celeba_torch(example, args)
     grads_each_sample = infl_step(state, batch)
-    score = jnp.matmul(grads_each_sample, grad_avg) # bsz * 1
+    score = np.matmul(grads_each_sample, grad_avg) # bsz * 1
     pdb.set_trace()
     # TODO
 
