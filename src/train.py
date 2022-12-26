@@ -43,20 +43,20 @@ def get_infl(args, state, val_data, unlabeled_data):
   """
   logits, labels, groups = [], [], []
   num_samples = 0.0
-  grad_avg = 0.0
-  for example in val_data: # Need to run on the validation dataset to aviod the negative effect of distribution shift, e.g., DP is not robust to distribution shift.
+  grad_sum = 0.0
+  for example in val_data: # Need to run on the validation dataset to avoid the negative effect of distribution shift, e.g., DP is not robust to distribution shift. For fairness, val data may be iid as test data 
     batch = preprocess_func_celeba_torch(example, args)
     grads_each_sample = infl_step(state, batch)
 
     # moving average
-    grad_avg = grad_avg * num_samples + jnp.sum(grads_each_sample, axis=0)
+    grad_sum += jnp.sum(grads_each_sample, axis=0)
     num_samples += grads_each_sample.shape[0]
-    grad_avg /= num_samples
-  grad_avg = grad_avg.reshape(-1,1)
+    # grad_sum /= num_samples
+  grad_avg = (grad_sum/num_samples).reshape(-1,1)
   for example in unlabeled_data:
     batch = preprocess_func_celeba_torch(example, args)
     grads_each_sample = infl_step(state, batch)
-    score = jnp.matmul(grads_each_sample) # bsz * 1
+    score = jnp.matmul(grads_each_sample, grad_avg) # bsz * 1
     pdb.set_trace()
     # TODO
 
@@ -98,6 +98,7 @@ def train(args):
   make_dirs(args)
 
   train_loader_labeled, train_loader_unlabeled = load_celeba_dataset_torch(args, shuffle_files=True, split='train', batch_size=args.train_batch_size, ratio = args.label_ratio)
+  pdb.set_trace()
   val_loader, test_loader = load_celeba_dataset_torch(args, shuffle_files=False, split='test', batch_size=args.test_batch_size, ratio = args.val_ratio)
 
   args.image_shape = args.img_size
@@ -168,7 +169,6 @@ def train(args):
         if args.method == 'plain':
           state, train_metric = train_step(state, batch)
         elif args.method in ['fix_lmd','dynamic_lmd']:
-          # pdb.set_trace()
           state, train_metric, lmd = train_step(state, batch, lmd = lmd, T=None)
         else:
           raise NameError('Undefined optimization mechanism')
@@ -180,10 +180,10 @@ def train(args):
           # epoch_pre = epoch_i
           test_metric = test(args, state, test_loader)
           rec, time_now = record_test(rec, t+args.datasize*epoch_i//args.train_batch_size, args.datasize*args.num_epochs//args.train_batch_size, time_now, time_start, train_metric, test_metric)
+          if epoch_i > args.warm_epoch:
+            # infl 
+            get_infl(args, state, val_loader, train_loader_unlabeled)
 
-          # infl 
-          # get_infl(args, state, val_loader, train_loader_unlabeled)
-          # print(lmd)
           
           print(f'lmd is {lmd}')
 
