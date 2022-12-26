@@ -241,9 +241,9 @@ def infl_step(state, batch, sel_layer):
   
   grad_flat_tree = jax.tree_util.tree_leaves(grads_per_sample_tree)
   # pdb.set_trace()
-
-  grads_per_sample = jnp.concatenate([grad_flat_tree[i].reshape(batch.shape[0],-1) for i in sel_layer], axis=-1)
   
+  grads_per_sample = jnp.concatenate([x.reshape(batch['label'].shape[0],-1) for x in grad_flat_tree[190:]], axis=-1)
+  # grads_per_sample = jnp.concatenate([grad_flat_tree[i].reshape(batch.shape[0],-1) for i in sel_layer], axis=-1)
   # grads_per_sample = jnp.concatenate([jnp.sum(x, 0).reshape(-1) for x in grad_flat_tree], axis=-1) 
 
   return grads_per_sample
