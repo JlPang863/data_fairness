@@ -41,7 +41,7 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
   """
   Get influence score of each unlabeled_data on val_data, then sample according to scores
   """
-
+  print('begin calculating influence')
   num_samples = 0.0
   grad_sum = 0.0
   for example in val_data: # Need to run on the validation dataset to avoid the negative effect of distribution shift, e.g., DP is not robust to distribution shift. For fairness, val data may be iid as test data 
@@ -63,6 +63,7 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
     pdb.set_trace()
     # TODO
 
+  print('calculating influence -- done')
 
 
 
