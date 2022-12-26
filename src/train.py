@@ -189,7 +189,7 @@ def train(args):
             # infl 
             sel_layer = list(range(num_layers))
             random.Random(args.train_seed + t).shuffle(sel_layer)
-            sel_layer = sel_layer[:5] # only use five layers to improve speed
+            sel_layer = sel_layer[:2] # only use two layers to improve speed
             sampled_idx = sample_by_infl(args, state, val_loader, train_loader_unlabeled, num = args.new_data_each_round, sel_layer = sel_layer)
 
             train_loader_labeled, train_loader_unlabeled = load_celeba_dataset_torch(args, shuffle_files=True, split='train', batch_size=args.train_batch_size, ratio = args.label_ratio, sampled_idx=sampled_idx)
