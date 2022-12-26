@@ -234,7 +234,7 @@ def infl_step(state, batch):
 
   # loss_fn_per_sample = get_loss_lmd_dynamic(state, batch, per_sample=True)
   loss_fn_per_sample = get_loss_fn(state, batch, per_sample=True)
-  # pdb.set_trace()
+
   
   grads_per_sample_tree, aux = jax.jacrev(loss_fn_per_sample, argnums=0, has_aux=True)(state.params)
   # grads_per_sample_tree, aux = our_jacrev(loss_fn_per_sample, argnums=0, has_aux=True)(state.params)
@@ -246,7 +246,7 @@ def infl_step(state, batch):
     grads_per_sample = jnp.concatenate([x.reshape(grad_flat_tree[-1].shape[0], grad_flat_tree[-1].shape[1], -1) for x in grad_flat_tree[-4:]], axis=-1)
   else:
     grads_per_sample = jnp.concatenate([x.reshape(batch['feature'].shape[0],-1) for x in grad_flat_tree[-4:]], axis=-1)
-    # pdb.set_trace()
+    
   
   # grads_per_sample = jnp.concatenate([x.reshape(batch['feature'].shape[0],-1) for x in grad_flat_tree[-4:]], axis=-1)
   # last sel_layer layers: 4 by default embedding + final linear (bias+kernel)

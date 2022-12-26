@@ -64,6 +64,7 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
     batch = preprocess_func_celeba_torch(example, args)
     batch['label'] = None # get grad for each label. We do not know labels of samples in unlabeled data
     grads_each_sample = np.asarray(infl_step(state, batch))
+    pdb.set_trace()
     score += np.matmul(grads_each_sample, grad_avg).reshape(-1).tolist()
     idx += batch['index'].tolist()
     print(len(score))
