@@ -187,10 +187,10 @@ def train(args):
           rec, time_now = record_test(rec, t+args.datasize*epoch_i//args.train_batch_size, args.datasize*args.num_epochs//args.train_batch_size, time_now, time_start, train_metric, test_metric)
           if epoch_i > args.warm_epoch:
             # infl 
-            sel_node = list(range(model_size))
-            random.Random(args.train_seed + t).shuffle(sel_node)
-            sel_node = sel_node[: int(len(sel_node) * 0.1)]
-            sampled_idx = sample_by_infl(args, state, val_loader, train_loader_unlabeled, num = args.new_data_each_round, sel_node = sel_node)
+            # sel_node = list(range(model_size))
+            # random.Random(args.train_seed + t).shuffle(sel_node)
+            # sel_node = sel_node[: int(len(sel_node) * 0.1)]
+            sampled_idx = sample_by_infl(args, state, val_loader, train_loader_unlabeled, num = args.new_data_each_round, sel_node = None)
 
             train_loader_labeled, train_loader_unlabeled = load_celeba_dataset_torch(args, shuffle_files=True, split='train', batch_size=args.train_batch_size, ratio = args.label_ratio, sampled_idx=sampled_idx)
 
