@@ -88,7 +88,7 @@ args.EP_STEPS = EP_STEPS
 args.train_seed = META_TRAIN_SEED + RUN * SEED_INCR
 args.train_batch_size = 256
 # args.train_batch_size = 64
-args.test_batch_size = 4096
+args.test_batch_size = 256
 args.augment = True
 args.track_forgetting = True
 # checkpoints
