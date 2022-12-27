@@ -116,11 +116,14 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
 
   # strategy 4: use true label, find large abs infl ones
   elif args.strategy == 4:
-    sel_idx = np.argsort(score)[-num:]
+    # sel_idx = np.argsort(score)[-num:]
+    sel_idx = np.argsort(score)[:num] # reversed
+
   
   # strategy 5: use true label, find most negative infl ones
   elif args.strategy == 5:
-    sel_idx = np.argsort(score)[:num]
+    # sel_idx = np.argsort(score)[:num]
+    sel_idx = np.argsort(score)[-num:] # reversed
 
   if args.strategy > 1:
     # check labels
