@@ -83,6 +83,17 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
       score += infl[range(infl.shape[0]), label_expected].reshape(-1).tolist()
       expected_label += label_expected.tolist()
       true_label += batch['label'].tolist()
+    elif args.strategy == 4:
+      label_expected = batch['label'].reshape(-1)
+      score += abs(infl[range(infl.shape[0]), label_expected]).reshape(-1).tolist()
+      expected_label += label_expected.tolist()
+      true_label += batch['label'].tolist()
+    elif args.strategy == 5:
+      label_expected = batch['label'].reshape(-1)
+      score += (infl[range(infl.shape[0]), label_expected]).reshape(-1).tolist()
+      expected_label += label_expected.tolist()
+      true_label += batch['label'].tolist()
+      
 
 
     idx += batch['index'].tolist()
@@ -103,7 +114,15 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
   elif args.strategy == 3:
     sel_idx = np.argsort(score)[:num]
 
-  if args.strategy in [2, 3]:
+  # strategy 4: use true label, find large abs infl ones
+  elif args.strategy == 4:
+    sel_idx = np.argsort(score)[-num:]
+  
+  # strategy 5: use true label, find most negative infl ones
+  elif args.strategy == 5:
+    sel_idx = np.argsort(score)[:num]
+
+  if args.strategy > 1:
     # check labels
     true_label = np.asarray(true_label)[sel_idx]
     expected_label = np.asarray(expected_label)[sel_idx]
