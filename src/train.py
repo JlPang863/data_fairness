@@ -67,7 +67,7 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
     batch_unlabeled = batch.copy()
     batch_unlabeled['label'] = None # get grad for each label. We do not know labels of samples in unlabeled data
     grads_each_sample = np.asarray(infl_step(state, batch_unlabeled))
-    infl = - np.matmul(grads_each_sample, grad_avg) # new_loss - cur_los
+    infl =  np.matmul(grads_each_sample, grad_avg) # new_loss - cur_los  # TODO shoudl be -np.matmul(grads_each_sample, grad_avg)
     # Strategy 1 (baseline): random
     if args.strategy == 1:
       score += [1] * batch['label'].shape[0]
