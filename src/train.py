@@ -126,8 +126,10 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
     # check labels
     true_label = np.asarray(true_label)[sel_idx]
     expected_label = np.asarray(expected_label)[sel_idx]
-    print(f'[Strategy {args.strategy}] Expected label {expected_label}')  
-    print(f'[Strategy {args.strategy}] True label {true_label}')  
+    expect_acc = np.mean(1.0 * (true_label == expected_label))
+    print(f'[Strategy {args.strategy}] Acc of expected label: {expect_acc}')  
+    # print(f'[Strategy {args.strategy}] Expected label {expected_label}')  
+    # print(f'[Strategy {args.strategy}] True label {true_label}')  
 
   sel_org_idx = np.asarray(idx)[sel_idx].tolist()
   print('calculating influence -- done')
