@@ -70,7 +70,7 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
     infl = - np.matmul(grads_each_sample, grad_avg) # new_loss - cur_los
     # Strategy 1 (baseline): random
     if args.strategy == 1:
-      pass
+      score += [1] * batch['label'].shape[0]
     # Strategy 2 (idea 1): find the label with least absolute influence, then find the sample with largest abs infl
     elif args.strategy == 2:
       label_expected = np.argmin(abs(infl), 1).reshape(-1)
@@ -86,10 +86,10 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
 
 
     idx += batch['index'].tolist()
-    print(len(score))
+    # print(len(score))
     if len(score) >= num * 20:
       break
-  # pdb.set_trace()
+
   if args.strategy == 1:
     sel_idx = list(range(len(score)))
     random.Random(args.infl_random_seed).shuffle(sel_idx)
@@ -174,6 +174,7 @@ def train(args):
   loss_rec = [loss]
   train_step = get_train_step(args.method)
   # epoch_pre = 0
+  sampled_idx = []
   for epoch_i in range(args.num_epochs):
 
 
@@ -233,7 +234,7 @@ def train(args):
           if epoch_i > args.warm_epoch:
             # infl 
             args.infl_random_seed = t + args.train_seed
-            sampled_idx = sample_by_infl(args, state, val_loader, train_loader_unlabeled, num = args.new_data_each_round)
+            sampled_idx += sample_by_infl(args, state, val_loader, train_loader_unlabeled, num = args.new_data_each_round)
 
             train_loader_labeled, train_loader_unlabeled = load_celeba_dataset_torch(args, shuffle_files=True, split='train', batch_size=args.train_batch_size, ratio = args.label_ratio, sampled_idx=sampled_idx)
 
