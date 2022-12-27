@@ -100,7 +100,7 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
     # print(len(score))
     if len(score) >= num * 20:
       break
-  # pdb.set_trace()
+  
   if args.strategy == 1:
     sel_idx = list(range(len(score)))
     random.Random(args.infl_random_seed).shuffle(sel_idx)
@@ -165,6 +165,18 @@ def train(args):
   make_dirs(args)
 
   train_loader_labeled, train_loader_unlabeled = load_celeba_dataset_torch(args, shuffle_files=True, split='train', batch_size=args.train_batch_size, ratio = args.label_ratio)
+  
+  for example in train_loader_unlabeled:
+    batch = preprocess_func_celeba_torch(example, args, noisy_attribute = None)
+    print(batch['index'])
+    break
+  train_loader_labeled, train_loader_unlabeled = load_celeba_dataset_torch(args, shuffle_files=True, split='train', batch_size=args.train_batch_size, ratio = args.label_ratio)
+  for example in train_loader_unlabeled:
+    batch = preprocess_func_celeba_torch(example, args, noisy_attribute = None)
+    print(batch['index'])
+    break
+  pdb.set_trace()
+
   val_loader, test_loader = load_celeba_dataset_torch(args, shuffle_files=False, split='test', batch_size=args.test_batch_size, ratio = args.val_ratio)
 
   args.image_shape = args.img_size
