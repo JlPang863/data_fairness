@@ -72,11 +72,18 @@ def load_recorder(load_dir, verbose=True):
   return rec
 
 
-def record_test(rec, t, T, t_prev, t_start, train_metric, test_metric, init=False):
+def record_test(rec, t, T, t_prev, t_start, train_metric, test_metric, init=False, val_metric = None):
   rec = record_test_stats(rec, t, test_metric)
   t_now = time.time()
   t_incr, t_tot = t_now - t_prev, t_now - t_start
-  print_stats(t, T, t_incr, t_tot, train_metric, test_metric, init)
+  
+  if val_metric:
+    print_stats(t, T, t_incr, t_tot, train_metric, val_metric, init, is_val=True)
+  else:
+    print_stats(t, T, t_incr, t_tot, train_metric, test_metric, init, is_val=False)
+
+
+
   return rec, t_now
 
 

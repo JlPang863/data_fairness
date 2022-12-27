@@ -258,7 +258,7 @@ def train(args):
             args.infl_random_seed = t + args.train_seed
             sampled_idx += sample_by_infl(args, state, val_loader, train_loader_unlabeled, num = args.new_data_each_round)
             val_metric = test(args, state, val_loader)
-            _, time_now = record_test(rec, t+args.datasize*epoch_i//args.train_batch_size, args.datasize*args.num_epochs//args.train_batch_size, time_now, time_start, train_metric, val_metric)
+            _, time_now = record_test(rec, t+args.datasize*epoch_i//args.train_batch_size, args.datasize*args.num_epochs//args.train_batch_size, time_now, time_start, train_metric, test_metric, val_metric=val_metric)
 
 
             train_loader_labeled, train_loader_unlabeled = load_celeba_dataset_torch(args, shuffle_files=True, split='train', batch_size=args.train_batch_size, ratio = args.label_ratio, sampled_idx=sampled_idx)

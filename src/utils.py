@@ -69,7 +69,11 @@ def set_global_seed(seed=0):
 #  print
 ########################################################################################################################
 
-def print_stats(t, T, t_incr, t_tot, train_metric, test_metric, init=False):
+def print_stats(t, T, t_incr, t_tot, train_metric, test_metric, init=False, is_val = False):
   prog = t / T * 100
+  if is_val:
+    val = 'val'
+  else:
+    val = 'test'
   print(f'{prog:6.2f}% | time: {t_incr:5.1f}s ({t_tot/60:5.1f}m) | step: {t:6d} |',
-          f"train acc: {train_metric['accuracy']:.3f}({train_metric['acc'][0]:.3f}, {train_metric['acc'][1]:.3f}) | train ar gap: {abs(train_metric['ar'][0]-train_metric['ar'][1]):.3f} | train loss: {train_metric['loss']:.3f} |test acc: {test_metric['accuracy']:.3f} ({test_metric['acc'][0]:.3f}, {test_metric['acc'][1]:.3f}) | test ar gap: {abs(test_metric['ar'][0] - test_metric['ar'][1]):.4f}")
+          f"train acc: {train_metric['accuracy']:.3f}({train_metric['acc'][0]:.3f}, {train_metric['acc'][1]:.3f}) | train ar gap: {abs(train_metric['ar'][0]-train_metric['ar'][1]):.3f} | train loss: {train_metric['loss']:.3f} |{val} acc: {test_metric['accuracy']:.3f} ({test_metric['acc'][0]:.3f}, {test_metric['acc'][1]:.3f}) | {val} ar gap: {abs(test_metric['ar'][0] - test_metric['ar'][1]):.4f}")
