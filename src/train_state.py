@@ -262,11 +262,11 @@ def infl_step_fair(state, batch):
   # grads_per_sample_tree, aux = our_jacrev(loss_fn_per_sample, argnums=0, has_aux=True)(state.params)
   
   grad_flat_tree = jax.tree_util.tree_leaves(grads_per_sample_tree)
-  pdb.set_trace()
-  if batch['label'] is None:
-    grads_per_sample = jnp.concatenate([x.reshape(grad_flat_tree[-1].shape[0], grad_flat_tree[-1].shape[1], -1) for x in grad_flat_tree[-4:]], axis=-1)
-  else:
-    grads_per_sample = jnp.concatenate([x.reshape(batch['feature'].shape[0],-1) for x in grad_flat_tree[-4:]], axis=-1)
+
+  # if batch['label'] is None:
+  #   grads_per_sample = jnp.concatenate([x.reshape(grad_flat_tree[-1].shape[0], grad_flat_tree[-1].shape[1], -1) for x in grad_flat_tree[-4:]], axis=-1)
+  # else:
+  grads_per_sample = jnp.concatenate([x.reshape(-1) for x in grad_flat_tree[-4:]], axis=-1)
     
 
   return grads_per_sample
