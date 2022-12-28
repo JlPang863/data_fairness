@@ -52,7 +52,7 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
     grads_each_sample = np.asarray(infl_step(state, batch))
 
     grads_fair_batch = np.asarray(infl_step_fair(state, batch))
-    
+    # TODO: confidence reg
 
 
     # print(grads_each_sample.shape)
@@ -82,6 +82,8 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
     label_expected = np.argmin(abs(infl), 1).reshape(-1)
     # infl_fair = (infl_fair[range(infl_fair.shape[0]), batch['label'].reshape(-1)]).reshape(-1)  # assume knowing true labels TODO
     infl_fair = (infl_fair[range(infl_fair.shape[0]), label_expected]).reshape(-1)  # assume knowing true labels TODO
+    infl_fair = np.asarray([-1] * infl_fair.shape[0])  # only consider acc
+
 
     # Strategy 1 (baseline): random
     if args.strategy == 1:
