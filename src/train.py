@@ -40,6 +40,8 @@ os.environ["XLA_PYTHON_CLIENT_PREALLOCATE"] = "false"   # This disables the prea
 def sample_by_infl(args, state, val_data, unlabeled_data, num):
   """
   Get influence score of each unlabeled_data on val_data, then sample according to scores
+  For accuracy, we need to get the exact infl
+  For fairness, we only care about the sign
   """
   print('begin calculating influence')
   num_samples = 0.0
@@ -116,14 +118,14 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
 
   # strategy 4: use true label, find large abs infl ones
   elif args.strategy == 4:
-    # sel_idx = np.argsort(score)[-num:]
-    sel_idx = np.argsort(score)[:num] # reversed
+    sel_idx = np.argsort(score)[-num:]
+    # sel_idx = np.argsort(score)[:num] # reversed, for controlled test
 
   
   # strategy 5: use true label, find most negative infl ones
   elif args.strategy == 5:
-    # sel_idx = np.argsort(score)[:num]
-    sel_idx = np.argsort(score)[-num:] # reversed
+    sel_idx = np.argsort(score)[:num]
+    # sel_idx = np.argsort(score)[-num:] # reversed, for controlled test
 
   if args.strategy > 1:
     # check labels
