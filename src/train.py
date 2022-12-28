@@ -79,7 +79,9 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
     grads_each_sample = np.asarray(infl_step(state, batch_unlabeled))
     infl = - np.matmul(grads_each_sample, grad_avg) # new_loss - cur_los  # 
     infl_fair = - np.matmul(grads_each_sample, grad_fair)
-    infl_fair = (infl_fair[range(infl_fair.shape[0]), batch['label'].reshape(-1)]).reshape(-1)  # assume knowing true labels TODO
+    label_expected = np.argmin(abs(infl), 1).reshape(-1)
+    # infl_fair = (infl_fair[range(infl_fair.shape[0]), batch['label'].reshape(-1)]).reshape(-1)  # assume knowing true labels TODO
+    infl_fair = (infl_fair[range(infl_fair.shape[0]), label_expected]).reshape(-1)  # assume knowing true labels TODO
 
     # Strategy 1 (baseline): random
     if args.strategy == 1:
