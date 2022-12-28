@@ -56,15 +56,11 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
     # TODO: confidence reg
 
 
-    # print(grads.shape)
-    pdb.set_trace()
-
-    # moving average
+    # sum & average
     grad_sum += grads * bsz
     grad_fair_sum += grads_fair_batch * bsz
     num_samples += bsz
-    
-    # grad_sum /= num_samples
+
   grad_avg = (grad_sum/num_samples).reshape(-1,1)
   grad_fair = (grad_fair_sum/num_samples).reshape(-1,1)
 
