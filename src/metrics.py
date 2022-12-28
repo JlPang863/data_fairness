@@ -161,31 +161,6 @@ def constraints_dp(logits, attributes, labels, T = None, M=2, K=2):
   group_a = jnp.sum((attributes == 0) * prob[:,1]) / jnp.sum((attributes == 0) * 1.0 + EPS)
   group_b = jnp.sum((attributes == 1) * prob[:,1]) / jnp.sum((attributes == 1) * 1.0 + EPS)
   return constraint, (group_a, group_b)
-  # T is not the original transition matrix. It has been transformed such that H[:,k] = T[k] H_noisy[:,k]
-  # prob = jax.nn.softmax(prob) 
-  # prob = logits
-  # rev_prob = 1 - prob + EPS
-  # group_a = jnp.where(attributes > 0, logits, 0).sum() / (jnp.where(attributes > 0, 1, 0).sum() + EPS)
-  # group_b = jnp.where(attributes <= 0, logits, 0).sum() / (jnp.where(attributes <= 0, 1, 0).sum() + EPS)
-
-  # group_a = jnp.sum((attributes == 0) * prob[:,1]) / jnp.sum((attributes == 0) * 1.0 + EPS)
-  # group_b = jnp.sum((attributes == 1) * prob[:,1]) / jnp.sum((attributes == 1) * 1.0 + EPS)
-  # return group_a - group_b, (group_a, group_b)
-
-  # group_a2 = jnp.sum((attributes == 0) * prob[:,1]**2) / jnp.sum((attributes == 0) * 1.0 + EPS)
-  # group_b2 = jnp.sum((attributes == 1) * prob[:,1]**2) / jnp.sum((attributes == 1) * 1.0 + EPS)
-
-  # group_a3 = jnp.sum((attributes == 0) * prob[:,1]**3) / jnp.sum((attributes == 0) * 1.0 + EPS)
-  # group_b3 = jnp.sum((attributes == 1) * prob[:,1]**3) / jnp.sum((attributes == 1) * 1.0 + EPS)
-
-
-  # group_a2 = jnp.sum((attributes == 0) * jnp.log(prob[:,1]+EPS)) / jnp.sum((attributes == 0) * 1.0 + EPS)
-  # group_b2 = jnp.sum((attributes == 1) * jnp.log(prob[:,1]+EPS)) / jnp.sum((attributes == 1) * 1.0 + EPS)
-
-
-  # group_a3 = jnp.sum((attributes == 0) * jnp.log(1-prob[:,1]+EPS)) / jnp.sum((attributes == 0) * 1.0 + EPS)
-  # group_b3 = jnp.sum((attributes == 1) * jnp.log(1-prob[:,1]+EPS)) / jnp.sum((attributes == 1) * 1.0 + EPS)
-  # return jnp.abs(group_a - group_b) +  jnp.abs(group_a2 - group_b2) + jnp.abs(group_a3 - group_b3)
 
 def constraints_confidence_entropy(logits):
   EPS = 1e-8

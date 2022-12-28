@@ -8,7 +8,7 @@ from .models import get_model
 from .recorder import init_recorder, record_train_stats, save_recorder, record_test, save_checkpoint
 import pdb
 from .hoc_fairlearn import *
-from .train_state import test_step, get_train_step, create_train_state, infl_step
+from .train_state import test_step, get_train_step, create_train_state, infl_step, infl_step_fair
 from .metrics import compute_metrics
 from .utils import set_global_seed, make_dirs, log_and_save_args
 from . import global_var
@@ -46,18 +46,26 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
   print('begin calculating influence')
   num_samples = 0.0
   grad_sum = 0.0
+  grad_fair_sum = 0.0
   for example in val_data: # Need to run on the validation dataset to avoid the negative effect of distribution shift, e.g., DP is not robust to distribution shift. For fairness, val data may be iid as test data 
     batch = preprocess_func_celeba_torch(example, args)
     grads_each_sample = np.asarray(infl_step(state, batch))
+
+    grads_fair_batch = np.asarray(infl_step_fair(state, batch))
+    
+
+
     # print(grads_each_sample.shape)
     # pdb.set_trace()
 
     # moving average
     grad_sum += np.sum(grads_each_sample, axis=0)
+    grad_fair_sum += grads_fair_batch * grads_each_sample.shape[0]
     num_samples += grads_each_sample.shape[0]
     
     # grad_sum /= num_samples
   grad_avg = (grad_sum/num_samples).reshape(-1,1)
+  grad_fair = (grad_fair_sum/num_samples).reshape(-1,1)
 
   # check unlabeled data
   score = []
@@ -70,29 +78,40 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
     batch_unlabeled['label'] = None # get grad for each label. We do not know labels of samples in unlabeled data
     grads_each_sample = np.asarray(infl_step(state, batch_unlabeled))
     infl = - np.matmul(grads_each_sample, grad_avg) # new_loss - cur_los  # 
+    infl_fair = - np.matmul(grads_each_sample, grad_fair)
+    infl_fair = (infl_fair[range(infl_fair.shape[0]), batch['label'].reshape(-1)]).reshape(-1)  # assume knowing true labels TODO
+
     # Strategy 1 (baseline): random
     if args.strategy == 1:
       score += [1] * batch['label'].shape[0]
     # Strategy 2 (idea 1): find the label with least absolute influence, then find the sample with largest abs infl
     elif args.strategy == 2:
       label_expected = np.argmin(abs(infl), 1).reshape(-1)
-      score += abs(infl[range(infl.shape[0]), label_expected]).reshape(-1).tolist()
+      score_tmp = abs(infl[range(infl.shape[0]), label_expected]).reshape(-1)
+      score_tmp[infl_fair > 0] = 0
+      score += score_tmp.tolist()
       expected_label += label_expected.tolist()
       true_label += batch['label'].tolist()
     # Strategy 3 (idea 2): find the label with minimal influence values (most negative), then find the sample with most negative infl 
     elif args.strategy == 3:
       label_expected = np.argmin(infl, 1).reshape(-1)
-      score += infl[range(infl.shape[0]), label_expected].reshape(-1).tolist()
+      score_tmp = (infl[range(infl.shape[0]), label_expected]).reshape(-1)
+      score_tmp[infl_fair > 0] = 0
+      score += score_tmp.tolist()
       expected_label += label_expected.tolist()
       true_label += batch['label'].tolist()
     elif args.strategy == 4:
       label_expected = batch['label'].reshape(-1)
-      score += abs(infl[range(infl.shape[0]), label_expected]).reshape(-1).tolist()
+      score_tmp = abs(infl[range(infl.shape[0]), label_expected]).reshape(-1)
+      score_tmp[infl_fair > 0] = 0
+      score += score_tmp.tolist()
       expected_label += label_expected.tolist()
       true_label += batch['label'].tolist()
     elif args.strategy == 5:
       label_expected = batch['label'].reshape(-1)
-      score += (infl[range(infl.shape[0]), label_expected]).reshape(-1).tolist()
+      score_tmp = (infl[range(infl.shape[0]), label_expected]).reshape(-1)
+      score_tmp[infl_fair > 0] = 0
+      score += score_tmp.tolist()
       expected_label += label_expected.tolist()
       true_label += batch['label'].tolist()
       
