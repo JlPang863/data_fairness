@@ -8,7 +8,7 @@ from .models import get_model
 from .recorder import init_recorder, record_train_stats, save_recorder, record_test, save_checkpoint
 import pdb
 from .hoc_fairlearn import *
-from .train_state import test_step, get_train_step, create_train_state, infl_step, infl_step_fair
+from .train_state import test_step, get_train_step, create_train_state, infl_step, infl_step_fair, infl_step_per_sample
 from .metrics import compute_metrics
 from .utils import set_global_seed, make_dirs, log_and_save_args
 from . import global_var
@@ -49,19 +49,20 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
   grad_fair_sum = 0.0
   for example in val_data: # Need to run on the validation dataset to avoid the negative effect of distribution shift, e.g., DP is not robust to distribution shift. For fairness, val data may be iid as test data 
     batch = preprocess_func_celeba_torch(example, args)
-    grads_each_sample = np.asarray(infl_step(state, batch, per_sample=False))
+    bsz = batch['feature'].shape[0]
+    grads = np.asarray(infl_step(state, batch))
 
     grads_fair_batch = np.asarray(infl_step_fair(state, batch))
     # TODO: confidence reg
 
 
-    # print(grads_each_sample.shape)
-    # pdb.set_trace()
+    # print(grads.shape)
+    pdb.set_trace()
 
     # moving average
-    grad_sum += np.sum(grads_each_sample, axis=0)
-    grad_fair_sum += grads_fair_batch * grads_each_sample.shape[0]
-    num_samples += grads_each_sample.shape[0]
+    grad_sum += grads * bsz
+    grad_fair_sum += grads_fair_batch * bsz
+    num_samples += bsz
     
     # grad_sum /= num_samples
   grad_avg = (grad_sum/num_samples).reshape(-1,1)
@@ -76,7 +77,7 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
     batch = preprocess_func_celeba_torch(example, args)
     batch_unlabeled = batch.copy()
     batch_unlabeled['label'] = None # get grad for each label. We do not know labels of samples in unlabeled data
-    grads_each_sample = np.asarray(infl_step(state, batch_unlabeled, per_sample = True))
+    grads_each_sample = np.asarray(infl_step_per_sample(state, batch_unlabeled))
     infl = - np.matmul(grads_each_sample, grad_avg) # new_loss - cur_los  # 
     infl_fair = - np.matmul(grads_each_sample, grad_fair)
     label_expected = np.argmin(abs(infl), 1).reshape(-1)

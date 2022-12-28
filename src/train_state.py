@@ -220,7 +220,31 @@ def test_step(state, batch):
 
 
 @jax.jit
-def infl_step(state, batch, per_sample=False):
+def infl_step(state, batch):
+  """
+  Get grads for infl scores
+  Return:
+    Grads: 1*model_size
+  """
+
+  # loss_fn_per_sample = get_loss_lmd_dynamic(state, batch, per_sample=True)
+  loss_fn = get_loss_fn(state, batch, per_sample=False)
+
+  
+  grads_tree, aux = jax.jacrev(loss_fn, argnums=0, has_aux=True)(state.params)
+  # grads_tree, aux = our_jacrev(loss_fn, argnums=0, has_aux=True)(state.params)
+  
+  grad_flat_tree = jax.tree_util.tree_leaves(grads_tree)
+
+
+  grads = jnp.concatenate([x.reshape(-1) for x in grad_flat_tree[-4:]], axis=-1)
+
+
+  return grads
+
+
+@jax.jit
+def infl_step_per_sample(state, batch):
   """
   Get grads for infl scores of each sample.
   Return:
@@ -228,7 +252,7 @@ def infl_step(state, batch, per_sample=False):
   """
 
   # loss_fn_per_sample = get_loss_lmd_dynamic(state, batch, per_sample=True)
-  loss_fn_per_sample = get_loss_fn(state, batch, per_sample=per_sample)
+  loss_fn_per_sample = get_loss_fn(state, batch, per_sample=True)
 
   
   grads_per_sample_tree, aux = jax.jacrev(loss_fn_per_sample, argnums=0, has_aux=True)(state.params)
@@ -236,20 +260,14 @@ def infl_step(state, batch, per_sample=False):
   
   grad_flat_tree = jax.tree_util.tree_leaves(grads_per_sample_tree)
 
-  if per_sample:
 
-    if batch['label'] is None:
-      grads_per_sample = jnp.concatenate([x.reshape(grad_flat_tree[-1].shape[0], grad_flat_tree[-1].shape[1], -1) for x in grad_flat_tree[-4:]], axis=-1)
-    else:
-      grads_per_sample = jnp.concatenate([x.reshape(batch['feature'].shape[0],-1) for x in grad_flat_tree[-4:]], axis=-1)
-    
+  if batch['label'] is None:
+    grads_per_sample = jnp.concatenate([x.reshape(grad_flat_tree[-1].shape[0], grad_flat_tree[-1].shape[1], -1) for x in grad_flat_tree[-4:]], axis=-1)
   else:
-    grads_per_sample = jnp.concatenate([x.reshape(-1) for x in grad_flat_tree[-4:]], axis=-1)
+    grads_per_sample = jnp.concatenate([x.reshape(batch['feature'].shape[0],-1) for x in grad_flat_tree[-4:]], axis=-1)
 
 
   return grads_per_sample
-
-
 
 @jax.jit
 def infl_step_fair(state, batch):
