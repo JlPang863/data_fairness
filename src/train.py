@@ -49,7 +49,7 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
   grad_fair_sum = 0.0
   for example in val_data: # Need to run on the validation dataset to avoid the negative effect of distribution shift, e.g., DP is not robust to distribution shift. For fairness, val data may be iid as test data 
     batch = preprocess_func_celeba_torch(example, args)
-    grads_each_sample = np.asarray(infl_step(state, batch))
+    grads_each_sample = np.asarray(infl_step(state, batch, per_sample=False))
 
     grads_fair_batch = np.asarray(infl_step_fair(state, batch))
     # TODO: confidence reg
@@ -76,12 +76,12 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
     batch = preprocess_func_celeba_torch(example, args)
     batch_unlabeled = batch.copy()
     batch_unlabeled['label'] = None # get grad for each label. We do not know labels of samples in unlabeled data
-    grads_each_sample = np.asarray(infl_step(state, batch_unlabeled))
+    grads_each_sample = np.asarray(infl_step(state, batch_unlabeled, per_sample = True))
     infl = - np.matmul(grads_each_sample, grad_avg) # new_loss - cur_los  # 
     infl_fair = - np.matmul(grads_each_sample, grad_fair)
     label_expected = np.argmin(abs(infl), 1).reshape(-1)
-    # infl_fair = (infl_fair[range(infl_fair.shape[0]), batch['label'].reshape(-1)]).reshape(-1)  # assume knowing true labels TODO
-    infl_fair = (infl_fair[range(infl_fair.shape[0]), label_expected]).reshape(-1)  # assume knowing true labels TODO
+    infl_fair = (infl_fair[range(infl_fair.shape[0]), batch['label'].reshape(-1)]).reshape(-1)  # assume knowing true labels TODO
+    # infl_fair = (infl_fair[range(infl_fair.shape[0]), label_expected]).reshape(-1)  # use expected labels
     infl_fair = np.asarray([-1] * infl_fair.shape[0])  # only consider acc
 
 
