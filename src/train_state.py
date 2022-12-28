@@ -255,7 +255,7 @@ def infl_step_fair(state, batch):
   """
 
   # loss_fn_per_sample = get_loss_lmd_dynamic(state, batch, per_sample=True)
-  loss_fn_per_sample = get_loss_fair(state, batch, per_sample=True)
+  loss_fn_per_sample = get_loss_fair(state, batch)
 
   
   grads_per_sample_tree, aux = jax.jacrev(loss_fn_per_sample, argnums=0, has_aux=True)(state.params)
