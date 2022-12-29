@@ -224,7 +224,7 @@ def infl_step(state, batch):
   """
   Get grads for infl scores
   Return:
-    Grads: 1*model_size
+    Grads: (model_size,)
   """
 
   # loss_fn_per_sample = get_loss_lmd_dynamic(state, batch, per_sample=True)
@@ -248,7 +248,7 @@ def infl_step_per_sample(state, batch):
   """
   Get grads for infl scores of each sample.
   Return:
-    Grads: bsz * model_size
+    Grads: (bsz, model_size)
   """
 
   # loss_fn_per_sample = get_loss_lmd_dynamic(state, batch, per_sample=True)
@@ -274,7 +274,7 @@ def infl_step_fair(state, batch):
   """
   Get grads for infl scores of each sample.
   Return:
-    Grads: bsz * model_size
+    Grads: (model_size,)
   """
 
 
