@@ -122,7 +122,7 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
 
     idx += batch['index'].tolist()
     # print(len(score))
-    if len(score) >= num * 100:
+    if len(score) >= num * 20:
       break
   
   if args.strategy == 1:
