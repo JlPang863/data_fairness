@@ -44,7 +44,7 @@
 # CUDA_VISIBLE_DEVICES=4 LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4 nohup python3 run_celeba.py --method plain  --lmd 0.0 --mu 1.0  --warm_epoch -1 --conf no_conf  --metric dp --label_ratio 0.001 --val_ratio 0.1 --strategy 5 > s5.log &
 
 
-# CUDA_VISIBLE_DEVICES=0 LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4 nohup python3 run_celeba.py --method plain  --lmd 0.0 --mu 1.0  --warm_epoch -1 --conf no_conf  --metric dp --label_ratio 0.05 --val_ratio 0.1 --strategy 1 > s1_dp_05.log &
+CUDA_VISIBLE_DEVICES=0 LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4 nohup python3 run_celeba.py --method plain  --lmd 0.0 --mu 1.0  --warm_epoch -1 --conf no_conf  --metric dp --label_ratio 0.05 --val_ratio 0.1 --strategy 1 > s1_dp_05_new1024_20round.log &
 
 CUDA_VISIBLE_DEVICES=5 LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4 nohup python3 run_celeba.py --method plain  --lmd 0.0 --mu 1.0  --warm_epoch -1 --conf no_conf  --metric dp --label_ratio 0.05 --val_ratio 0.1 --strategy 2 > s2_dp_05_new1024_20round.log &
 
@@ -52,7 +52,7 @@ CUDA_VISIBLE_DEVICES=6 LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.
 
 CUDA_VISIBLE_DEVICES=7 LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4 nohup python3 run_celeba.py --method plain  --lmd 0.0 --mu 1.0  --warm_epoch -1 --conf no_conf  --metric dp --label_ratio 0.05 --val_ratio 0.1 --strategy 4 > s4_dp_05_new1024_20round.log &
 
-# CUDA_VISIBLE_DEVICES=4 LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4 nohup python3 run_celeba.py --method plain  --lmd 0.0 --mu 1.0  --warm_epoch -1 --conf no_conf  --metric dp --label_ratio 0.05 --val_ratio 0.1 --strategy 5 > s5_dp_05.log &
+CUDA_VISIBLE_DEVICES=4 LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4 nohup python3 run_celeba.py --method plain  --lmd 0.0 --mu 1.0  --warm_epoch -1 --conf no_conf  --metric dp --label_ratio 0.05 --val_ratio 0.1 --strategy 5 > s5_dp_05_new1024_20round.log &
 
 
 
