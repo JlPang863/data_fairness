@@ -73,7 +73,10 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
     batch = preprocess_func_celeba_torch(example, args)
     batch_unlabeled = batch.copy()
     batch_unlabeled['label'] = None # get grad for each label. We do not know labels of samples in unlabeled data
-    grads_each_sample, logits = np.asarray(infl_step_per_sample(state, batch_unlabeled))
+    # grads_each_sample = np.asarray(infl_step_per_sample(state, batch_unlabeled))
+    grads_each_sample, logits = infl_step_per_sample(state, batch_unlabeled)
+    grads_each_sample = np.asarray(grads_each_sample)
+    logits = np.asarray(logits)
     pdb.set_trace()
     infl = - np.matmul(grads_each_sample, grad_avg) # new_loss - cur_los  # 
     infl_fair = - np.matmul(grads_each_sample, grad_fair)
@@ -139,6 +142,14 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
       score += score_tmp.tolist()
       expected_label += label_expected.tolist()
       true_label += batch['label'].tolist()
+    elif args.strategy == 6:
+      label_expected = np.argmax(logits, 1).reshape(-1)
+      score_tmp = (infl[range(infl.shape[0]), label_expected]).reshape(-1)
+      score_tmp[infl_fair > 0] = 0
+      score += score_tmp.tolist()
+      expected_label += label_expected.tolist()
+      true_label += batch['label'].tolist()
+
       
 
 
@@ -167,7 +178,7 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
 
   
   # strategy 5: use true label, find most negative infl ones
-  elif args.strategy == 5:
+  elif args.strategy in [5, 6]:
     sel_idx = np.argsort(score)[:num]
     # sel_idx = np.argsort(score)[-num:] # reversed, for controlled test
 
