@@ -77,7 +77,7 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
     grads_each_sample, logits = infl_step_per_sample(state, batch_unlabeled)
     grads_each_sample = np.asarray(grads_each_sample)
     logits = np.asarray(logits)
-    pdb.set_trace()
+    # pdb.set_trace()
     infl = - np.matmul(grads_each_sample, grad_avg) # new_loss - cur_los  # 
     infl_fair = - np.matmul(grads_each_sample, grad_fair)
 
@@ -96,17 +96,17 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
     infl_fair, infl = infl, infl_fair # reversed
     # case 1: only consider fairness loss
     # case 1-1: use true labels
-    infl_fair = np.asarray([-1] * infl_fair.shape[0])  # only fairness. note it has been reversed
-
     # case 1-2: use model predicted labels
     # case 1-3: use min_y abs(infl)
     # case 1-4: use min_y infl
+    infl_fair = np.asarray([-1] * infl_fair.shape[0])  # only fairness. note it has been reversed
 
     # case 2: fairness loss + acc loss. drop if hurt acc
     # case 2-1: use true labels
     # case 2-2: use model predicted labels
     # case 2-3: use min_y abs(infl)
     # case 2-4: use min_y infl
+    # change nothing. comment out case 1
 
 
     # Strategy 1 (baseline): random
