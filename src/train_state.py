@@ -267,7 +267,7 @@ def infl_step_per_sample(state, batch):
     grads_per_sample = jnp.concatenate([x.reshape(batch['feature'].shape[0],-1) for x in grad_flat_tree[-4:]], axis=-1)
 
 
-  return grads_per_sample
+  return grads_per_sample, aux[1] # grad and logits
 
 @jax.jit
 def infl_step_fair(state, batch):

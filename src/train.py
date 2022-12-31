@@ -73,15 +73,37 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
     batch = preprocess_func_celeba_torch(example, args)
     batch_unlabeled = batch.copy()
     batch_unlabeled['label'] = None # get grad for each label. We do not know labels of samples in unlabeled data
-    grads_each_sample = np.asarray(infl_step_per_sample(state, batch_unlabeled))
+    grads_each_sample, logits = np.asarray(infl_step_per_sample(state, batch_unlabeled))
+    pdb.set_trace()
     infl = - np.matmul(grads_each_sample, grad_avg) # new_loss - cur_los  # 
     infl_fair = - np.matmul(grads_each_sample, grad_fair)
-    label_expected = np.argmin(abs(infl), 1).reshape(-1)
-    infl_fair = (infl_fair[range(infl_fair.shape[0]), batch['label'].reshape(-1)]).reshape(-1)  # assume knowing true labels TODO
-    tolerance = args.tol # get an unfair sample wp tolerance
-    infl_fair[infl_fair > 0] = np.random.rand(int(np.sum(infl_fair > 0))) - tolerance
+
+
+    # label_expected = np.argmin(abs(infl), 1).reshape(-1)
+    # label_expected = batch['label'].reshape(-1)
+    # infl_fair = (infl_fair[range(infl_fair.shape[0]), label_expected]).reshape(-1)  # assume knowing true labels TODO
+    # tolerance = args.tol # get an unfair sample wp tolerance
+    # infl_fair[infl_fair > 0] = np.random.rand(int(np.sum(infl_fair > 0))) - tolerance
+
+
     # infl_fair = (infl_fair[range(infl_fair.shape[0]), label_expected]).reshape(-1)  # use expected labels
     # infl_fair = np.asarray([-1] * infl_fair.shape[0])  # only consider acc
+
+
+    infl_fair, infl = infl, infl_fair # reversed
+    # case 1: only consider fairness loss
+    # case 1-1: use true labels
+    infl_fair = np.asarray([-1] * infl_fair.shape[0])  # only fairness. note it has been reversed
+
+    # case 1-2: use model predicted labels
+    # case 1-3: use min_y abs(infl)
+    # case 1-4: use min_y infl
+
+    # case 2: fairness loss + acc loss. drop if hurt acc
+    # case 2-1: use true labels
+    # case 2-2: use model predicted labels
+    # case 2-3: use min_y abs(infl)
+    # case 2-4: use min_y infl
 
 
     # Strategy 1 (baseline): random
