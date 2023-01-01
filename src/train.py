@@ -99,7 +99,7 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
     # case 1-2: use model predicted labels
     # case 1-3: use min_y abs(infl)
     # case 1-4: use min_y infl
-    infl_fair = np.asarray([-1] * infl_fair.shape[0])  # only fairness. note it has been reversed
+    # infl_fair = np.asarray([-1] * infl_fair.shape[0])  # only fairness. note it has been reversed
 
     # case 2: fairness loss + acc loss. drop if hurt acc
     # case 2-1: use true labels
