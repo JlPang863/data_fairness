@@ -93,13 +93,40 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
     # infl_fair = np.asarray([-1] * infl_fair.shape[0])  # only consider acc
 
 
-    infl_fair, infl = infl, infl_fair # reversed
+
     # case 1: only consider fairness loss
     # case 1-1: use true labels
     # case 1-2: use model predicted labels
     # case 1-3: use min_y abs(infl)
     # case 1-4: use min_y infl
     # infl_fair = np.asarray([-1] * infl_fair.shape[0])  # only fairness. note it has been reversed
+
+    # ----------    Reversed strategy -------------------
+    # Strategy 1 (baseline): random
+    if args.strategy == 1:
+      score += [1] * batch['label'].shape[0]
+    # Strategy 2 (idea 1): find the label with least absolute influence, then find the sample with most negative fairness infl
+    elif args.strategy == 2:
+      label_expected = np.argmin(abs(infl), 1).reshape(-1)
+
+    # Strategy 3 (idea 2): find the label with minimal influence values (most negative), then find the sample with most negative infl 
+    elif args.strategy == 3:
+      label_expected = np.argmin(infl, 1).reshape(-1)
+
+    # Strategy 4: use true label
+    elif args.strategy == 4:
+      label_expected = batch['label'].reshape(-1)
+
+    # Strategy 4: use model predicted label
+    elif args.strategy == 5:
+      label_expected = np.argmax(logits, 1).reshape(-1)
+
+    if args.strategy > 1:
+      score_tmp = (infl_fair[range(infl_fair.shape[0]), label_expected]).reshape(-1)
+      score += score_tmp.tolist()
+      expected_label += label_expected.tolist()
+      true_label += batch['label'].tolist()
+    # ----------    Reversed strategy (END) -------------------
 
     # case 2: fairness loss + acc loss. drop if hurt acc
     # case 2-1: use true labels
@@ -109,46 +136,46 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
     # change nothing. comment out case 1
 
 
-    # Strategy 1 (baseline): random
-    if args.strategy == 1:
-      score += [1] * batch['label'].shape[0]
-    # Strategy 2 (idea 1): find the label with least absolute influence, then find the sample with largest abs infl
-    elif args.strategy == 2:
-      label_expected = np.argmin(abs(infl), 1).reshape(-1)
-      score_tmp = abs(infl[range(infl.shape[0]), label_expected]).reshape(-1)
-      score_tmp[infl_fair > 0] = 0
-      score += score_tmp.tolist()
-      expected_label += label_expected.tolist()
-      true_label += batch['label'].tolist()
-    # Strategy 3 (idea 2): find the label with minimal influence values (most negative), then find the sample with most negative infl 
-    elif args.strategy == 3:
-      label_expected = np.argmin(infl, 1).reshape(-1)
-      score_tmp = (infl[range(infl.shape[0]), label_expected]).reshape(-1)
-      score_tmp[infl_fair > 0] = 0
-      score += score_tmp.tolist()
-      expected_label += label_expected.tolist()
-      true_label += batch['label'].tolist()
-    elif args.strategy == 4:
-      label_expected = batch['label'].reshape(-1)
-      score_tmp = abs(infl[range(infl.shape[0]), label_expected]).reshape(-1)
-      score_tmp[infl_fair > 0] = 0
-      score += score_tmp.tolist()
-      expected_label += label_expected.tolist()
-      true_label += batch['label'].tolist()
-    elif args.strategy == 5:
-      label_expected = batch['label'].reshape(-1)
-      score_tmp = (infl[range(infl.shape[0]), label_expected]).reshape(-1)
-      score_tmp[infl_fair > 0] = 0
-      score += score_tmp.tolist()
-      expected_label += label_expected.tolist()
-      true_label += batch['label'].tolist()
-    elif args.strategy == 6:
-      label_expected = np.argmax(logits, 1).reshape(-1)
-      score_tmp = (infl[range(infl.shape[0]), label_expected]).reshape(-1)
-      score_tmp[infl_fair > 0] = 0
-      score += score_tmp.tolist()
-      expected_label += label_expected.tolist()
-      true_label += batch['label'].tolist()
+    # # Strategy 1 (baseline): random
+    # if args.strategy == 1:
+    #   score += [1] * batch['label'].shape[0]
+    # # Strategy 2 (idea 1): find the label with least absolute influence, then find the sample with largest abs infl
+    # elif args.strategy == 2:
+    #   label_expected = np.argmin(abs(infl), 1).reshape(-1)
+    #   score_tmp = abs(infl[range(infl.shape[0]), label_expected]).reshape(-1)
+    #   score_tmp[infl_fair > 0] = 0
+    #   score += score_tmp.tolist()
+    #   expected_label += label_expected.tolist()
+    #   true_label += batch['label'].tolist()
+    # # Strategy 3 (idea 2): find the label with minimal influence values (most negative), then find the sample with most negative infl 
+    # elif args.strategy == 3:
+    #   label_expected = np.argmin(infl, 1).reshape(-1)
+    #   score_tmp = (infl[range(infl.shape[0]), label_expected]).reshape(-1)
+    #   score_tmp[infl_fair > 0] = 0
+    #   score += score_tmp.tolist()
+    #   expected_label += label_expected.tolist()
+    #   true_label += batch['label'].tolist()
+    # elif args.strategy == 4:
+    #   label_expected = batch['label'].reshape(-1)
+    #   score_tmp = abs(infl[range(infl.shape[0]), label_expected]).reshape(-1)
+    #   score_tmp[infl_fair > 0] = 0
+    #   score += score_tmp.tolist()
+    #   expected_label += label_expected.tolist()
+    #   true_label += batch['label'].tolist()
+    # elif args.strategy == 5:
+    #   label_expected = batch['label'].reshape(-1)
+    #   score_tmp = (infl[range(infl.shape[0]), label_expected]).reshape(-1)
+    #   score_tmp[infl_fair > 0] = 0
+    #   score += score_tmp.tolist()
+    #   expected_label += label_expected.tolist()
+    #   true_label += batch['label'].tolist()
+    # elif args.strategy == 6:
+    #   label_expected = np.argmax(logits, 1).reshape(-1)
+    #   score_tmp = (infl[range(infl.shape[0]), label_expected]).reshape(-1)
+    #   score_tmp[infl_fair > 0] = 0
+    #   score += score_tmp.tolist()
+    #   expected_label += label_expected.tolist()
+    #   true_label += batch['label'].tolist()
 
       
 
@@ -157,30 +184,42 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
     # print(len(score))
     if len(score) >= num * 20:
       break
-  
+
+
   if args.strategy == 1:
     sel_idx = list(range(len(score)))
     random.Random(args.infl_random_seed).shuffle(sel_idx)
     sel_idx = sel_idx[:num]
 
   # Strategy 2 (idea 1): find the label with least absolute influence, then find the sample with largest abs infl
-  elif args.strategy == 2:
-    sel_idx = np.argsort(score)[-num:]
-
-  # Strategy 3 (idea 2): find the label with minimal influence values (most negative), then find the sample with most negative infl 
-  elif args.strategy == 3:
+  else:
     sel_idx = np.argsort(score)[:num]
 
-  # strategy 4: use true label, find large abs infl ones
-  elif args.strategy == 4:
-    sel_idx = np.argsort(score)[-num:]
-    # sel_idx = np.argsort(score)[:num] # reversed, for controlled test
+
+
+  # if args.strategy == 1:
+  #   sel_idx = list(range(len(score)))
+  #   random.Random(args.infl_random_seed).shuffle(sel_idx)
+  #   sel_idx = sel_idx[:num]
+
+  # # Strategy 2 (idea 1): find the label with least absolute influence, then find the sample with largest abs infl
+  # elif args.strategy == 2:
+  #   sel_idx = np.argsort(score)[-num:]
+
+  # # Strategy 3 (idea 2): find the label with minimal influence values (most negative), then find the sample with most negative infl 
+  # elif args.strategy == 3:
+  #   sel_idx = np.argsort(score)[:num]
+
+  # # strategy 4: use true label, find large abs infl ones
+  # elif args.strategy == 4:
+  #   sel_idx = np.argsort(score)[-num:]
+  #   # sel_idx = np.argsort(score)[:num] # reversed, for controlled test
 
   
-  # strategy 5: use true label, find most negative infl ones
-  elif args.strategy in [5, 6]:
-    sel_idx = np.argsort(score)[:num]
-    # sel_idx = np.argsort(score)[-num:] # reversed, for controlled test
+  # # strategy 5: use true label, find most negative infl ones
+  # elif args.strategy in [5, 6]:
+  #   sel_idx = np.argsort(score)[:num]
+  #   # sel_idx = np.argsort(score)[-num:] # reversed, for controlled test
 
   if args.strategy > 1:
     # check labels
