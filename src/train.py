@@ -123,6 +123,8 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
 
     if args.strategy > 1:
       score_tmp = (infl_fair[range(infl_fair.shape[0]), label_expected]).reshape(-1)
+      infl_fair_true = infl_fair[range(infl_fair.shape[0]), batch['label'].reshape(-1)]
+      score_tmp[infl_fair_true > 0] = 0 # case1_remove_unfair
       score += score_tmp.tolist()
       expected_label += label_expected.tolist()
       true_label += batch['label'].tolist()
