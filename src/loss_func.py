@@ -36,7 +36,7 @@ def get_loss_fn(state, batch, per_sample = False):
     if len(logits) == 2: # logits and embeddings
       logits = logits[0]
     loss = cross_entropy_loss(logits=logits, labels=batch['label'])
-    loss += constraints_confidence(logits)
+    # loss += constraints_confidence(logits)
     return loss, (new_model_state, logits)
 
   def loss_fn_per_sample(params): 
