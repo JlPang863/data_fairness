@@ -53,7 +53,7 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
     grads = np.asarray(infl_step(state, batch))
 
     grads_fair_batch = np.asarray(infl_step_fair(state, batch))
-    # TODO: confidence reg
+
 
 
     # sum & average
@@ -74,7 +74,7 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
     batch_unlabeled = batch.copy()
     batch_unlabeled['label'] = None # get grad for each label. We do not know labels of samples in unlabeled data
     # grads_each_sample = np.asarray(infl_step_per_sample(state, batch_unlabeled))
-    grads_each_sample, logits = infl_step_per_sample(state, batch_unlabeled)
+    grads_each_sample, grad_org_each_sample, logits = infl_step_per_sample(state, batch_unlabeled)
     grads_each_sample = np.asarray(grads_each_sample)
     logits = np.asarray(logits)
     # pdb.set_trace()
