@@ -255,20 +255,23 @@ def infl_step_per_sample(state, batch):
   loss_fn_per_sample = get_loss_fn(state, batch, per_sample=True)
 
   
-  grads_per_sample_tree, aux = jax.jacrev(loss_fn_per_sample, argnums=(0,1), has_aux=True)(state.params)
+  grads_per_sample_tree, grads_org_per_sample_tree, aux = jax.jacrev(loss_fn_per_sample, argnums=(0,1), has_aux=True)(state.params)
   pdb.set_trace()
   # grads_per_sample_tree, aux = our_jacrev(loss_fn_per_sample, argnums=0, has_aux=True)(state.params)
   
   grad_flat_tree = jax.tree_util.tree_leaves(grads_per_sample_tree)
+  grads_org_per_sample_tree = jax.tree_util.tree_leaves(grads_org_per_sample_tree)
 
 
   if batch['label'] is None:
     grads_per_sample = jnp.concatenate([x.reshape(grad_flat_tree[-1].shape[0], grad_flat_tree[-1].shape[1], -1) for x in grad_flat_tree[-4:]], axis=-1)
+    grads_org_per_sample = jnp.concatenate([x.reshape(grads_org_per_sample_tree[-1].shape[0], grads_org_per_sample_tree[-1].shape[1], -1) for x in grads_org_per_sample_tree[-4:]], axis=-1)
   else:
     grads_per_sample = jnp.concatenate([x.reshape(batch['feature'].shape[0],-1) for x in grad_flat_tree[-4:]], axis=-1)
+    grads_org_per_sample = jnp.concatenate([x.reshape(batch['feature'].shape[0],-1) for x in grads_org_per_sample_tree[-4:]], axis=-1)
 
 
-  return grads_per_sample, grads_per_sample, aux[1] # grad and logits
+  return grads_per_sample, grads_org_per_sample, aux[1] # grad and logits
 
 @jax.jit
 def infl_step_fair(state, batch):
