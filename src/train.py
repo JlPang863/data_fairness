@@ -194,7 +194,7 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
 
     idx += batch['index'].tolist()
     # print(len(score))
-    if len(score) >= num * 2: # 100
+    if len(score) >= num * 10: # 100
       break
 
 
@@ -207,8 +207,9 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
   else:
     sel_idx = np.argsort(score)[:num]
     max_score = score[sel_idx[-1]]
+    if max_score >= 0.0:
+      sel_idx = np.arange(len(score))[np.asarray(score) < 0.0]
     score_org = np.asarray(score_org)
-    pdb.set_trace()
     sel_true_false_with_labels = score_org <= max_score
 
 
