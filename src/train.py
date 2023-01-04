@@ -46,11 +46,12 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
   print('begin calculating influence')
   num_samples = 0.0
   grad_sum = 0.0
+  grad_org_sum = 0.0
   grad_fair_sum = 0.0
   for example in val_data: # Need to run on the validation dataset to avoid the negative effect of distribution shift, e.g., DP is not robust to distribution shift. For fairness, val data may be iid as test data 
     batch = preprocess_func_celeba_torch(example, args)
     bsz = batch['feature'].shape[0]
-    grads = np.asarray(infl_step(state, batch))
+    grads, grads_org = np.asarray(infl_step(state, batch))
 
     grads_fair_batch = np.asarray(infl_step_fair(state, batch))
 
@@ -58,10 +59,12 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
 
     # sum & average
     grad_sum += grads * bsz
+    grad_org_sum += grads_org * bsz
     grad_fair_sum += grads_fair_batch * bsz
     num_samples += bsz
 
   grad_avg = (grad_sum/num_samples).reshape(-1,1)
+  grad_org_avg = (grad_org_sum/num_samples).reshape(-1,1)
   grad_fair = (grad_fair_sum/num_samples).reshape(-1,1)
 
   # check unlabeled data
@@ -76,9 +79,11 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
     # grads_each_sample = np.asarray(infl_step_per_sample(state, batch_unlabeled))
     grads_each_sample, grad_org_each_sample, logits = infl_step_per_sample(state, batch_unlabeled)
     grads_each_sample = np.asarray(grads_each_sample)
+    grad_org_each_sample = np.asarray(grad_org_each_sample)
     logits = np.asarray(logits)
     # pdb.set_trace()
     infl = - np.matmul(grads_each_sample, grad_avg) # new_loss - cur_los  # 
+    infl_org = - np.matmul(grads_each_sample, grad_org_avg) # new_loss - cur_los  # 
     infl_fair = - np.matmul(grads_each_sample, grad_fair)
 
 
@@ -124,9 +129,11 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
     if args.strategy > 1:
       score_tmp = (infl_fair[range(infl_fair.shape[0]), label_expected]).reshape(-1)
       infl_fair_true = infl_fair[range(infl_fair.shape[0]), batch['label'].reshape(-1)].reshape(-1)
-      infl_true = infl[range(infl.shape[0]), batch['label'].reshape(-1)].reshape(-1)
+      # infl_true = infl[range(infl.shape[0]), batch['label'].reshape(-1)].reshape(-1) # # case1_remove_posloss
+      infl_true = infl_org[range(infl_org.shape[0]), batch['label'].reshape(-1)].reshape(-1) # case1_remove_poslossOrg
+      
       score_tmp[infl_fair_true > 0] = 0 # case1_remove_unfair
-      score_tmp[infl_true > 0] = 0 # case1_remove_posloss
+      score_tmp[infl_true > 0] = 0 # case1_remove_posloss or case1_remove_poslossOrg
       score += score_tmp.tolist()
       expected_label += label_expected.tolist()
       true_label += batch['label'].tolist()

@@ -38,9 +38,10 @@ def get_loss_fn(state, batch, per_sample = False):
     if len(logits) == 2: # logits and embeddings
       logits = logits[0]
     loss = cross_entropy_loss(logits=logits, labels=batch['label'])
+    loss_org = loss
     if args.train_conf:
       loss += constraints_confidence(logits)
-    return loss, (new_model_state, logits)
+    return (loss, loss_org), (new_model_state, logits)
 
   def loss_fn_per_sample(params): 
     if state.batch_stats:
@@ -50,10 +51,10 @@ def get_loss_fn(state, batch, per_sample = False):
     if len(logits) == 2: # logits and embeddings
         logits = logits[0]
     loss = cross_entropy_loss_per_sample(logits=logits, labels=batch['label']) 
-    loss_org = loss
+    # loss_org = loss
     if args.train_conf:
       loss += constraints_confidence_per_sample(logits)
-    return (loss, loss_org), (new_model_state, logits, loss_org)
+    return loss, (new_model_state, logits)
 
   if per_sample:
     return loss_fn_per_sample
