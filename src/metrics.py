@@ -168,6 +168,14 @@ def constraints_confidence_entropy(logits):
   confidence_loss = -jnp.mean(prob * jnp.log(prob))
   return confidence_loss
 
+
+def constraints_confidence_entropy_per_sample(logits):
+  EPS = 1e-8
+  prob = jax.nn.softmax(logits) + EPS
+  confidence_loss = -prob * jnp.log(prob)
+  return confidence_loss
+
+
 def constraints_confidence_peer(logits):
   EPS = 1e-8
   prob = jax.nn.softmax(logits) + EPS
@@ -243,5 +251,10 @@ constraints_dict = {
   'plain': constraints_plain,
   'entropy': constraints_confidence_entropy,
   'peer': constraints_confidence_peer,
+  'no_conf': constraints_confidence_no_conf,
+}
+
+constraints_dict_per_sample = {
+  'entropy': constraints_confidence_entropy_per_sample,
   'no_conf': constraints_confidence_no_conf,
 }

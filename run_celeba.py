@@ -14,6 +14,7 @@ parser.add_argument('--metric', type=str, default='dp', help="dp eop eod")
 # parser.add_argument('--e2', type=float, default=0.0)
 parser.add_argument('--lmd', type=float, default=1.0)
 parser.add_argument('--tol', type=float, default=0.0) # # get an unfair sample wp tol
+parser.add_argument('--train_conf', action='store_true', default=False)
 
 parser.add_argument('--mu', type=float, default=1.0)
 parser.add_argument('--warm_epoch', type=int, default=1)

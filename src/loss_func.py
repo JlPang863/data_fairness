@@ -19,7 +19,8 @@ def get_loss_fair(state, batch, T = None):
     loss_reg, _ = constraints_fair(logits, batch['group'], batch['label'], T = T)
     # lmd = lmd + mu * loss_reg # TODO
     loss = jnp.sum(mu/2 * loss_reg**2) + jnp.sum(lmd * loss_reg)
-    loss += constraints_confidence(logits)
+    if not args.train_conf:
+      loss += constraints_confidence(logits)
     return loss, (new_model_state, logits, lmd)
 
   return loss_fn
@@ -28,6 +29,7 @@ def get_loss_fair(state, batch, T = None):
 def get_loss_fn(state, batch, per_sample = False):
   args = global_var.get_value('args')
   constraints_confidence = constraints_dict[args.conf]
+  constraints_confidence_per_sample = constraints_dict_per_sample[args.conf]
   def loss_fn(params):
     if state.batch_stats:
       logits, new_model_state = state.apply_fn({'params': params, 'batch_stats': state.batch_stats}, batch['feature'], mutable=['batch_stats'])
@@ -36,7 +38,8 @@ def get_loss_fn(state, batch, per_sample = False):
     if len(logits) == 2: # logits and embeddings
       logits = logits[0]
     loss = cross_entropy_loss(logits=logits, labels=batch['label'])
-    # loss += constraints_confidence(logits)
+    if args.train_conf:
+      loss += constraints_confidence(logits)
     return loss, (new_model_state, logits)
 
   def loss_fn_per_sample(params): 
@@ -47,7 +50,8 @@ def get_loss_fn(state, batch, per_sample = False):
     if len(logits) == 2: # logits and embeddings
         logits = logits[0]
     loss = cross_entropy_loss_per_sample(logits=logits, labels=batch['label']) 
-    # loss += constraints_confidence_per_sample(logits)
+    if args.train_conf:
+      loss += constraints_confidence_per_sample(logits)
     return loss, (new_model_state, logits)
 
   if per_sample:
