@@ -89,7 +89,7 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
 
     # label_expected = np.argmin(abs(infl), 1).reshape(-1)
     # label_expected = batch['label'].reshape(-1)
-    # infl_fair = (infl_fair[range(infl_fair.shape[0]), label_expected]).reshape(-1)  # assume knowing true labels TODO
+    # infl_fair = (infl_fair[range(infl_fair.shape[0]), label_expected]).reshape(-1)  # assume knowing true labels 
     # tolerance = args.tol # get an unfair sample wp tolerance
     # infl_fair[infl_fair > 0] = np.random.rand(int(np.sum(infl_fair > 0))) - tolerance
 
