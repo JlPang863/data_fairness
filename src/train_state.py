@@ -255,7 +255,7 @@ def infl_step_per_sample(state, batch):
   loss_fn_per_sample = get_loss_fn(state, batch, per_sample=True)
 
   
-  grads_per_sample_tree, grads_org_per_sample_tree, aux = jax.jacrev(loss_fn_per_sample, argnums=(0,1), has_aux=True)(state.params)
+  grads_per_sample_tree, aux = jax.jacrev(loss_fn_per_sample, argnums=0, has_aux=True)(state.params)
   pdb.set_trace()
   # grads_per_sample_tree, aux = our_jacrev(loss_fn_per_sample, argnums=0, has_aux=True)(state.params)
   

@@ -53,7 +53,7 @@ def get_loss_fn(state, batch, per_sample = False):
     loss_org = loss
     if args.train_conf:
       loss += constraints_confidence_per_sample(logits)
-    return loss, loss_org, (new_model_state, logits, loss_org)
+    return (loss, loss_org), (new_model_state, logits, loss_org)
 
   if per_sample:
     return loss_fn_per_sample
