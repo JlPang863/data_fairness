@@ -252,7 +252,7 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
   sel_org_idx_with_labels = np.asarray(idx)[sel_true_false_with_labels].tolist() # samples that have labels
   pdb.set_trace()
   print('calculating influence -- done')
-  return sel_org_idx, sel_org_idx_with_labels
+  return sel_org_idx, set(sel_org_idx_with_labels)
 
 
 
