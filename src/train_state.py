@@ -244,7 +244,7 @@ def infl_step(state, batch):
   grads_org = jnp.concatenate([x.reshape(-1) for x in grad_org_flat_tree[-4:]], axis=-1)
 
 
-  return grads
+  return grads, grads_org
 
 
 @jax.jit
