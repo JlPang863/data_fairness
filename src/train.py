@@ -252,7 +252,7 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
   sel_org_idx_with_labels = np.asarray(idx)[sel_true_false_with_labels].tolist() # samples that have labels
   pdb.set_trace()
   print('calculating influence -- done')
-  return sel_org_idx, set(sel_org_idx_with_labels)
+  return sel_org_idx, sel_org_idx_with_labels
 
 
 
@@ -378,7 +378,7 @@ def train(args):
             args.infl_random_seed = t + args.train_seed
             sampled_idx_tmp, sel_org_idx_with_labels= sample_by_infl(args, state, val_loader, train_loader_unlabeled, num = args.new_data_each_round)
             sampled_idx += sampled_idx_tmp
-            idx_with_labels.add(sel_org_idx_with_labels)
+            idx_with_labels.update(sel_org_idx_with_labels)
             val_metric = test(args, state, val_loader)
             _, time_now = record_test(rec, t+args.datasize*epoch_i//args.train_batch_size, args.datasize*args.num_epochs//args.train_batch_size, time_now, time_start, train_metric, test_metric, val_metric=val_metric)
 
