@@ -133,7 +133,7 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
       infl_true = infl_org[range(infl_org.shape[0]), batch['label'].reshape(-1)].reshape(-1) # case1_remove_poslossOrg
       
       score_tmp[infl_fair_true > 0] = 0 # case1_remove_unfair
-      score_tmp[infl_true > 0] = 0 # case1_remove_posloss or case1_remove_poslossOrg
+      # score_tmp[infl_true > 0] = 0 # case1_remove_posloss or case1_remove_poslossOrg
       score += score_tmp.tolist()
       expected_label += label_expected.tolist()
       true_label += batch['label'].tolist()
