@@ -105,7 +105,7 @@ def train_plain(state, batch):
   plain training
   """
   # args = global_var.get_value('args')
-  loss_fn = get_loss_fn(state, batch)
+  loss_fn = get_loss_fn(state, batch, detaild_loss = False)
   grad_fn = jax.value_and_grad(loss_fn, has_aux=True)
   aux, grads = grad_fn(state.params)
   new_model_state, logits = aux[1]

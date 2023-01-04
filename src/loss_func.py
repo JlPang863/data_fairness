@@ -26,7 +26,7 @@ def get_loss_fair(state, batch, T = None):
   return loss_fn
 
 
-def get_loss_fn(state, batch, per_sample = False):
+def get_loss_fn(state, batch, per_sample = False, detaild_loss = True):
   args = global_var.get_value('args')
   constraints_confidence = constraints_dict[args.conf]
   constraints_confidence_per_sample = constraints_dict_per_sample[args.conf]
@@ -41,7 +41,11 @@ def get_loss_fn(state, batch, per_sample = False):
     loss_org = loss
     if args.train_conf:
       loss += constraints_confidence(logits)
-    return (loss, loss_org), (new_model_state, logits)
+    if detaild_loss:
+      return (loss, loss_org), (new_model_state, logits)
+    else:
+      return loss, (new_model_state, logits)
+
 
   def loss_fn_per_sample(params): 
     if state.batch_stats:
