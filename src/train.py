@@ -40,8 +40,7 @@ os.environ["XLA_PYTHON_CLIENT_PREALLOCATE"] = "false"   # This disables the prea
 def sample_by_infl(args, state, val_data, unlabeled_data, num):
   """
   Get influence score of each unlabeled_data on val_data, then sample according to scores
-  For accuracy, we need to get the exact infl
-  For fairness, we only care about the sign
+  For fairness, the sign is very important
   """
   print('begin calculating influence')
   num_samples = 0.0
@@ -69,6 +68,7 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
 
   # check unlabeled data
   score = []
+  score_org = []
   idx = []
   expected_label = []
   true_label = []
@@ -128,6 +128,7 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
 
     if args.strategy > 1:
       score_tmp = (infl_fair[range(infl_fair.shape[0]), label_expected]).reshape(-1)
+      score_org += score_tmp.tolist()
       infl_fair_true = infl_fair[range(infl_fair.shape[0]), batch['label'].reshape(-1)].reshape(-1)
       # infl_true = infl[range(infl.shape[0]), batch['label'].reshape(-1)].reshape(-1) # # case1_remove_posloss
       infl_true = infl_org[range(infl_org.shape[0]), batch['label'].reshape(-1)].reshape(-1) # case1_remove_poslossOrg
@@ -202,9 +203,14 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
     random.Random(args.infl_random_seed).shuffle(sel_idx)
     sel_idx = sel_idx[:num]
 
-  # Strategy 2 (idea 1): find the label with least absolute influence, then find the sample with largest abs infl
+  # Strategy 2--5
   else:
     sel_idx = np.argsort(score)[:num]
+    max_score = score[sel_idx[-1]]
+    score_org = np.asarray(score_org)
+    pdb.set_trace()
+    sel_true_false_with_labels = score_org <= max_score
+
 
 
 
@@ -241,9 +247,11 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
     # print(f'[Strategy {args.strategy}] Expected label {expected_label}')  
     # print(f'[Strategy {args.strategy}] True label {true_label}')  
 
-  sel_org_idx = np.asarray(idx)[sel_idx].tolist()
+  sel_org_idx = np.asarray(idx)[sel_idx].tolist()  # samples that are used in training
+  sel_org_idx_with_labels = np.asarray(idx)[sel_true_false_with_labels].tolist() # samples that have labels
+  pdb.set_trace()
   print('calculating influence -- done')
-  return sel_org_idx 
+  return sel_org_idx, sel_org_idx_with_labels
 
 
 
@@ -274,9 +282,10 @@ def train(args):
   set_global_seed(args.train_seed)
   make_dirs(args)
 
-  train_loader_labeled, train_loader_unlabeled = load_celeba_dataset_torch(args, shuffle_files=True, split='train', batch_size=args.train_batch_size, ratio = args.label_ratio)
+  train_loader_labeled, train_loader_unlabeled, part_1 = load_celeba_dataset_torch(args, shuffle_files=True, split='train', batch_size=args.train_batch_size, ratio = args.label_ratio)
+  idx_with_labels = set(part_1)
   
-  val_loader, test_loader = load_celeba_dataset_torch(args, shuffle_files=True, split='test', batch_size=args.test_batch_size, ratio = args.val_ratio)
+  val_loader, test_loader, _ = load_celeba_dataset_torch(args, shuffle_files=True, split='test', batch_size=args.test_batch_size, ratio = args.val_ratio)
 
   args.image_shape = args.img_size
   # setup
@@ -366,15 +375,18 @@ def train(args):
           if epoch_i > args.warm_epoch:
             # infl 
             args.infl_random_seed = t + args.train_seed
-            sampled_idx += sample_by_infl(args, state, val_loader, train_loader_unlabeled, num = args.new_data_each_round)
+            sampled_idx_tmp, sel_org_idx_with_labels= sample_by_infl(args, state, val_loader, train_loader_unlabeled, num = args.new_data_each_round)
+            sampled_idx += sampled_idx_tmp
+            idx_with_labels.add(sel_org_idx_with_labels)
             val_metric = test(args, state, val_loader)
             _, time_now = record_test(rec, t+args.datasize*epoch_i//args.train_batch_size, args.datasize*args.num_epochs//args.train_batch_size, time_now, time_start, train_metric, test_metric, val_metric=val_metric)
 
 
-            train_loader_labeled, train_loader_unlabeled = load_celeba_dataset_torch(args, shuffle_files=True, split='train', batch_size=args.train_batch_size, ratio = args.label_ratio, sampled_idx=sampled_idx)
+            train_loader_labeled, train_loader_unlabeled, _ = load_celeba_dataset_torch(args, shuffle_files=True, split='train', batch_size=args.train_batch_size, ratio = args.label_ratio, sampled_idx=sampled_idx)
+            print(f'Use {len(sampled_idx)} samples. Get {len(idx_with_labels)} labels. Ratio: {len(sampled_idx)/len(idx_with_labels)}')
 
           
-          print(f'lmd is {lmd}')
+          # print(f'lmd is {lmd}')
 
 
 

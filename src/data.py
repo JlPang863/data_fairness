@@ -65,15 +65,10 @@ class my_celeba(torchvision.datasets.CelebA):
           elif t == "landmarks":
               target.append(self.landmarks_align[index, :])
           else:
-              # TODO: refactor with utils.verify_str_arg
               raise ValueError(f'Target type "{t}" is not recognized.')
 
       if self.transform is not None:
           X = self.transform(X)
-          # import pdb
-          # pdb.set_trace()
-          # print(X.shape)
-          # X = X.transpose((1, 2, 0))  # convert to HWC
 
       if target:
           target = tuple(target) if len(target) > 1 else target[0]
@@ -140,4 +135,4 @@ def load_celeba_dataset_torch(args, shuffle_files=False, split='train', batch_si
                                           num_workers=4,
                                           drop_last=False)
 
-  return [dataloader_1, dataloader_2]
+  return [dataloader_1, dataloader_2], part1
