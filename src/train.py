@@ -194,7 +194,7 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
 
     idx += batch['index'].tolist()
     # print(len(score))
-    if len(score) >= num * 1: # 100
+    if len(score) >= num * 2: # 100
       break
 
 
@@ -282,10 +282,10 @@ def train(args):
   set_global_seed(args.train_seed)
   make_dirs(args)
 
-  train_loader_labeled, train_loader_unlabeled, part_1 = load_celeba_dataset_torch(args, shuffle_files=True, split='train', batch_size=args.train_batch_size, ratio = args.label_ratio)
+  [train_loader_labeled, train_loader_unlabeled], part_1 = load_celeba_dataset_torch(args, shuffle_files=True, split='train', batch_size=args.train_batch_size, ratio = args.label_ratio)
   idx_with_labels = set(part_1)
   
-  val_loader, test_loader, _ = load_celeba_dataset_torch(args, shuffle_files=True, split='test', batch_size=args.test_batch_size, ratio = args.val_ratio)
+  [val_loader, test_loader], _ = load_celeba_dataset_torch(args, shuffle_files=True, split='test', batch_size=args.test_batch_size, ratio = args.val_ratio)
 
   args.image_shape = args.img_size
   # setup
@@ -382,7 +382,7 @@ def train(args):
             _, time_now = record_test(rec, t+args.datasize*epoch_i//args.train_batch_size, args.datasize*args.num_epochs//args.train_batch_size, time_now, time_start, train_metric, test_metric, val_metric=val_metric)
 
 
-            train_loader_labeled, train_loader_unlabeled, _ = load_celeba_dataset_torch(args, shuffle_files=True, split='train', batch_size=args.train_batch_size, ratio = args.label_ratio, sampled_idx=sampled_idx)
+            [train_loader_labeled, train_loader_unlabeled], _ = load_celeba_dataset_torch](args, shuffle_files=True, split='train', batch_size=args.train_batch_size, ratio = args.label_ratio, sampled_idx=sampled_idx)
             print(f'Use {len(sampled_idx)} samples. Get {len(idx_with_labels)} labels. Ratio: {len(sampled_idx)/len(idx_with_labels)}')
 
           
