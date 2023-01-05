@@ -384,7 +384,8 @@ def train(args):
 
 
             [train_loader_labeled, train_loader_unlabeled], _ = load_celeba_dataset_torch(args, shuffle_files=True, split='train', batch_size=args.train_batch_size, ratio = args.label_ratio, sampled_idx=sampled_idx)
-            print(f'Use {len(sampled_idx)} samples. Get {len(idx_with_labels)} labels. Ratio: {len(sampled_idx)/len(idx_with_labels)}')
+            used_idx = set(part_1 + sampled_idx)
+            print(f'Use {len(used_idx)} samples. Get {len(idx_with_labels)} labels. Ratio: {len(used_idx)/len(idx_with_labels)}')
 
           
           # print(f'lmd is {lmd}')
