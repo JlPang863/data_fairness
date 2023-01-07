@@ -130,11 +130,14 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
       score_tmp = (infl_fair[range(infl_fair.shape[0]), label_expected]).reshape(-1)
       score_org += score_tmp.tolist()
       infl_fair_true = infl_fair[range(infl_fair.shape[0]), batch['label'].reshape(-1)].reshape(-1)
-      # infl_true = infl[range(infl.shape[0]), batch['label'].reshape(-1)].reshape(-1) # # case1_remove_posloss
-      infl_true = infl_org[range(infl_org.shape[0]), batch['label'].reshape(-1)].reshape(-1) # case1_remove_poslossOrg
+      if args.remove_pos:
+        infl_true = infl[range(infl.shape[0]), batch['label'].reshape(-1)].reshape(-1) # # case1_remove_posloss
+      if args.remove_posOrg:
+        infl_true = infl_org[range(infl_org.shape[0]), batch['label'].reshape(-1)].reshape(-1) # case1_remove_poslossOrg
       
       score_tmp[infl_fair_true > 0] = 0 # case1_remove_unfair
-      score_tmp[infl_true > 0] = 0 # case1_remove_posloss or case1_remove_poslossOrg
+      if args.remove_pos or args.remove_posOrg:
+        score_tmp[infl_true > 0] = 0 # case1_remove_posloss or case1_remove_poslossOrg
       score += score_tmp.tolist()
       expected_label += label_expected.tolist()
       true_label += batch['label'].tolist()
