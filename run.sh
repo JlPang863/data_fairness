@@ -96,26 +96,26 @@
 # CUDA_VISIBLE_DEVICES=7 LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4 nohup python3 run_celeba.py --method plain  --lmd 0.0 --mu 1.0  --warm_epoch -1 --conf entropy  --metric dp --label_ratio 0.02 --val_ratio 0.1 --strategy 5 --train_conf > s5_dp_02_new1024_100round_case1_remove_unfair_poslossOrg_train_conf.log &
 # # -----------------------
 
-# # -----------------------
-# CUDA_VISIBLE_DEVICES=0 LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4 nohup python3 run_celeba.py --method plain  --lmd 0.0 --mu 1.0  --warm_epoch -1 --conf entropy  --metric dp --label_ratio 0.02 --val_ratio 0.1 --strategy 2 --train_conf > s2_dp_02_new1024_100round_case1_remove_unfair_train_conf.log &
-
-# CUDA_VISIBLE_DEVICES=1 LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4 nohup python3 run_celeba.py --method plain  --lmd 0.0 --mu 1.0  --warm_epoch -1 --conf entropy  --metric dp --label_ratio 0.02 --val_ratio 0.1 --strategy 3 --train_conf > s3_dp_02_new1024_100round_case1_remove_unfair_train_conf.log &
-
-# CUDA_VISIBLE_DEVICES=2 LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4 nohup python3 run_celeba.py --method plain  --lmd 0.0 --mu 1.0  --warm_epoch -1 --conf entropy  --metric dp --label_ratio 0.02 --val_ratio 0.1 --strategy 4 --train_conf > s4_dp_02_new1024_100round_case1_remove_unfair_train_conf.log &
-
-# CUDA_VISIBLE_DEVICES=3 LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4 nohup python3 run_celeba.py --method plain  --lmd 0.0 --mu 1.0  --warm_epoch -1 --conf entropy  --metric dp --label_ratio 0.02 --val_ratio 0.1 --strategy 5 --train_conf > s5_dp_02_new1024_100round_case1_remove_unfair_train_conf.log &
-# # -----------------------
-
-
-# ----------------------- 
-CUDA_VISIBLE_DEVICES=4 LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4 nohup python3 run_celeba.py --method plain  --lmd 0.0 --mu 1.0  --warm_epoch -1 --conf entropy  --metric dp --label_ratio 0.02 --val_ratio 0.1 --strategy 2 --train_conf --remove_posOrg> s2_dp_02_new1024_100round_case1_remove_unfair_poslossOrg_train_conf.log &
-
-# CUDA_VISIBLE_DEVICES=4 LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4 nohup python3 run_celeba.py --method plain  --lmd 0.0 --mu 1.0  --warm_epoch -1 --conf entropy  --metric dp --label_ratio 0.02 --val_ratio 0.1 --strategy 3 --train_conf --remove_posOrg> s3_dp_02_new1024_100round_case1_remove_unfair_poslossOrg_train_conf.log &
-
-CUDA_VISIBLE_DEVICES=5 LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4 nohup python3 run_celeba.py --method plain  --lmd 0.0 --mu 1.0  --warm_epoch -1 --conf entropy  --metric dp --label_ratio 0.02 --val_ratio 0.1 --strategy 4 --train_conf --remove_posOrg> s4_dp_02_new1024_100round_case1_remove_unfair_poslossOrg_train_conf.log &
-
-CUDA_VISIBLE_DEVICES=7 LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4 nohup python3 run_celeba.py --method plain  --lmd 0.0 --mu 1.0  --warm_epoch -1 --conf entropy  --metric dp --label_ratio 0.02 --val_ratio 0.1 --strategy 5 --train_conf --remove_posOrg> s5_dp_02_new1024_100round_case1_remove_unfair_poslossOrg_train_conf.log &
 # -----------------------
+CUDA_VISIBLE_DEVICES=0 LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4 nohup python3 run_celeba.py --method plain  --lmd 0.0 --mu 1.0  --warm_epoch -1 --conf entropy  --metric dp --label_ratio 0.02 --val_ratio 0.1 --strategy 2 --train_conf > s2_dp_02_new256_30round_case1_remove_unfair_train_conf.log &
+
+CUDA_VISIBLE_DEVICES=1 LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4 nohup python3 run_celeba.py --method plain  --lmd 0.0 --mu 1.0  --warm_epoch -1 --conf entropy  --metric dp --label_ratio 0.02 --val_ratio 0.1 --strategy 3 --train_conf > s3_dp_02_new256_30round_case1_remove_unfair_train_conf.log &
+
+CUDA_VISIBLE_DEVICES=2 LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4 nohup python3 run_celeba.py --method plain  --lmd 0.0 --mu 1.0  --warm_epoch -1 --conf entropy  --metric dp --label_ratio 0.02 --val_ratio 0.1 --strategy 4 --train_conf > s4_dp_02_new256_30round_case1_remove_unfair_train_conf.log &
+
+CUDA_VISIBLE_DEVICES=3 LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4 nohup python3 run_celeba.py --method plain  --lmd 0.0 --mu 1.0  --warm_epoch -1 --conf entropy  --metric dp --label_ratio 0.02 --val_ratio 0.1 --strategy 5 --train_conf > s5_dp_02_new256_30round_case1_remove_unfair_train_conf.log &
+# -----------------------
+
+
+# # ----------------------- 
+# CUDA_VISIBLE_DEVICES=0 LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4 nohup python3 run_celeba.py --method plain  --lmd 0.0 --mu 1.0  --warm_epoch -1 --conf entropy  --metric dp --label_ratio 0.02 --val_ratio 0.1 --strategy 2 --train_conf --remove_posOrg> s2_dp_02_new1024_100round_case1_remove_unfair_poslossOrg_train_conf.log &
+
+# CUDA_VISIBLE_DEVICES=1 LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4 nohup python3 run_celeba.py --method plain  --lmd 0.0 --mu 1.0  --warm_epoch -1 --conf entropy  --metric dp --label_ratio 0.02 --val_ratio 0.1 --strategy 3 --train_conf --remove_posOrg> s3_dp_02_new1024_100round_case1_remove_unfair_poslossOrg_train_conf.log &
+
+# CUDA_VISIBLE_DEVICES=2 LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4 nohup python3 run_celeba.py --method plain  --lmd 0.0 --mu 1.0  --warm_epoch -1 --conf entropy  --metric dp --label_ratio 0.02 --val_ratio 0.1 --strategy 4 --train_conf --remove_posOrg> s4_dp_02_new1024_100round_case1_remove_unfair_poslossOrg_train_conf.log &
+
+# CUDA_VISIBLE_DEVICES=3 LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4 nohup python3 run_celeba.py --method plain  --lmd 0.0 --mu 1.0  --warm_epoch -1 --conf entropy  --metric dp --label_ratio 0.02 --val_ratio 0.1 --strategy 5 --train_conf --remove_posOrg> s5_dp_02_new1024_100round_case1_remove_unfair_poslossOrg_train_conf.log &
+# # -----------------------
 
 # # ----------------------- 
 # CUDA_VISIBLE_DEVICES=0 LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4 nohup python3 run_celeba.py --method plain  --lmd 0.0 --mu 1.0  --warm_epoch -1 --conf entropy  --metric dp --label_ratio 0.02 --val_ratio 0.1 --strategy 2 --train_conf --remove_pos> s2_dp_02_new1024_100round_case1_remove_unfair_posloss_train_conf.log &
