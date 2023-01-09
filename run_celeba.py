@@ -115,7 +115,7 @@ args.idx_key = 2
 args.group_key = "Male"
 args.img_size = 32
 args.balance_batch = False
-args.new_data_each_round = 256 # 1024
+args.new_data_each_round = 1024 # 1024
 args.sampling_rounds = args.num_epochs * 2
 
 
