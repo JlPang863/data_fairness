@@ -205,6 +205,7 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
     sel_idx = list(range(len(score)))
     random.Random(args.infl_random_seed).shuffle(sel_idx)
     sel_idx = sel_idx[:num]
+    sel_true_false_with_labels = sel_idx
 
   # Strategy 2--5
   else:
