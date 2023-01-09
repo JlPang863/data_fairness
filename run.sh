@@ -130,13 +130,13 @@
 
 
 # -----------------------
-CUDA_VISIBLE_DEVICES=0 LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4 nohup python3 run_celeba.py --method plain  --lmd 0.0 --mu 1.0  --warm_epoch -1 --conf no_conf  --metric dp --label_ratio 0.02 --val_ratio 0.1 --strategy 2  > s2_dp_02_new256_100round_case1_remove_unfair.log &
+CUDA_VISIBLE_DEVICES=0 LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4 nohup python3 run_celeba.py --method plain  --lmd 0.0 --mu 1.0  --warm_epoch -1 --conf no_conf  --metric dp --label_ratio 0.02 --val_ratio 0.1 --strategy 2 --remove_pos  > s2_dp_02_new256_100round_case1_remove_unfair_posloss.log &
 
-CUDA_VISIBLE_DEVICES=1 LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4 nohup python3 run_celeba.py --method plain  --lmd 0.0 --mu 1.0  --warm_epoch -1 --conf no_conf  --metric dp --label_ratio 0.02 --val_ratio 0.1 --strategy 3  > s3_dp_02_new256_100round_case1_remove_unfair.log &
+CUDA_VISIBLE_DEVICES=1 LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4 nohup python3 run_celeba.py --method plain  --lmd 0.0 --mu 1.0  --warm_epoch -1 --conf no_conf  --metric dp --label_ratio 0.02 --val_ratio 0.1 --strategy 3 --remove_pos  > s3_dp_02_new256_100round_case1_remove_unfair_posloss.log &
 
-CUDA_VISIBLE_DEVICES=2 LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4 nohup python3 run_celeba.py --method plain  --lmd 0.0 --mu 1.0  --warm_epoch -1 --conf no_conf  --metric dp --label_ratio 0.02 --val_ratio 0.1 --strategy 4  > s4_dp_02_new256_100round_case1_remove_unfair.log &
+CUDA_VISIBLE_DEVICES=2 LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4 nohup python3 run_celeba.py --method plain  --lmd 0.0 --mu 1.0  --warm_epoch -1 --conf no_conf  --metric dp --label_ratio 0.02 --val_ratio 0.1 --strategy 4 --remove_pos  > s4_dp_02_new256_100round_case1_remove_unfair_posloss.log &
 
-CUDA_VISIBLE_DEVICES=3 LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4 nohup python3 run_celeba.py --method plain  --lmd 0.0 --mu 1.0  --warm_epoch -1 --conf no_conf  --metric dp --label_ratio 0.02 --val_ratio 0.1 --strategy 5  > s5_dp_02_new256_100round_case1_remove_unfair.log &
+CUDA_VISIBLE_DEVICES=3 LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4 nohup python3 run_celeba.py --method plain  --lmd 0.0 --mu 1.0  --warm_epoch -1 --conf no_conf  --metric dp --label_ratio 0.02 --val_ratio 0.1 --strategy 5 --remove_pos  > s5_dp_02_new256_100round_case1_remove_unfair_posloss.log &
 # -----------------------
 
 
