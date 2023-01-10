@@ -421,7 +421,7 @@ def fair_train(args):
     [_, _], part1, part2 = load_celeba_dataset_torch(args, shuffle_files=True, split='train', batch_size=args.train_batch_size, ratio = args.label_ratio, sampled_idx=None, return_part2=True)
     load_name = f'./results/s2_{args.metric}_{args.label_ratio}_new{args.new_data_each_round}_100round_case1_remove_unfair_trainConf{args.train_conf}_posloss{args.remove_pos}_poslossOrg{args.remove_posOrg}.npy'
     indices = np.load(load_name, allow_pickle=True)
-    sel_idx = list(indices[-1][2])
+    sel_idx = list(indices[args.sel_round][2])
     num_sample_to_add = len(sel_idx) - len(part1)
     random.Random(args.train_seed).shuffle(part2)
     sel_idx = part1 + part2[:num_sample_to_add]
@@ -429,7 +429,7 @@ def fair_train(args):
   elif args.strategy in [2,3,4,5]:
     load_name = f'./results/s{args.strategy}_{args.metric}_{args.label_ratio}_new{args.new_data_each_round}_100round_case1_remove_unfair_trainConf{args.train_conf}_posloss{args.remove_pos}_poslossOrg{args.remove_posOrg}.npy'
     indices = np.load(load_name, allow_pickle=True)
-    sel_idx = list(indices[-1][2])
+    sel_idx = list(indices[args.sel_round][2])
   else:
     raise NameError('We only have strategies from 1 to 5')
 
