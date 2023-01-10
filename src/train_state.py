@@ -148,7 +148,7 @@ def train_dynamic_lmd_two_loader(state, batch, batch_fair, lmd = 1.0, T = None):
   aux, grads = grad_fn(state.params, lmd) # aux[0]: loss
   new_model_state, logits, logits_fair, lmd = aux[1]
 
-  metrics_fair = compute_metrics(logits=logits_fair, labels=batch_fair['label'], groups = batch_fair['group'])
+  metrics_fair = compute_metrics_fair(logits=logits_fair, labels=batch_fair['label'], groups = batch_fair['group'])
   metrics = compute_metrics(logits=logits, labels=batch['label'], groups = None)
   if state.batch_stats:
     new_state = state.apply_gradients(grads=grads, batch_stats=new_model_state['batch_stats'])
