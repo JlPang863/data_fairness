@@ -101,8 +101,9 @@ def get_loss_lmd_dynamic_two_loader(state, batch, batch_fair, per_sample = False
 
     loss_reg, _ = constraints_fair(logits_fair, batch_fair['group'], batch_fair['label'], T = T)
     lmd = lmd + mu * loss_reg 
-    loss = cross_entropy_loss(logits=logits, labels=batch['label']) + jnp.sum(mu/2 * loss_reg**2) + jnp.sum(lmd * loss_reg)
-    loss += constraints_confidence(logits) + constraints_confidence(logits_fair)
+    loss_fair = cross_entropy_loss(logits=logits_fair, labels=batch_fair['label']) + jnp.sum(mu/2 * loss_reg**2) + jnp.sum(lmd * loss_reg)
+    loss = cross_entropy_loss(logits=logits, labels=batch['label'])
+    loss += constraints_confidence(logits) + constraints_confidence(logits_fair) + loss_fair
     return loss, (new_model_state, logits, logits_fair, lmd)
 
   return loss_fn
