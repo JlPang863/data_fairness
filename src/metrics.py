@@ -212,7 +212,7 @@ def compute_metrics(logits, labels, groups = None):
   loss = cross_entropy_loss(logits=logits, labels=labels)
   accuracy = jnp.mean(jnp.argmax(logits, -1) == labels)
 
-  ar0, ar1, tpr0, tpr1, fpr0, fpr1, acc0, acc1 = None, None, None, None, None, None, None, None
+  ar0, ar1, tpr0, tpr1, fpr0, fpr1, acc0, acc1 = 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
 
   metrics = {
       'loss': loss,
