@@ -408,3 +408,99 @@ def train(args):
   np.save(save_name, idx_rec)
 
   # return test_metric
+
+
+
+def fair_train(args):
+  # setup
+  set_global_seed(args.train_seed)
+  make_dirs(args)
+
+  load_name = f'./results/s{args.strategy}_{args.metric}_{args.label_ratio}_new{args.new_data_each_round}_100round_case1_remove_unfair_trainConf{args.train_conf}_posloss{args.remove_pos}_poslossOrg{args.remove_posOrg}.npy'
+
+  indices = np.load(load_name, allow_pickle=True)
+  sel_idx = list(indices[-1][2])
+  [train_loader_labeled, train_loader_unlabeled], _ = load_celeba_dataset_torch(args, shuffle_files=True, split='train', batch_size=args.train_batch_size, ratio = 0.0, sampled_idx=sel_idx)
+
+  
+  [val_loader, test_loader], _ = load_celeba_dataset_torch(args, shuffle_files=True, split='test', batch_size=args.test_batch_size, ratio = args.val_ratio)
+
+  args.image_shape = args.img_size
+  # setup
+  model, model_linear = get_model(args)
+  args.hidden_size = model_linear.hidden_size
+  state = create_train_state(model, args)
+
+
+  # get model size
+  flat_tree = jax.tree_util.tree_leaves(state.params)
+  num_layers = len(flat_tree)
+  print(f'Numer of layers {num_layers}')
+
+  rec = init_recorder()
+
+  
+
+  # info
+  log_and_save_args(args)
+  time_start = time.time()
+  time_now = time_start
+  print('train net...')
+
+  # begin training
+  lmd = args.lmd
+
+
+  train_step = get_train_step(args.method)
+
+  for epoch_i in range(args.num_epochs):
+
+
+    t = 0
+    num_sample_cur = 0
+    print(f'Epoch {epoch_i}')
+
+    while t * args.train_batch_size < args.datasize:
+      for example in train_loader_labeled:
+
+        val_iter = iter(val_loader)
+        try:
+            # Samples the batch
+            example_fair = next(val_iter)
+        except StopIteration:
+            # restart the generator if the previous generator is exhausted.
+            generator = iter(val_loader)
+            example_fair = next(generator)
+
+        bsz = example[0].shape[0]
+
+        num_sample_cur += bsz
+        batch = preprocess_func_celeba_torch(example, args, noisy_attribute = None)
+        batch_fair = preprocess_func_celeba_torch(example_fair, args, noisy_attribute = None)
+        t += 1
+        if t * args.train_batch_size > args.datasize:
+          break
+
+
+        # train
+        if args.method == 'plain':
+          state, train_metric = train_step(state, batch)
+        elif args.method in ['dynamic_lmd']:
+          state, train_metric, train_metric_fair, lmd = train_step(state, batch, batch_fair, lmd = lmd, T=None)
+        else:
+          raise NameError('Undefined optimization mechanism')
+
+        rec = record_train_stats(rec, t-1, train_metric, 0)
+      
+        if t % args.log_steps == 0:
+          # test
+          # epoch_pre = epoch_i
+          test_metric = test(args, state, test_loader)
+          rec, time_now = record_test(rec, t+args.datasize*epoch_i//args.train_batch_size, args.datasize*args.num_epochs//args.train_batch_size, time_now, time_start, train_metric, test_metric)
+
+          print(f'lmd is {lmd}')
+
+    rec = save_checkpoint(args.save_dir, t+args.datasize*epoch_i//args.train_batch_size, state, rec, save=False)
+
+  # wrap it up
+  save_recorder(args.save_dir, rec)

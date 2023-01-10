@@ -208,26 +208,30 @@ def fairness(logits, labels, attributes):
 
 
 
-def compute_metrics(logits, labels, groups):
+def compute_metrics(logits, labels, groups = None):
   loss = cross_entropy_loss(logits=logits, labels=labels)
   accuracy = jnp.mean(jnp.argmax(logits, -1) == labels)
-  ar0 = jnp.sum( (jnp.argmax(logits, -1) == 1) * (groups == 0) * 1.0) / jnp.sum( (groups == 0) * 1.0)
-  ar1 = jnp.sum( (jnp.argmax(logits, -1) == 1) * (groups == 1) * 1.0) / jnp.sum( (groups == 1) * 1.0)
 
-  tpr0 = jnp.sum( (jnp.argmax(logits, -1) == 1) * (groups == 0) * (labels==1) * 1.0) / jnp.sum( (groups == 0) * (labels==1) * 1.0)
-  tpr1 = jnp.sum( (jnp.argmax(logits, -1) == 1) * (groups == 1) * (labels==1) * 1.0) / jnp.sum( (groups == 1) * (labels==1) * 1.0)
+  if groups:
+    ar0 = jnp.sum( (jnp.argmax(logits, -1) == 1) * (groups == 0) * 1.0) / jnp.sum( (groups == 0) * 1.0)
+    ar1 = jnp.sum( (jnp.argmax(logits, -1) == 1) * (groups == 1) * 1.0) / jnp.sum( (groups == 1) * 1.0)
 
-  fpr0 = jnp.sum( (jnp.argmax(logits, -1) == 1) * (groups == 0) * (labels==0) * 1.0) / jnp.sum( (groups == 0) * (labels==0) * 1.0)
-  fpr1 = jnp.sum( (jnp.argmax(logits, -1) == 1) * (groups == 1) * (labels==0) * 1.0) / jnp.sum( (groups == 1) * (labels==0) * 1.0)
+    tpr0 = jnp.sum( (jnp.argmax(logits, -1) == 1) * (groups == 0) * (labels==1) * 1.0) / jnp.sum( (groups == 0) * (labels==1) * 1.0)
+    tpr1 = jnp.sum( (jnp.argmax(logits, -1) == 1) * (groups == 1) * (labels==1) * 1.0) / jnp.sum( (groups == 1) * (labels==1) * 1.0)
 
-  # prob = jax.nn.softmax(logits)
-  # ar0 = jnp.sum( (prob[:,1] == 1) * (groups == 0) * 1.0) / jnp.sum( (groups == 0) * 1.0) # only for controlled test
-  # ar1 = jnp.sum( (prob[:,1] == 1) * (groups == 1) * 1.0) / jnp.sum( (groups == 1) * 1.0) # only for controlled test
+    fpr0 = jnp.sum( (jnp.argmax(logits, -1) == 1) * (groups == 0) * (labels==0) * 1.0) / jnp.sum( (groups == 0) * (labels==0) * 1.0)
+    fpr1 = jnp.sum( (jnp.argmax(logits, -1) == 1) * (groups == 1) * (labels==0) * 1.0) / jnp.sum( (groups == 1) * (labels==0) * 1.0)
 
-  # op0 = jnp.sum( (jnp.argmax(logits, -1) == 1) * (labels == 1) * (groups == 0) * 1.0) / jnp.sum( (labels == 1) * (groups == 0) * 1.0)
-  # op1 = jnp.sum( (jnp.argmax(logits, -1) == 1) * (labels == 1) * (groups == 1) * 1.0) / jnp.sum( (labels == 1) * (groups == 1) * 1.0)
-  acc0 = jnp.sum( (jnp.argmax(logits, -1) == labels) * (groups == 0) * 1.0) / jnp.sum( (groups == 0) * 1.0)
-  acc1 = jnp.sum( (jnp.argmax(logits, -1) == labels) * (groups == 1) * 1.0) / jnp.sum( (groups == 1) * 1.0)
+    # prob = jax.nn.softmax(logits)
+    # ar0 = jnp.sum( (prob[:,1] == 1) * (groups == 0) * 1.0) / jnp.sum( (groups == 0) * 1.0) # only for controlled test
+    # ar1 = jnp.sum( (prob[:,1] == 1) * (groups == 1) * 1.0) / jnp.sum( (groups == 1) * 1.0) # only for controlled test
+
+    # op0 = jnp.sum( (jnp.argmax(logits, -1) == 1) * (labels == 1) * (groups == 0) * 1.0) / jnp.sum( (labels == 1) * (groups == 0) * 1.0)
+    # op1 = jnp.sum( (jnp.argmax(logits, -1) == 1) * (labels == 1) * (groups == 1) * 1.0) / jnp.sum( (labels == 1) * (groups == 1) * 1.0)
+    acc0 = jnp.sum( (jnp.argmax(logits, -1) == labels) * (groups == 0) * 1.0) / jnp.sum( (groups == 0) * 1.0)
+    acc1 = jnp.sum( (jnp.argmax(logits, -1) == labels) * (groups == 1) * 1.0) / jnp.sum( (groups == 1) * 1.0)
+  else:
+    ar0, ar1, tpr0, tpr1, fpr0, fpr1, acc0, acc1 = None, None, None, None, None, None, None, None
 
   metrics = {
       'loss': loss,

@@ -133,59 +133,52 @@ def train_plain(state, batch):
 #     new_state = state.apply_gradients(grads=grads)
 #   return new_state, metrics, lmd
 
-# @partial(jax.jit, static_argnames=['args'])
 @jax.jit
-def train_dynamic_lmd(state, batch, lmd = 1.0, T = None): 
+def train_dynamic_lmd_two_loader(state, batch, batch_fair, lmd = 1.0, T = None): 
   """
   dynamic-lambda training
   """
   # pdb.set_trace()
 
   args = global_var.get_value('args')
-  loss_fn = get_loss_lmd_dynamic(state, batch, per_sample=False, T = T)
+  loss_fn = get_loss_lmd_dynamic_two_loader(state, batch, batch_fair, per_sample=False, T = T)
   
   grad_fn = jax.value_and_grad(loss_fn, has_aux=True)
 
   aux, grads = grad_fn(state.params, lmd) # aux[0]: loss
-  new_model_state, logits, lmd = aux[1]
+  new_model_state, logits, logits_fair, lmd = aux[1]
 
-  # loss_fn_per_sample = get_loss_lmd_dynamic(state, batch, per_sample=True)
-  # grads_per_sample_tree, aux = jax.jacrev(loss_fn_per_sample, argnums=0, has_aux=True)(state.params, lmd)
-  # grad_flat_tree = jax.tree_util.tree_leaves(grads_per_sample_tree)
-  # grads_per_sample = jnp.concatenate([x.reshape(x.shape[0],-1) for x in grad_flat_tree], axis=-1) 
-  # print(grads_per_sample.shape)
-
-
-
-  # if per_sample:
-    # loss_fn = get_loss_lmd_dynamic(state, batch, per_sample=False)
-    # grads_per_sample_tree, aux = jax.jacrev(loss_fn, argnums=0, has_aux=True)(state.params, lmd)
-    # grads_per_sample_tree, aux = our_jacrev(loss_fn, argnums=0, has_aux=True)(state.params, lmd)
-    
-    # new_model_state, logits, lmd = aux
-    # grad_flat_tree = jax.tree_util.tree_leaves(grads_per_sample_tree)
-    # grads_per_sample = jnp.concatenate([x.reshape(-1) for x in grad_flat_tree]) 
-    # print(grads_per_sample.shape)
-    # loss_fn = get_loss_lmd_dynamic(state, batch, per_sample=False)
-    # grad_fn = jax.value_and_grad(loss_fn, has_aux=True)
-    
-    # aux, grads = grad_fn(state.params, lmd) # aux[0]: loss
-    # new_model_state, logits, lmd = aux[1]
-    # grads = jax.tree_util.tree_map(lambda x: jnp.mean(x,0), grads_per_sample_tree)
-    # 
-    
-    # grads = grads_per_sample_tree
-    # del grads_per_sample_tree
-  # else:
-    
-  # pdb.set_trace()
-  metrics = compute_metrics(logits=logits, labels=batch['label'], groups = batch['group'])
+  metrics_fair = compute_metrics(logits=logits_fair, labels=batch_fair['label'], groups = batch_fair['group'])
+  metrics = compute_metrics(logits=logits, labels=batch['label'], groups = None)
   if state.batch_stats:
     new_state = state.apply_gradients(grads=grads, batch_stats=new_model_state['batch_stats'])
   else:
     new_state = state.apply_gradients(grads=grads)
   print('grad backward done')
-  return new_state, metrics, lmd
+  return new_state, metrics, metrics_fair, lmd
+
+# @jax.jit
+# def train_dynamic_lmd(state, batch, lmd = 1.0, T = None): 
+#   """
+#   dynamic-lambda training
+#   """
+#   # pdb.set_trace()
+
+#   args = global_var.get_value('args')
+#   loss_fn = get_loss_lmd_dynamic(state, batch, per_sample=False, T = T)
+  
+#   grad_fn = jax.value_and_grad(loss_fn, has_aux=True)
+
+#   aux, grads = grad_fn(state.params, lmd) # aux[0]: loss
+#   new_model_state, logits, lmd = aux[1]
+
+#   metrics = compute_metrics(logits=logits, labels=batch['label'], groups = batch['group'])
+#   if state.batch_stats:
+#     new_state = state.apply_gradients(grads=grads, batch_stats=new_model_state['batch_stats'])
+#   else:
+#     new_state = state.apply_gradients(grads=grads)
+#   print('grad backward done')
+#   return new_state, metrics, lmd
 
 
 def get_train_step(method):
@@ -199,7 +192,8 @@ def get_train_step(method):
     raise NameError('Undefined')
     # return train_fix_lmd
   elif method == 'dynamic_lmd':
-    return train_dynamic_lmd
+    return train_dynamic_lmd_two_loader
+    # return train_dynamic_lmd
 
 
 @jax.jit
