@@ -23,9 +23,13 @@ import numpy as np
 # num = a[range(len(a)),sel]
 # print(num - num[rnd_idx])
 # a = [1,3]
-a = np.array([-1,2,3,4,5])
+# a = np.array([-1,2,3,4,5])
+a = [(1,2,[1],[2]), (1,2,[1,1],[2,2])]
 # print(abs(a))
 # a = {}
 # a[(1,1)] = 1
 
-print(np.random.rand(np.sum(a>0)))
+np.save('result.npy', a)
+b = np.load('result.npy', allow_pickle=True)
+print(b)
+# print(np.random.rand(np.sum(a>0)))

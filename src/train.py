@@ -321,6 +321,7 @@ def train(args):
   train_step = get_train_step(args.method)
   # epoch_pre = 0
   sampled_idx = []
+  idx_rec = []
   for epoch_i in range(args.num_epochs):
 
 
@@ -379,7 +380,7 @@ def train(args):
           rec, time_now = record_test(rec, t+args.datasize*epoch_i//args.train_batch_size, args.datasize*args.num_epochs//args.train_batch_size, time_now, time_start, train_metric, test_metric)
           if epoch_i > args.warm_epoch:
             # infl 
-            args.infl_random_seed = t + args.train_seed
+            args.infl_random_seed = t+args.datasize*epoch_i//args.train_batch_size + args.train_seed
             sampled_idx_tmp, sel_org_idx_with_labels= sample_by_infl(args, state, val_loader, train_loader_unlabeled, num = args.new_data_each_round)
             sampled_idx += sampled_idx_tmp
             idx_with_labels.update(sel_org_idx_with_labels)
@@ -390,6 +391,9 @@ def train(args):
             [train_loader_labeled, train_loader_unlabeled], _ = load_celeba_dataset_torch(args, shuffle_files=True, split='train', batch_size=args.train_batch_size, ratio = args.label_ratio, sampled_idx=sampled_idx)
             used_idx = set(part_1 + sampled_idx)
             print(f'Use {len(used_idx)} samples. Get {len(idx_with_labels)} labels. Ratio: {len(used_idx)/len(idx_with_labels)}')
+            idx_rec.append((epoch_i, args.infl_random_seed, used_idx, idx_with_labels))
+            save_name = f'./results/s{args.strategy}_{args.metric}_{args.label_ratio}_new{args.new_data_each_round}_100round_case1_remove_unfair_trainConf{args.train_conf}_posloss{args.remove_pos}_poslossOrg{args.remove_posOrg}.npy'
+            np.save(save_name, idx_rec)
 
           
           # print(f'lmd is {lmd}')
@@ -400,4 +404,7 @@ def train(args):
 
   # wrap it up
   save_recorder(args.save_dir, rec)
+  save_name = f'./results/s{args.strategy}_{args.metric}_{args.label_ratio}_new{args.new_data_each_round}_100round_case1_remove_unfair_trainConf{args.train_conf}_posloss{args.remove_pos}_poslossOrg{args.remove_posOrg}.npy'
+  np.save(save_name, idx_rec)
+
   # return test_metric
