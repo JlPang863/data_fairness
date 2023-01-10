@@ -58,8 +58,12 @@ def record_ckpt(rec, step):
   return rec
 
 
-def save_recorder(save_dir, rec, verbose=True):
-  save_path = save_dir + '/recorder.pkl'
+def save_recorder(save_dir, rec, verbose=True, file_name = None):
+  if file_name:
+    save_path = save_dir
+  else:
+    save_path = save_dir + '/recorder.pkl'
+
   with open(save_path, 'wb') as f: pickle.dump(vars(rec), f)
   if verbose: print(f'Save record to {save_path}')
   return save_path

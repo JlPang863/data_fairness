@@ -416,10 +416,23 @@ def fair_train(args):
   set_global_seed(args.train_seed)
   make_dirs(args)
 
-  load_name = f'./results/s{args.strategy}_{args.metric}_{args.label_ratio}_new{args.new_data_each_round}_100round_case1_remove_unfair_trainConf{args.train_conf}_posloss{args.remove_pos}_poslossOrg{args.remove_posOrg}.npy'
 
-  indices = np.load(load_name, allow_pickle=True)
-  sel_idx = list(indices[-1][2])
+  if args.strategy == 1:
+    [_, _], part1, part2 = load_celeba_dataset_torch(args, shuffle_files=True, split='train', batch_size=args.train_batch_size, ratio = args.label_ratio, sampled_idx=None, return_part2=True)
+    load_name = f'./results/s2_{args.metric}_{args.label_ratio}_new{args.new_data_each_round}_100round_case1_remove_unfair_trainConf{args.train_conf}_posloss{args.remove_pos}_poslossOrg{args.remove_posOrg}.npy'
+    indices = np.load(load_name, allow_pickle=True)
+    sel_idx = list(indices[-1][2])
+    num_sample_to_add = len(sel_idx) - len(part1)
+    random.Random(args.train_seed).shuffle(part2)
+    sel_idx = part1 + part2[:num_sample_to_add]
+    print(f'randomly select {len(part1)} + {num_sample_to_add} = {len(sel_idx)} samples')
+  elif args.strategy in [2,3,4,5]:
+    load_name = f'./results/s{args.strategy}_{args.metric}_{args.label_ratio}_new{args.new_data_each_round}_100round_case1_remove_unfair_trainConf{args.train_conf}_posloss{args.remove_pos}_poslossOrg{args.remove_posOrg}.npy'
+    indices = np.load(load_name, allow_pickle=True)
+    sel_idx = list(indices[-1][2])
+  else:
+    raise NameError('We only have strategies from 1 to 5')
+
   [train_loader_labeled, train_loader_unlabeled], _ = load_celeba_dataset_torch(args, shuffle_files=True, split='train', batch_size=args.train_batch_size, ratio = 0.0, sampled_idx=sel_idx)
 
   
@@ -503,4 +516,5 @@ def fair_train(args):
     rec = save_checkpoint(args.save_dir, t+args.datasize*epoch_i//args.train_batch_size, state, rec, save=False)
 
   # wrap it up
-  save_recorder(args.save_dir, rec)
+  file_name = f'/s{args.strategy}_{args.metric}_{args.label_ratio}_new{args.new_data_each_round}_100round_case1_remove_unfair_trainConf{args.train_conf}_posloss{args.remove_pos}_poslossOrg{args.remove_posOrg}.pkl'
+  save_recorder(args.save_dir, rec, file_name=file_name)

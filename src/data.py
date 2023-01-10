@@ -81,7 +81,7 @@ class my_celeba(torchvision.datasets.CelebA):
       return X, target, index
 
 
-def load_celeba_dataset_torch(args, shuffle_files=False, split='train', batch_size=128, ratio = 0.1, sampled_idx = None):
+def load_celeba_dataset_torch(args, shuffle_files=False, split='train', batch_size=128, ratio = 0.1, sampled_idx = None, return_part2 = False):
 
   train_transform = transforms.Compose([
       transforms.Resize(32),
@@ -134,5 +134,7 @@ def load_celeba_dataset_torch(args, shuffle_files=False, split='train', batch_si
                                           shuffle=shuffle_files,
                                           num_workers=4,
                                           drop_last=False)
-
-  return [dataloader_1, dataloader_2], part1
+  if return_part2:
+    return [dataloader_1, dataloader_2], part1, part2
+  else:
+    return [dataloader_1, dataloader_2], part1
