@@ -75,5 +75,7 @@ def print_stats(t, T, t_incr, t_tot, train_metric, test_metric, init=False, is_v
     val = 'val'
   else:
     val = 'test'
+  # print(f'{prog:6.2f}% | time: {t_incr:5.1f}s ({t_tot/60:5.1f}m) | step: {t:6d} |',
+  #         f"train acc: {train_metric['accuracy']:.3f}({train_metric['acc'][0]:.3f}, {train_metric['acc'][1]:.3f}) | train ar gap: {abs(train_metric['ar'][0]-train_metric['ar'][1]):.3f} | train loss: {train_metric['loss']:.3f} |{val} acc: {test_metric['accuracy']:.3f} ({test_metric['acc'][0]:.3f}, {test_metric['acc'][1]:.3f}) | {val} ar gap: {abs(test_metric['ar'][0] - test_metric['ar'][1]):.4f}")
   print(f'{prog:6.2f}% | time: {t_incr:5.1f}s ({t_tot/60:5.1f}m) | step: {t:6d} |',
-          f"train acc: {train_metric['accuracy']:.3f}({train_metric['acc'][0]:.3f}, {train_metric['acc'][1]:.3f}) | train ar gap: {abs(train_metric['ar'][0]-train_metric['ar'][1]):.3f} | train loss: {train_metric['loss']:.3f} |{val} acc: {test_metric['accuracy']:.3f} ({test_metric['acc'][0]:.3f}, {test_metric['acc'][1]:.3f}) | {val} ar gap: {abs(test_metric['ar'][0] - test_metric['ar'][1]):.4f}")
+          f"train acc: {train_metric['accuracy']:.3f} | train loss: {train_metric['loss']:.3f} |{val} acc: {test_metric['accuracy']:.3f} ({test_metric['acc'][0]:.3f}, {test_metric['acc'][1]:.3f}) | {val} ar gap: {abs(test_metric['ar'][0] - test_metric['ar'][1]):.4f}")

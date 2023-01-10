@@ -9,7 +9,7 @@ from .recorder import init_recorder, record_train_stats, save_recorder, record_t
 import pdb
 from .hoc_fairlearn import *
 from .train_state import test_step, get_train_step, create_train_state, infl_step, infl_step_fair, infl_step_per_sample
-from .metrics import compute_metrics
+from .metrics import compute_metrics, compute_metrics_fair
 from .utils import set_global_seed, make_dirs, log_and_save_args
 from . import global_var
 import os
@@ -275,7 +275,7 @@ def test(args, state, data):
     labels.append(batch['label'])
     groups.append(batch['group'])
 
-  return compute_metrics(
+  return compute_metrics_fair(
     logits=jnp.concatenate(logits),
     labels=jnp.concatenate(labels),
     groups=jnp.concatenate(groups),
