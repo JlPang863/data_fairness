@@ -433,10 +433,10 @@ def fair_train(args):
   else:
     raise NameError('We only have strategies from 1 to 5')
 
-  [train_loader_labeled, _], _ = load_celeba_dataset_torch(args, shuffle_files=True, split='train', batch_size=args.train_batch_size, ratio = 0.0, sampled_idx=sel_idx)
+  [train_loader_labeled, _], _ = load_celeba_dataset_torch(args, shuffle_files=True, split='train', batch_size=args.train_batch_size, ratio = 0.0, sampled_idx=sel_idx, fair_train=True)
 
   
-  [val_loader, test_loader], _ = load_celeba_dataset_torch(args, shuffle_files=True, split='test', batch_size=args.test_batch_size, ratio = args.val_ratio)
+  [val_loader, test_loader], _ = load_celeba_dataset_torch(args, shuffle_files=True, split='test', batch_size=args.test_batch_size, ratio = args.val_ratio, fair_train=True)
 
   args.image_shape = args.img_size
   # setup
