@@ -154,7 +154,7 @@ def train_dynamic_lmd_two_loader(state, batch, batch_fair, lmd = 1.0, T = None):
     new_state = state.apply_gradients(grads=grads, batch_stats=new_model_state['batch_stats'])
   else:
     new_state = state.apply_gradients(grads=grads)
-  print('grad backward done')
+  # print('grad backward done')
   return new_state, metrics, metrics_fair, lmd
 
 # @jax.jit
