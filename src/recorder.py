@@ -60,7 +60,7 @@ def record_ckpt(rec, step):
 
 def save_recorder(save_dir, rec, verbose=True, file_name = None):
   if file_name:
-    save_path = save_dir
+    save_path = save_dir + file_name
   else:
     save_path = save_dir + '/recorder.pkl'
 
