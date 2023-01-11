@@ -81,7 +81,7 @@ class my_celeba(torchvision.datasets.CelebA):
       return X, target, index
 
 
-def load_celeba_dataset_torch(args, shuffle_files=False, split='train', batch_size=128, ratio = 0.1, sampled_idx = None, return_part2 = False):
+def load_celeba_dataset_torch(args, shuffle_files=False, split='train', batch_size=128, ratio = 0.1, sampled_idx = None, return_part2 = False, fair_train=False):
 
   train_transform = transforms.Compose([
       transforms.Resize(32),
@@ -123,17 +123,29 @@ def load_celeba_dataset_torch(args, shuffle_files=False, split='train', batch_si
   ds_1 = torch.utils.data.Subset(ds, part1)
   ds_2 = torch.utils.data.Subset(ds, part2)
 
-
-  dataloader_1 = torch.utils.data.DataLoader(ds_1,
-                                            batch_size=batch_size if split == 'train' else 512, # val loader: 512
+  if fair_train:
+    dataloader_1 = torch.utils.data.DataLoader(ds_1,
+                                              batch_size=batch_size if split == 'train' else 256, # val loader: 256
+                                              shuffle=shuffle_files,
+                                              num_workers=1,
+                                              drop_last=False)
+    dataloader_2 = torch.utils.data.DataLoader(ds_2,
+                                            batch_size=batch_size,
                                             shuffle=shuffle_files,
                                             num_workers=1,
                                             drop_last=False)
-  dataloader_2 = torch.utils.data.DataLoader(ds_2,
-                                          batch_size=batch_size if split == 'test' else 32, # unlabeled loader: 32
-                                          shuffle=shuffle_files,
-                                          num_workers=1,
-                                          drop_last=False)
+  else:
+    dataloader_1 = torch.utils.data.DataLoader(ds_1,
+                                              batch_size=batch_size if split == 'train' else 512, # val loader: 512
+                                              shuffle=shuffle_files,
+                                              num_workers=1,
+                                              drop_last=False)
+    dataloader_2 = torch.utils.data.DataLoader(ds_2,
+                                            batch_size=batch_size if split == 'test' else 32, # unlabeled loader: 32
+                                            shuffle=shuffle_files,
+                                            num_workers=1,
+                                            drop_last=False)
+
   if return_part2:
     return [dataloader_1, dataloader_2], part1, part2
   else:
