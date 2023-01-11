@@ -34,7 +34,7 @@ ROOT = '.'
 EXP = 'exps'
 RUN = 0
 META_MODEL_SEED, META_TRAIN_SEED, SEED_INCR = 42, 4242, 424242
-EP_STEPS = 200  # 200
+EP_STEPS = 100  # 200
 # DATA_DIR = ROOT + './fair-eval/celeba/data'
 # DATA_DIR = ROOT + '/data'
 DATA_DIR = '/data2/data'
@@ -90,7 +90,7 @@ args.scheduler = OrderedDict(
 )
 
 # training
-args.num_epochs = 10
+args.num_epochs = 5
 args.EP_STEPS = EP_STEPS
 args.train_seed = META_TRAIN_SEED + RUN * SEED_INCR
 args.train_batch_size = 256
