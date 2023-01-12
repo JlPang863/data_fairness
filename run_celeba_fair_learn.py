@@ -17,6 +17,8 @@ parser.add_argument('--tol', type=float, default=0.0) # # get an unfair sample w
 parser.add_argument('--train_conf', action='store_true', default=False)
 parser.add_argument('--remove_pos', action='store_true', default=False)
 parser.add_argument('--remove_posOrg', action='store_true', default=False)
+parser.add_argument('--conf_fair_only', action='store_true', default=False)
+
 
 parser.add_argument('--mu', type=float, default=1.0)
 parser.add_argument('--warm_epoch', type=int, default=1)
