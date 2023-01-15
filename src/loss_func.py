@@ -110,7 +110,6 @@ def get_loss_lmd_dynamic_two_loader(state, batch, batch_fair, per_sample = False
     elif args.exp == 3:
       pass
 
-    loss_fair = cross_entropy_loss(logits=logits_fair, labels=batch_fair['label']) + jnp.sum(mu/2 * loss_reg**2) + jnp.sum(lmd * loss_reg)
     loss = cross_entropy_loss(logits=logits, labels=batch['label']) + loss_fair
     
     if args.conf_method == "V":
