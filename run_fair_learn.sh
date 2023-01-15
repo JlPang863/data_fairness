@@ -91,15 +91,14 @@ do
     do
         for STG in $strategy
         do
-            CUDA_VISIBLE_DEVICES=$i nohup python3 run_celeba_fair_learn.py --method dynamic_lmd  --lmd 0.0 --mu 1.0  --warm_epoch -1 --conf $MYCONF  --metric dp --label_ratio 0.02 --val_ratio 0.1 --strategy $STG --sel_round $SR --remove_pos --exp $MYEXP --conf_method $CM > ./logs/fair_train/s$STG\_dp_02_new256_100round_sel_$SR\_$MYCONF\_exp$MYEXP\_$CM.log &
+            # CUDA_VISIBLE_DEVICES=$i nohup python3 run_celeba_fair_learn.py --method dynamic_lmd  --lmd 0.0 --mu 1.0  --warm_epoch -1 --conf $MYCONF  --metric dp --label_ratio 0.02 --val_ratio 0.1 --strategy $STG --sel_round $SR --remove_pos --exp $MYEXP --conf_method $CM > ./logs/fair_train/s$STG\_dp_02_new256_100round_sel_$SR\_$MYCONF\_exp$MYEXP\_$CM.log &
         done
     done
 
 i=$((i+1))
+echo $i
 done
 
 done
 done
 
-
-CUDA_VISIBLE_DEVICES=0 python3 run_celeba_fair_learn.py --method dynamic_lmd  --lmd 0.0 --mu 1.0  --warm_epoch -1 --conf peer  --metric dp --label_ratio 0.02 --val_ratio 0.1 --strategy 2 --sel_round 5 --remove_pos --exp 2 --conf_method V 
