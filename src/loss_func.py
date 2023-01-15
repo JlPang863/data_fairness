@@ -105,7 +105,10 @@ def get_loss_lmd_dynamic_two_loader(state, batch, batch_fair, per_sample = False
     if args.exp == 1:
       loss_fair += cross_entropy_loss(logits=logits_fair, labels=batch_fair['label'])
     elif args.exp == 2:
-      loss_fair += cross_entropy_loss(logits=logits_fair[batch_fair['label'] == worst_group_id], labels=batch_fair['label'][batch_fair['label'] == worst_group_id])
+      # import pdb
+      # pdb.set_trace()
+      weight = (jnp.repeat((batch_fair['label'] == worst_group_id).reshape(-1,1), 2, axis=1) * 1.0) + 1e-5
+      loss_fair += cross_entropy_loss(logits=logits * weight, labels=batch_fair['label'])
     elif args.exp == 3:
       pass
 
