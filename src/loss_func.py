@@ -83,7 +83,7 @@ def get_loss_fn(state, batch, per_sample = False, detaild_loss = True):
 
 
 
-def get_loss_lmd_dynamic_two_loader(state, batch, batch_fair, per_sample = False, T = None):
+def get_loss_lmd_dynamic_two_loader(state, batch, batch_fair, per_sample = False, T = None, worst_group_id = 0):
   args = global_var.get_value('args')
   mu = args.mu
   constraints_fair = constraints_dict[args.metric]
@@ -101,12 +101,23 @@ def get_loss_lmd_dynamic_two_loader(state, batch, batch_fair, per_sample = False
 
     loss_reg, _ = constraints_fair(logits_fair, batch_fair['group'], batch_fair['label'], T = T)
     lmd = lmd + mu * loss_reg 
+    loss_fair = jnp.sum(mu/2 * loss_reg**2) + jnp.sum(lmd * loss_reg)
+    if args.exp == 1:
+      loss_fair += cross_entropy_loss(logits=logits_fair, labels=batch_fair['label'])
+    elif args.exp == 2:
+      loss_fair += cross_entropy_loss(logits=logits_fair[batch_fair['label'] == worst_group_id], labels=batch_fair['label'][batch_fair['label'] == worst_group_id])
+    elif args.exp == 3:
+      pass
+
     loss_fair = cross_entropy_loss(logits=logits_fair, labels=batch_fair['label']) + jnp.sum(mu/2 * loss_reg**2) + jnp.sum(lmd * loss_reg)
-    loss = cross_entropy_loss(logits=logits, labels=batch['label'])
-    if args.conf_fair_only:
-      loss += constraints_confidence(logits_fair) + loss_fair
+    loss = cross_entropy_loss(logits=logits, labels=batch['label']) + loss_fair
+    
+    if args.conf_method == "V":
+      loss += constraints_confidence(logits_fair)
+    elif args.conf_method == "TV":
+      loss += constraints_confidence(logits) + constraints_confidence(logits_fair)
     else:
-      loss += constraints_confidence(logits) + constraints_confidence(logits_fair) + loss_fair
+      raise NameError(f'Undefined conf_method. Should be TV or V. Current {args.conf_method}')
 
     return loss, (new_model_state, logits, logits_fair, lmd)
 

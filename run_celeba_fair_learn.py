@@ -18,13 +18,15 @@ parser.add_argument('--train_conf', action='store_true', default=False)
 parser.add_argument('--remove_pos', action='store_true', default=False)
 parser.add_argument('--remove_posOrg', action='store_true', default=False)
 parser.add_argument('--conf_fair_only', action='store_true', default=False)
-
+parser.add_argument('--exp', type=int, default=1)
+parser.add_argument('--conf_method', type=str, default='TV', help="TV, V")
+parser.add_argument('--conf', type=str, default='false', help='no_conf, peer, entropy')
 
 parser.add_argument('--mu', type=float, default=1.0)
 parser.add_argument('--warm_epoch', type=int, default=1)
 parser.add_argument('--sel_round', type=int, default=5, help="0--29")
 parser.add_argument('--strategy', type=int, default=1)
-parser.add_argument('--conf', type=str, default='false', help='no_conf, peer, entropy')
+
 parser.add_argument('--label_key', type=str, default='Smiling', help="5_o_Clock_Shadow Arched_Eyebrows Attractive Bags_Under_Eyes Bald Bangs Big_Lips Big_Nose Black_Hair Blond_Hair Blurry Brown_Hair Bushy_Eyebrows Chubby Double_Chin Eyeglasses Goatee Gray_Hair Heavy_Makeup High_Cheekbones Male Mouth_Slightly_Open Mustache Narrow_Eyes No_Beard Oval_Face Pale_Skin Pointy_Nose Receding_Hairline Rosy_Cheeks Sideburns Smiling Straight_Hair Wavy_Hair Wearing_Earrings Wearing_Hat Wearing_Lipstick Wearing_Necklace Wearing_Necktie Young")
 
 parser.add_argument('--label_ratio', type=float, default=0.01)

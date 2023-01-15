@@ -465,7 +465,7 @@ def fair_train(args):
 
 
   train_step = get_train_step(args.method)
-
+  worst_group_id = 0
   for epoch_i in range(args.num_epochs):
 
 
@@ -499,7 +499,7 @@ def fair_train(args):
         if args.method == 'plain':
           state, train_metric = train_step(state, batch)
         elif args.method in ['dynamic_lmd']:
-          state, train_metric, train_metric_fair, lmd = train_step(state, batch, batch_fair, lmd = lmd, T=None)
+          state, train_metric, train_metric_fair, lmd = train_step(state, batch, batch_fair, lmd = lmd, T=None, worst_group_id = worst_group_id)
         else:
           raise NameError('Undefined optimization mechanism')
 
@@ -510,6 +510,7 @@ def fair_train(args):
           # epoch_pre = epoch_i
           test_metric = test(args, state, test_loader)
           val_metric = test(args, state, val_loader)
+          worst_group_id = np.argmin(val_metric['acc'])
           _, time_now = record_test(rec, t+args.datasize*epoch_i//args.train_batch_size, args.datasize*args.num_epochs//args.train_batch_size, time_now, time_start, train_metric, test_metric, val_metric=val_metric)
           rec, time_now = record_test(rec, t+args.datasize*epoch_i//args.train_batch_size, args.datasize*args.num_epochs//args.train_batch_size, time_now, time_start, train_metric, test_metric)
 
