@@ -483,8 +483,8 @@ def fair_train(args):
             example_fair = next(val_iter)
         except StopIteration:
             # restart the generator if the previous generator is exhausted.
-            generator = iter(val_loader)
-            example_fair = next(generator)
+            val_iter = iter(val_loader)
+            example_fair = next(val_iter)
 
         bsz = example[0].shape[0]
 
