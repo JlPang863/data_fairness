@@ -62,31 +62,31 @@ args.nesterov = True
 # args.decay_factor = 0.2
 # args.decay_steps = [50*EP_STEPS, 80*EP_STEPS, 90*EP_STEPS]
 # Adam
+# args.opt = OrderedDict(
+#     name="adam",
+#     config=OrderedDict(
+#         learning_rate = 0.01
+#     )
+# )
+# SGD
 args.opt = OrderedDict(
-    name="adam",
+    name="sgd",
     config=OrderedDict(
-        learning_rate = 0.01
+        learning_rate = args.lr,
+        momentum = args.momentum,
+        nesterov = args.nesterov
     )
 )
-# # SGD
-# args.opt = OrderedDict(
-#     name="sgd",
-#     config=OrderedDict(
-#         learning_rate = args.lr,
-#         momentum = args.momentum,
-#         nesterov = args.nesterov
-#     )
-# )
 # cosine scheduler
-args.scheduler = None
-# args.scheduler = OrderedDict(
-#     name = "cosine_decay_schedule",
-#     config = OrderedDict(
-#         init_value = args.lr,
-#         decay_steps = 5000,  # previous: 5000, 10 epochs
-#         alpha = 0.95,
-#     )
-# )
+# args.scheduler = None
+args.scheduler = OrderedDict(
+    name = "cosine_decay_schedule",
+    config = OrderedDict(
+        init_value = args.lr,
+        decay_steps = 5000,  # previous: 5000, 10 epochs
+        alpha = 0.95,
+    )
+)
 
 # training
 args.num_epochs = 10
