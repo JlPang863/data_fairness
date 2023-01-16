@@ -152,7 +152,7 @@ do
     done
 
 done
-i=$((i+1))
+# i=$((i+1))
 # echo $i
 done
 
