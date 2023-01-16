@@ -1,5 +1,5 @@
 
-conf="no_conf"
+conf="entropy peer"
 sel_round="5 10 15 20 25"
 exp="1 2 3"
 strategy="2"
