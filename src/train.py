@@ -472,11 +472,12 @@ def fair_train(args):
     t = 0
     num_sample_cur = 0
     print(f'Epoch {epoch_i}')
+    val_iter = iter(val_loader)
 
     while t * args.train_batch_size < args.datasize:
       for example in train_loader_labeled:
 
-        val_iter = iter(val_loader)
+        
         try:
             # Samples the batch
             example_fair = next(val_iter)
