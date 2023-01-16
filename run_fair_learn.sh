@@ -141,6 +141,7 @@ do
             if [[ $i -eq 2 ]]
             then
                 i=0
+                echo wait
                 wait
             fi
 
