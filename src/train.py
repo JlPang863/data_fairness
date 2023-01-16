@@ -443,7 +443,7 @@ def fair_train(args):
   model, model_linear = get_model(args)
   args.hidden_size = model_linear.hidden_size
   state = create_train_state(model, args)
-
+  
 
   # get model size
   flat_tree = jax.tree_util.tree_leaves(state.params)
