@@ -108,8 +108,8 @@
 
 
 conf="no_conf"
-sel_round="5 10"
-exp="1 2"
+sel_round="5 10 15 20 25"
+exp="1 2 3"
 strategy="2"
 conf_method="TV"
 
