@@ -84,22 +84,22 @@ args.opt = OrderedDict(
 )
 # cosine scheduler
 # args.scheduler = None
-# args.scheduler = OrderedDict(
-#     name = "cosine_decay_schedule",
-#     config = OrderedDict(
-#         init_value = args.lr,
-#         decay_steps = 3000,  # previous: 5000, 10 epochs
-#         alpha = 0.01,
-#     )
-# )
 args.scheduler = OrderedDict(
-    name = "piecewise_constant_schedule",
+    name = "cosine_decay_schedule",
     config = OrderedDict(
         init_value = args.lr,
-        boundaries_and_scales = {1500: 0.1,
-                                3000: 0.1},
+        decay_steps = 3000,  # previous: 5000, 10 epochs
+        alpha = 0.01,
     )
 )
+# args.scheduler = OrderedDict(
+#     name = "piecewise_constant_schedule",
+#     config = OrderedDict(
+#         init_value = args.lr,
+#         boundaries_and_scales = {1500: 0.1,
+#                                 3000: 0.1},
+#     )
+# )
 
 # training
 args.num_epochs = 5
