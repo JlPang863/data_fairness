@@ -116,15 +116,11 @@ conf_method="TV"
 
 
 
+i=0
+j=0
 for MYEXP in $exp
 do
 
-
-
-
-
-i=0
-j=0
 for SR in $sel_round
 do
 for MYCONF in $conf
@@ -147,7 +143,7 @@ do
                 i=0
                 wait
             fi
-            echo $j
+
             
         done
     done
