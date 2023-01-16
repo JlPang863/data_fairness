@@ -147,6 +147,7 @@ do
                 i=0
                 wait
             fi
+            echo $j
             
         done
     done
