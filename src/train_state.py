@@ -59,7 +59,7 @@ def create_train_state_linear(model, args, params=None): # TODO: will be removed
   
   return state
 
-def create_train_state(model, args, params=None):
+def create_train_state(model, args, params=None, return_opt = False):
   rng = jax.random.PRNGKey(args.model_seed)
 
   # tx = optax.sgd(args.lr, args.momentum)
@@ -94,8 +94,10 @@ def create_train_state(model, args, params=None):
       params=params,
       tx=tx,
       batch_stats=batch_stats)
-  
-  return state
+  if return_opt:
+    return state, tx
+  else:
+    return state
 
 
 
