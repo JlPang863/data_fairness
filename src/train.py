@@ -442,7 +442,7 @@ def fair_train(args):
   # setup
   model, model_linear = get_model(args)
   args.hidden_size = model_linear.hidden_size
-  state, optimizer = create_train_state(model, args, return_opt=True)
+  state, lr_scheduler = create_train_state(model, args, return_opt=True)
 
 
   # get model size
@@ -509,6 +509,7 @@ def fair_train(args):
         if t % args.log_steps == 0:
           # test
           # epoch_pre = epoch_i
+          print(f'current lr is {lr_scheduler(state.step)}')
           test_metric = test(args, state, test_loader)
           val_metric = test(args, state, val_loader)
           worst_group_id = np.argmin(val_metric['acc'])

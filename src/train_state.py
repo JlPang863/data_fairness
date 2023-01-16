@@ -61,7 +61,7 @@ def create_train_state_linear(model, args, params=None): # TODO: will be removed
 
 def create_train_state(model, args, params=None, return_opt = False):
   rng = jax.random.PRNGKey(args.model_seed)
-
+  lr_scheduler = None
   # tx = optax.sgd(args.lr, args.momentum)
   # tx = optax.sgd(args.lr, args.momentum, nesterov=True)
   # instantiate optax optimizer
@@ -74,7 +74,7 @@ def create_train_state(model, args, params=None, return_opt = False):
       scheduler_clsname = getattr(optax, args.scheduler['name'])
       lr_scheduler = scheduler_clsname(**args.scheduler['config'])
       opt_config['learning_rate'] = lr_scheduler
-      pdb.set_trace()
+
 
     tx = opt_clsname(**opt_config)
   except:
@@ -96,7 +96,7 @@ def create_train_state(model, args, params=None, return_opt = False):
       tx=tx,
       batch_stats=batch_stats)
   if return_opt:
-    return state, tx
+    return state, lr_scheduler
   else:
     return state
 
