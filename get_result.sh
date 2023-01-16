@@ -1,11 +1,15 @@
 
-conf="entropy peer"
+# conf="entropy peer"
+# sel_round="5 10 15 20 25"
+# exp="1 2 3"
+# strategy="2"
+# conf_method="TV V"
+
+conf="no_conf"
 sel_round="5 10 15 20 25"
 exp="1 2 3"
 strategy="2"
-conf_method="TV V"
-
-
+conf_method="TV"
 
 
 for MYEXP in $exp
