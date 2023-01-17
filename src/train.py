@@ -468,7 +468,7 @@ def fair_train(args):
   global_var.set_value('args', args)
 
 
-  train_step = get_train_step(args.method)
+  train_step, train_step_warm = get_train_step(args.method)
   worst_group_id = 0
   for epoch_i in range(args.num_epochs):
 
@@ -499,20 +499,17 @@ def fair_train(args):
         if t * args.train_batch_size > args.datasize:
           break
 
-        # pdb.set_trace()
-        if state.step == args.warm_step:
-          conf = args.conf
-          global_var.set_value('args', args)
-          print(f'CHANGE conf to {args.conf}')
-          train_step = get_train_step(args.method)
-        
-
 
         # train
         if args.method == 'plain':
           state, train_metric = train_step(state, batch)
         elif args.method in ['dynamic_lmd']:
-          state, train_metric, train_metric_fair, lmd = train_step(state, batch, batch_fair, lmd = lmd, T=None, worst_group_id = worst_group_id, conf=conf)
+          if state.step > args.warm_step:
+            state, train_metric, train_metric_fair, lmd = train_step(state, batch, batch_fair, lmd = lmd, T=None, worst_group_id = worst_group_id)
+          else:
+            state, train_metric, _, lmd = train_step_warm(state, batch, batch_fair, lmd = lmd, T=None, worst_group_id = worst_group_id)
+            
+          
         else:
           raise NameError('Undefined optimization mechanism')
 

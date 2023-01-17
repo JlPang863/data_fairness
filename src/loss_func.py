@@ -81,16 +81,44 @@ def get_loss_fn(state, batch, per_sample = False, detaild_loss = True):
 #     return loss, (new_model_state, logits, lmd)
 #   return loss_fn
 
-
-
-def get_loss_lmd_dynamic_two_loader(state, batch, batch_fair, per_sample = False, T = None, worst_group_id = 0, conf=None):
+def get_loss_lmd_dynamic_two_loader_warm(state, batch, batch_fair, per_sample = False, T = None, worst_group_id = 0):
   args = global_var.get_value('args')
   mu = args.mu
   constraints_fair = constraints_dict[args.metric]
-  if conf is None:
-    constraints_confidence = constraints_dict[args.conf]
-  else:
-    constraints_confidence = constraints_dict[conf]
+
+  def loss_fn(params, lmd): 
+    if state.batch_stats:
+        logits, new_model_state = state.apply_fn({'params': params, 'batch_stats': state.batch_stats}, batch['feature'], mutable=['batch_stats'])
+        logits_fair, _ = state.apply_fn({'params': params, 'batch_stats': state.batch_stats}, batch_fair['feature'], mutable=['batch_stats'])
+    else:
+        logits, new_model_state = state.apply_fn({'params': params}, batch['feature'], mutable=['batch_stats'])
+        logits_fair, _ = state.apply_fn({'params': params}, batch_fair['feature'], mutable=['batch_stats'])
+    if len(logits) == 2: # logits and embeddings
+        logits = logits[0]
+        logits_fair = logits_fair[0]
+
+    loss_reg, _ = constraints_fair(logits_fair, batch_fair['group'], batch_fair['label'], T = T)
+    lmd = lmd + mu * loss_reg 
+    loss_fair = jnp.sum(mu/2 * loss_reg**2) + jnp.sum(lmd * loss_reg)
+    if args.exp == 1:
+      loss_fair += cross_entropy_loss(logits=logits_fair, labels=batch_fair['label'])
+    elif args.exp == 2:
+      weight = (jnp.repeat((batch_fair['label'] == worst_group_id).reshape(-1,1), 2, axis=1) * 1.0) + 1e-5
+      loss_fair += cross_entropy_loss(logits=logits * weight, labels=batch_fair['label'])
+    elif args.exp == 3:
+      pass
+
+    loss = cross_entropy_loss(logits=logits, labels=batch['label']) + loss_fair
+    
+    return loss, (new_model_state, logits, logits_fair, lmd)
+
+  return loss_fn
+
+def get_loss_lmd_dynamic_two_loader(state, batch, batch_fair, per_sample = False, T = None, worst_group_id = 0):
+  args = global_var.get_value('args')
+  mu = args.mu
+  constraints_fair = constraints_dict[args.metric]
+  constraints_confidence = constraints_dict[args.conf]
 
   def loss_fn(params, lmd): 
     if state.batch_stats:

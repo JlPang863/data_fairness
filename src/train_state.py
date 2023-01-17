@@ -136,15 +136,41 @@ def train_plain(state, batch):
 #     new_state = state.apply_gradients(grads=grads)
 #   return new_state, metrics, lmd
 
+
 @jax.jit
-def train_dynamic_lmd_two_loader(state, batch, batch_fair, lmd = 1.0, T = None, worst_group_id = 0, conf = None): 
+def train_dynamic_lmd_two_loader_warm(state, batch, batch_fair, lmd = 1.0, T = None, worst_group_id = 0): 
   """
   dynamic-lambda training
   """
   # pdb.set_trace()
 
   # args = global_var.get_value('args')
-  loss_fn = get_loss_lmd_dynamic_two_loader(state, batch, batch_fair, per_sample=False, T = T, worst_group_id = worst_group_id, conf = conf)
+  loss_fn = get_loss_lmd_dynamic_two_loader_warm(state, batch, batch_fair, per_sample=False, T = T, worst_group_id = worst_group_id)
+  
+  grad_fn = jax.value_and_grad(loss_fn, has_aux=True)
+
+  aux, grads = grad_fn(state.params, lmd) # aux[0]: loss
+  new_model_state, logits, logits_fair, lmd = aux[1]
+
+  metrics_fair = compute_metrics_fair(logits=logits_fair, labels=batch_fair['label'], groups = batch_fair['group'])
+  metrics = compute_metrics(logits=logits, labels=batch['label'], groups = None)
+  if state.batch_stats:
+    new_state = state.apply_gradients(grads=grads, batch_stats=new_model_state['batch_stats'])
+  else:
+    new_state = state.apply_gradients(grads=grads)
+  # print('grad backward done')
+  return new_state, metrics, metrics_fair, lmd
+
+
+@jax.jit
+def train_dynamic_lmd_two_loader(state, batch, batch_fair, lmd = 1.0, T = None, worst_group_id = 0): 
+  """
+  dynamic-lambda training
+  """
+  # pdb.set_trace()
+
+  # args = global_var.get_value('args')
+  loss_fn = get_loss_lmd_dynamic_two_loader(state, batch, batch_fair, per_sample=False, T = T, worst_group_id = worst_group_id)
   
   grad_fn = jax.value_and_grad(loss_fn, has_aux=True)
 
@@ -184,7 +210,7 @@ def train_dynamic_lmd_two_loader(state, batch, batch_fair, lmd = 1.0, T = None, 
 #   return new_state, metrics, lmd
 
 
-def get_train_step(method, conf = None):
+def get_train_step(method):
   """
   Train for a single step.
   Method: plain, fix_lmd, dynamic_lmd, admm 
@@ -195,7 +221,7 @@ def get_train_step(method, conf = None):
     raise NameError('Undefined')
     # return train_fix_lmd
   elif method == 'dynamic_lmd':
-    return train_dynamic_lmd_two_loader
+    return train_dynamic_lmd_two_loader, train_dynamic_lmd_two_loader_warm
     # return train_dynamic_lmd
 
 
