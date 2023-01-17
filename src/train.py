@@ -499,7 +499,7 @@ def fair_train(args):
         if t * args.train_batch_size > args.datasize:
           break
 
-
+        pdb.set_trace()
         if state.step == args.warm_step:
           args.conf = conf
           global_var.set_value('args', args)
