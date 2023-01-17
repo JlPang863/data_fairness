@@ -508,7 +508,7 @@ def fair_train(args):
             state, train_metric, train_metric_fair, lmd = train_step(state, batch, batch_fair, lmd = lmd, T=None, worst_group_id = worst_group_id)
           else:
             state, train_metric, _, lmd = train_step_warm(state, batch, batch_fair, lmd = lmd, T=None, worst_group_id = worst_group_id)
-            
+            print(f'warm up step {state.step}/{args.warm_step}')
           
         else:
           raise NameError('Undefined optimization mechanism')
