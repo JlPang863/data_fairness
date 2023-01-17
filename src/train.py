@@ -503,6 +503,7 @@ def fair_train(args):
         if state.step == args.warm_step:
           args.conf = conf
           global_var.set_value('args', args)
+          print(f'CHANGE conf to {args.conf}')
           train_step = get_train_step(args.method)
         
 
