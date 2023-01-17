@@ -462,9 +462,9 @@ def fair_train(args):
 
   # begin training
   lmd = args.lmd
-  conf = args.conf
 
-  args.conf = 'no_conf' # warm up
+
+  conf = 'no_conf' # warm up
   global_var.set_value('args', args)
 
 
@@ -499,9 +499,9 @@ def fair_train(args):
         if t * args.train_batch_size > args.datasize:
           break
 
-        pdb.set_trace()
+        # pdb.set_trace()
         if state.step == args.warm_step:
-          args.conf = conf
+          conf = args.conf
           global_var.set_value('args', args)
           print(f'CHANGE conf to {args.conf}')
           train_step = get_train_step(args.method)
@@ -512,7 +512,7 @@ def fair_train(args):
         if args.method == 'plain':
           state, train_metric = train_step(state, batch)
         elif args.method in ['dynamic_lmd']:
-          state, train_metric, train_metric_fair, lmd = train_step(state, batch, batch_fair, lmd = lmd, T=None, worst_group_id = worst_group_id)
+          state, train_metric, train_metric_fair, lmd = train_step(state, batch, batch_fair, lmd = lmd, T=None, worst_group_id = worst_group_id, conf=conf)
         else:
           raise NameError('Undefined optimization mechanism')
 

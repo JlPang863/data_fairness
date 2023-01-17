@@ -137,14 +137,14 @@ def train_plain(state, batch):
 #   return new_state, metrics, lmd
 
 @jax.jit
-def train_dynamic_lmd_two_loader(state, batch, batch_fair, lmd = 1.0, T = None, worst_group_id = 0): 
+def train_dynamic_lmd_two_loader(state, batch, batch_fair, lmd = 1.0, T = None, worst_group_id = 0, conf = None): 
   """
   dynamic-lambda training
   """
   # pdb.set_trace()
 
   # args = global_var.get_value('args')
-  loss_fn = get_loss_lmd_dynamic_two_loader(state, batch, batch_fair, per_sample=False, T = T, worst_group_id = worst_group_id)
+  loss_fn = get_loss_lmd_dynamic_two_loader(state, batch, batch_fair, per_sample=False, T = T, worst_group_id = worst_group_id, conf = conf)
   
   grad_fn = jax.value_and_grad(loss_fn, has_aux=True)
 
@@ -184,7 +184,7 @@ def train_dynamic_lmd_two_loader(state, batch, batch_fair, lmd = 1.0, T = None, 
 #   return new_state, metrics, lmd
 
 
-def get_train_step(method):
+def get_train_step(method, conf = None):
   """
   Train for a single step.
   Method: plain, fix_lmd, dynamic_lmd, admm 
