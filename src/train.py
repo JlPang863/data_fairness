@@ -504,11 +504,11 @@ def fair_train(args):
         if args.method == 'plain':
           state, train_metric = train_step(state, batch)
         elif args.method in ['dynamic_lmd']:
-          if state.step > args.warm_step:
+          if state.step >= args.warm_step:
             state, train_metric, train_metric_fair, lmd = train_step(state, batch, batch_fair, lmd = lmd, T=None, worst_group_id = worst_group_id)
           else:
             state, train_metric, _, lmd = train_step_warm(state, batch, batch_fair, lmd = lmd, T=None, worst_group_id = worst_group_id)
-            print(f'warm up step {state.step}/{args.warm_step}')
+            # print(f'warm up step {state.step}/{args.warm_step}')
           
         else:
           raise NameError('Undefined optimization mechanism')
