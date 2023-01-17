@@ -112,9 +112,9 @@ def get_loss_lmd_dynamic_two_loader(state, batch, batch_fair, per_sample = False
 
     loss = cross_entropy_loss(logits=logits, labels=batch['label']) + loss_fair
     
-    if args.conf_method == "V" and state.step > args.warm_step: 
+    if args.conf_method == "V": 
       loss += constraints_confidence(logits_fair)
-    elif args.conf_method == "TV" and state.step > args.warm_step:
+    elif args.conf_method == "TV":
       loss += constraints_confidence(logits) + constraints_confidence(logits_fair)
     else:
       raise NameError(f'Undefined conf_method. Should be TV or V. Current {args.conf_method}')

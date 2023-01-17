@@ -143,7 +143,7 @@ def train_dynamic_lmd_two_loader(state, batch, batch_fair, lmd = 1.0, T = None, 
   """
   # pdb.set_trace()
 
-  args = global_var.get_value('args')
+  # args = global_var.get_value('args')
   loss_fn = get_loss_lmd_dynamic_two_loader(state, batch, batch_fair, per_sample=False, T = T, worst_group_id = worst_group_id)
   
   grad_fn = jax.value_and_grad(loss_fn, has_aux=True)

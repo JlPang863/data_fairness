@@ -462,6 +462,10 @@ def fair_train(args):
 
   # begin training
   lmd = args.lmd
+  conf = args.conf
+
+  args.conf = 'no_conf' # warm up
+  global_var.set_value('args', args)
 
 
   train_step = get_train_step(args.method)
@@ -496,7 +500,11 @@ def fair_train(args):
           break
 
 
-          
+        if state.step == args.warm_step:
+          args.conf = conf
+          global_var.set_value('args', args)
+        
+
 
         # train
         if args.method == 'plain':
@@ -511,7 +519,7 @@ def fair_train(args):
         if t % args.log_steps == 0:
           # test
           # epoch_pre = epoch_i
-          print(f'[Step {state.step}] Current lr is {lr_scheduler(state.step)}')
+          print(f'[Step {state.step}] Conf: {args.conf} Current lr is {lr_scheduler(state.step)}')
           test_metric = test(args, state, test_loader)
           val_metric = test(args, state, val_loader)
           worst_group_id = np.argmin(val_metric['acc'])
