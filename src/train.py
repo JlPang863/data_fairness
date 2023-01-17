@@ -496,6 +496,8 @@ def fair_train(args):
           break
 
 
+          
+
         # train
         if args.method == 'plain':
           state, train_metric = train_step(state, batch)

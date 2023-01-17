@@ -23,7 +23,7 @@ parser.add_argument('--conf_method', type=str, default='TV', help="TV, V")
 parser.add_argument('--conf', type=str, default='false', help='no_conf, peer, entropy')
 
 parser.add_argument('--mu', type=float, default=1.0)
-parser.add_argument('--warm_epoch', type=int, default=1)
+parser.add_argument('--warm_step', type=int, default=1)
 parser.add_argument('--sel_round', type=int, default=5, help="0--29")
 parser.add_argument('--strategy', type=int, default=1)
 
@@ -32,7 +32,7 @@ parser.add_argument('--label_key', type=str, default='Smiling', help="5_o_Clock_
 parser.add_argument('--label_ratio', type=float, default=0.01)
 parser.add_argument('--val_ratio', type=float, default=0.1)
 
-# Example: LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4 python3 run_celeba.py --method dynamic_lmd  --lmd 0.0 --mu 1.0  --warm_epoch 0 --metric dp --conf entropy
+# Example: LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4 python3 run_celeba.py --method dynamic_lmd  --lmd 0.0 --mu 1.0  --warm_step 0 --metric dp --conf entropy
 # setup
 ROOT = '.'
 EXP = 'exps'
@@ -84,22 +84,21 @@ args.opt = OrderedDict(
 )
 # cosine scheduler
 # args.scheduler = None
-args.scheduler = OrderedDict(
-    name = "cosine_decay_schedule",
-    config = OrderedDict(
-        init_value = args.lr,
-        decay_steps = 3000,  # previous: 5000, 10 epochs
-        alpha = 0.01,
-    )
-)
 # args.scheduler = OrderedDict(
-#     name = "piecewise_constant_schedule",
+#     name = "cosine_decay_schedule",
 #     config = OrderedDict(
 #         init_value = args.lr,
-#         boundaries_and_scales = {1500: 0.1,
-#                                 3000: 0.1},
+#         decay_steps = 3000,  # previous: 5000, 10 epochs
+#         alpha = 0.01,
 #     )
 # )
+args.scheduler = OrderedDict(
+    name = "piecewise_constant_schedule",
+    config = OrderedDict(
+        init_value = args.lr,
+        boundaries_and_scales = {2000: 0.1},
+    )
+)
 
 # training
 args.num_epochs = 5
@@ -144,7 +143,7 @@ if args.fe_sel == 6:
     args.feature_extractor = 'None'
 else:
     args.feature_extractor = method_list[args.fe_sel]
-args.save_dir = EXPS_DIR + f'/{EXP}/{args.method}/run_{RUN}_{args.label_key}_lmd{args.lmd}_mu{args.mu}_warm{args.warm_epoch}_metric_{args.metric}'
+args.save_dir = EXPS_DIR + f'/{EXP}/{args.method}/run_{RUN}_{args.label_key}_lmd{args.lmd}_mu{args.mu}_warm{args.warm_step}_metric_{args.metric}'
 if __name__ == "__main__":
 
     # data conversion for torch loader
