@@ -88,6 +88,7 @@ def get_loss_lmd_dynamic_two_loader(state, batch, batch_fair, per_sample = False
   mu = args.mu
   constraints_fair = constraints_dict[args.metric]
   constraints_confidence = constraints_dict[args.conf]
+  print(f'conf is {args.conf}')
   def loss_fn(params, lmd): 
     if state.batch_stats:
         logits, new_model_state = state.apply_fn({'params': params, 'batch_stats': state.batch_stats}, batch['feature'], mutable=['batch_stats'])
