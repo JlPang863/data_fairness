@@ -121,7 +121,12 @@ def load_celeba_dataset_torch(args, shuffle_files=False, split='train', batch_si
 
 
   ds_1 = torch.utils.data.Subset(ds, part1)
-  ds_2 = torch.utils.data.Subset(ds, part2)
+  if len(part2) > 0:
+    ds_2 = torch.utils.data.Subset(ds, part2)
+  else:
+    ds_2 = torch.utils.data.Subset(ds, part1) # just a placeholder
+
+  
 
   if fair_train:
     dataloader_1 = torch.utils.data.DataLoader(ds_1,
