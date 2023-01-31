@@ -30,7 +30,8 @@ do
         for STG in $strategy
         do
             echo $SR\_$MYCONF\_exp$MYEXP\_$CM
-            cat ./logs/fair_train/s$STG\_dp_02_new256_100round_warm1000_sel_$SR\_$MYCONF\_exp$MYEXP\_$CM.log | grep "95.15" | grep "test" | awk '{ print $20, $27 }'
+            # cat ./logs/fair_train/s$STG\_dp_02_new256_100round_warm1000_sel_$SR\_$MYCONF\_exp$MYEXP\_$CM.log | grep "95.15" | grep "test" | awk '{ print $20, $27 }'
+            cat ./logs/fair_train/s$STG\_dp_02_new256_100round_warm2500_sel_$SR\_$MYCONF\_exp$MYEXP\_$CM.log | grep "95.15" | grep "test" | awk '{ print $20, $27 }'
             
         done
     done
