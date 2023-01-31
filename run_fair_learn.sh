@@ -69,14 +69,14 @@
 conf="no_conf"
 # sel_round="5 10"
 sel_round="5"
-exp="1 2 3"
+exp="1"
 strategy="6"
 conf_method="TV"
 
 
 
 
-i=0
+i=2
 j=0
 for MYEXP in $exp
 do
