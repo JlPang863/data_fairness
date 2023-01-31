@@ -520,7 +520,7 @@ def fair_train(args):
         if t % args.log_steps == 0:
           # test
           # epoch_pre = epoch_i
-          print(f'[Step {state.step}] Conf: {args.conf} Current lr is {lr_scheduler(state.step)}')
+          print(f'[Step {state.step}] Conf: {args.conf} Current lr is {np.round(lr_scheduler(state.step), 5)}')
           test_metric = test(args, state, test_loader)
           val_metric = test(args, state, val_loader)
           worst_group_id = np.argmin(val_metric['acc'])
