@@ -155,7 +155,7 @@ do
                 i=$((i+1))
                 j=0
             fi
-            if [[ $i -eq 7 ]]
+            if [[ $i -eq 8 ]]
             then
                 i=0
                 echo wait
