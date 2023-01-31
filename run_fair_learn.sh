@@ -95,7 +95,7 @@ do
         for STG in $strategy
         do
             echo GPU: $i. Task: $j. Rrunning for ./logs/fair_train/s$STG\_dp_02_new256_100round_sel_$SR\_$MYCONF\_exp$MYEXP\_$CM.log
-            # CUDA_VISIBLE_DEVICES=$i nohup python3 run_celeba_fair_learn.py --method dynamic_lmd  --lmd 0.0 --mu 1.0  --warm_step 0 --conf $MYCONF  --metric dp --label_ratio 0.02 --val_ratio $VR --strategy $STG --sel_round 5 --remove_pos --exp $MYEXP --conf_method $CM > ./logs/fair_train/s$STG\_dp_02_new256_100round_val_$VR\_$MYCONF\_exp$MYEXP\_$CM.log &
+            CUDA_VISIBLE_DEVICES=$i nohup python3 run_celeba_fair_learn.py --method dynamic_lmd  --lmd 0.0 --mu 1.0  --warm_step 0 --conf $MYCONF  --metric dp --label_ratio 0.02 --val_ratio $VR --strategy $STG --sel_round 5 --remove_pos --exp $MYEXP --conf_method $CM > ./logs/fair_train/s$STG\_dp_02_new256_100round_val_$VR\_$MYCONF\_exp$MYEXP\_$CM.log &
             sleep 1s
             
             j=$((j+1))
@@ -148,7 +148,7 @@ do
         for STG in $strategy
         do
             echo GPU: $i. Task: $j. Rrunning for ./logs/fair_train/s$STG\_dp_02_new256_100round_sel_$SR\_$MYCONF\_exp$MYEXP\_$CM.log
-            # CUDA_VISIBLE_DEVICES=$i nohup python3 run_celeba_fair_learn.py --method dynamic_lmd  --lmd 0.0 --mu 1.0  --warm_step 0 --conf $MYCONF  --metric dp --label_ratio 0.02 --val_ratio $VR --strategy $STG --sel_round 5 --remove_pos --exp $MYEXP --conf_method $CM > ./logs/fair_train/s$STG\_dp_02_new256_100round_val_$VR\_$MYCONF\_exp$MYEXP\_$CM.log &
+            CUDA_VISIBLE_DEVICES=$i nohup python3 run_celeba_fair_learn.py --method dynamic_lmd  --lmd 0.0 --mu 1.0  --warm_step 0 --conf $MYCONF  --metric dp --label_ratio 0.02 --val_ratio $VR --strategy $STG --sel_round 5 --remove_pos --exp $MYEXP --conf_method $CM > ./logs/fair_train/s$STG\_dp_02_new256_100round_val_$VR\_$MYCONF\_exp$MYEXP\_$CM.log &
             sleep 1s
             j=$((j+1))
             if [[ $j -eq 2 ]]
