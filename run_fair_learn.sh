@@ -65,12 +65,13 @@
 
 # SR="25"
 
-conf="entropy peer"
+# conf="entropy peer"
+conf="no_conf"
 # sel_round="5 10"
 sel_round="5"
 exp="1 2 3"
 strategy="6"
-conf_method="TV V"
+conf_method="TV"
 
 
 
