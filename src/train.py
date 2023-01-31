@@ -430,8 +430,10 @@ def fair_train(args):
     load_name = f'./results/s{args.strategy}_{args.metric}_{args.label_ratio}_new{args.new_data_each_round}_100round_case1_remove_unfair_trainConf{args.train_conf}_posloss{args.remove_pos}_poslossOrg{args.remove_posOrg}.npy'
     indices = np.load(load_name, allow_pickle=True)
     sel_idx = list(indices[args.sel_round][2])
+  elif args.strategy == 6:
+    [_, sel_idx], _ = load_celeba_dataset_torch(args, shuffle_files=True, split='train', batch_size=args.train_batch_size, ratio = 1.0, sampled_idx=None, fair_train=True) # use all data for training
   else:
-    raise NameError('We only have strategies from 1 to 5')
+    raise NameError('We only have strategies from 1 to 6')
 
   [train_loader_labeled, _], _ = load_celeba_dataset_torch(args, shuffle_files=True, split='train', batch_size=args.train_batch_size, ratio = 0.0, sampled_idx=sel_idx, fair_train=True)
 
