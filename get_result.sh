@@ -53,7 +53,7 @@ do
             # cat ./logs/fair_train/s$STG\_dp_02_new256_100round_warm2500_sel_$SR\_$MYCONF\_exp$MYEXP\_$CM.log | grep "95.15" | grep "test" | awk '{ print $20, $27 }'
             # cat ./logs/fair_train/s$STG\_dp_02_new256_100round_sel_$SR\_$MYCONF\_exp$MYEXP\_$CM.log | grep "98.79" | grep "test" | awk '{ print $19, $26 }'
 
-            cat ./logs/fair_train/s$STG\_dp_02_new256_100round_val_$VR\_$MYCONF\_exp$MYEXP\_$CM.log | grep "98.79" | grep "test" | awk '{ print $19, $26 }'
+            cat ./logs/fair_train/s$STG\_dp_02_new256_100round_val_$VR\_$MYCONF\_exp$MYEXP\_$CM.log | grep "98.79" | grep "test" |  awk '{ acc +=  $19; fr += $26 } END {print acc/NR, fr/NR}'
 
             
 
