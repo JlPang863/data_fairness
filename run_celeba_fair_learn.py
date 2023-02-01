@@ -96,12 +96,12 @@ args.scheduler = OrderedDict(
     name = "piecewise_constant_schedule",
     config = OrderedDict(
         init_value = args.lr,
-        boundaries_and_scales = {15000: 0.1},
+        boundaries_and_scales = {7000: 0.1},
     )
 )
 
 # training
-args.num_epochs = 20
+args.num_epochs = 10
 args.EP_STEPS = EP_STEPS
 args.train_seed = META_TRAIN_SEED + RUN * SEED_INCR
 args.train_batch_size = 256
