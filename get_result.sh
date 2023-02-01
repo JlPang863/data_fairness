@@ -21,7 +21,7 @@
 # conf="no_conf"
 # conf_method="TV"
 conf="entropy peer"
-conf_method="TV V"
+conf_method="TV"
 sel_round="5"
 val_ratio="0.2 0.4 0.6 0.8"
 exp="1 2 3"
