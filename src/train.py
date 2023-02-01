@@ -431,7 +431,7 @@ def fair_train(args):
     indices = np.load(load_name, allow_pickle=True)
     sel_idx = list(indices[args.sel_round][2])
   elif args.strategy == 6:
-    [_, _], sel_idx = load_celeba_dataset_torch(args, shuffle_files=True, split='train', batch_size=args.train_batch_size, ratio = 1.0, sampled_idx=None, fair_train=True) # use all data for training
+    [_, _], sel_idx = load_celeba_dataset_torch(args, shuffle_files=True, split='train', batch_size=args.train_batch_size, ratio = args.label_ratio, sampled_idx=None, fair_train=True) # use all data for training
   else:
     raise NameError('We only have strategies from 1 to 6')
 
