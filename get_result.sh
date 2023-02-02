@@ -20,12 +20,27 @@
 # conf_method="TV"
 # conf="no_conf"
 # conf_method="TV"
+# conf="entropy peer"
+# conf_method="TV"
+# sel_round="5"
+# val_ratio="0.2 0.4 0.6 0.8"
+# exp="1 2 3"
+# strategy="6"
+
+
+
 conf="entropy peer"
-conf_method="TV"
+# conf="no_conf"
+# sel_round="5 10"
 sel_round="5"
-val_ratio="0.2 0.4 0.6 0.8"
+train_ratio="0.02 0.05 0.1 0.2 0.4 0.6"
+val_ratio="0.2 0.4 0.8"
 exp="1 2 3"
 strategy="6"
+conf_method="TV V"
+
+for TR in $train_ratio
+do
 
 
 for VR in $val_ratio
@@ -53,7 +68,10 @@ do
             # cat ./logs/fair_train/s$STG\_dp_02_new256_100round_warm2500_sel_$SR\_$MYCONF\_exp$MYEXP\_$CM.log | grep "95.15" | grep "test" | awk '{ print $20, $27 }'
             # cat ./logs/fair_train/s$STG\_dp_02_new256_100round_sel_$SR\_$MYCONF\_exp$MYEXP\_$CM.log | grep "98.79" | grep "test" | awk '{ print $19, $26 }'
 
-            cat ./logs/fair_train/s$STG\_dp_02_new256_100round_val_$VR\_$MYCONF\_exp$MYEXP\_$CM.log | grep "98.79" | grep "test" |  awk '{ acc +=  $19; fr += $26 } END {print acc/NR, fr/NR}'
+            # cat ./logs/fair_train/s$STG\_dp_02_new256_100round_val_$VR\_$MYCONF\_exp$MYEXP\_$CM.log | grep "98.79" | grep "test" |  awk '{ acc +=  $19; fr += $26 } END {print acc/NR, fr/NR}'
+            cat ./logs/fair_train/s$STG\_dp_02_new256_100round_val_$VR\_$TR\_$MYCONF\_exp$MYEXP\_$CM.log | grep "98.79" | grep "test" |  awk '{ acc +=  $19; fr += $26 } END {print acc/NR, fr/NR}'
+
+            
 
             
 
