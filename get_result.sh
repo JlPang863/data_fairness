@@ -69,7 +69,8 @@ do
             # cat ./logs/fair_train/s$STG\_dp_02_new256_100round_sel_$SR\_$MYCONF\_exp$MYEXP\_$CM.log | grep "98.79" | grep "test" | awk '{ print $19, $26 }'
 
             # cat ./logs/fair_train/s$STG\_dp_02_new256_100round_val_$VR\_$MYCONF\_exp$MYEXP\_$CM.log | grep "98.79" | grep "test" |  awk '{ acc +=  $19; fr += $26 } END {print acc/NR, fr/NR}'
-            cat ./logs/fair_train/s$STG\_dp_02_new256_100round_val_$VR\_$TR\_$MYCONF\_exp$MYEXP\_$CM.log | grep "98.79" | grep "test" |  awk '{ acc +=  $19; fr += $26 } END {print acc/NR, fr/NR}'
+            # cat ./logs/fair_train/s$STG\_dp_02_new256_100round_val_$VR\_$TR\_$MYCONF\_exp$MYEXP\_$CM.log | grep "98.79" | grep "test" |  awk '{ acc +=  $19; fr += $26 } END {print acc/NR, fr/NR}'
+            cat ./logs/fair_train/s$STG\_dp_02_new256_100round_val_$VR\_$TR\_$MYCONF\_exp$MYEXP\_$CM.log | grep "98.79\|97.52\|96.26"  | grep "test" |  awk '{ acc +=  $19; fr += $26 } END {print acc/NR, fr/NR}'
 
             
 
