@@ -292,13 +292,17 @@ def infl_step_per_sample(state, batch):
   # grad_org_flat_tree = jax.tree_util.tree_leaves(grads_per_sample_tree[1])
 
 
+  # if batch['label'] is None:
+  #   grads_per_sample = jnp.concatenate([x.reshape(grad_flat_tree[-1].shape[0], grad_flat_tree[-1].shape[1], -1) for x in grad_flat_tree[-4:]], axis=-1)  # last two layers
+  # else:
+  #   grads_per_sample = jnp.concatenate([x.reshape(batch['feature'].shape[0],-1) for x in grad_flat_tree[-4:]], axis=-1)
+    
   if batch['label'] is None:
-    grads_per_sample = jnp.concatenate([x.reshape(grad_flat_tree[-1].shape[0], grad_flat_tree[-1].shape[1], -1) for x in grad_flat_tree[-4:]], axis=-1)
-    # grads_org_per_sample = jnp.concatenate([x.reshape(grad_org_flat_tree[-1].shape[0], grad_org_flat_tree[-1].shape[1], -1) for x in grad_org_flat_tree[-4:]], axis=-1)
+    grads_per_sample = jnp.concatenate([x.reshape(grad_flat_tree[-1].shape[0], grad_flat_tree[-1].shape[1], -1) for x in grad_flat_tree[-2:]], axis=-1) # last layer
   else:
-    grads_per_sample = jnp.concatenate([x.reshape(batch['feature'].shape[0],-1) for x in grad_flat_tree[-4:]], axis=-1)
-    # grads_org_per_sample = jnp.concatenate([x.reshape(batch['feature'].shape[0],-1) for x in grad_org_flat_tree[-4:]], axis=-1)
-
+    grads_per_sample = jnp.concatenate([x.reshape(batch['feature'].shape[0],-1) for x in grad_flat_tree[-2:]], axis=-1)
+  import pdb
+  pdb.set_trace()
 
   return grads_per_sample, aux[1] # grad and logits
 
