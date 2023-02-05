@@ -317,7 +317,7 @@ def train(args):
   else:
     model = tmp_model
   # model, model_linear = get_model(args)
-  args.hidden_size = model_linear.hidden_size
+  # args.hidden_size = model_linear.hidden_size
   state = create_train_state(model, args)
 
 
