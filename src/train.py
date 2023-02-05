@@ -228,8 +228,8 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
       sel_idx = np.arange(len(score))[np.asarray(score) < 0.0]
     score_before_check = np.asarray(score_before_check)
     sel_true_false_with_labels = score_before_check < min(max_score, 0.0)
-    import pdb
-    pdb.set_trace()
+    # import pdb
+    # pdb.set_trace()
     # score_org = np.asarray(score_org)
     # sel_true_false_with_labels = score_org <= max_score
 
