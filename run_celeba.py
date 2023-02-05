@@ -54,10 +54,10 @@ args.load_dir = None
 args.ckpt = 0
 
 # optimizer
-args.lr = 0.01
-args.momentum = 0.9
-args.weight_decay = 0.0005
-args.nesterov = True
+# args.lr = 0.01
+# args.momentum = 0.9
+# args.weight_decay = 0.0005
+# args.nesterov = True
 # args.lr_vitaly = False
 # args.decay_factor = 0.2
 # args.decay_steps = [50*EP_STEPS, 80*EP_STEPS, 90*EP_STEPS]
@@ -69,6 +69,31 @@ args.nesterov = True
 #     )
 # )
 # SGD
+# args.opt = OrderedDict(
+#     name="sgd",
+#     config=OrderedDict(
+#         learning_rate = args.lr,
+#         momentum = args.momentum,
+#         nesterov = args.nesterov
+#     )
+# )
+# # cosine scheduler
+# # args.scheduler = None
+# args.scheduler = OrderedDict(
+#     name = "cosine_decay_schedule",
+#     config = OrderedDict(
+#         init_value = args.lr,
+#         decay_steps = 5000,  # previous: 5000, 10 epochs
+#         alpha = 0.95,
+#     )
+# )
+
+# optimizer
+args.lr = 0.01
+args.momentum = 0.9
+args.weight_decay = 0.0005
+args.nesterov = True
+# SGD
 args.opt = OrderedDict(
     name="sgd",
     config=OrderedDict(
@@ -77,16 +102,15 @@ args.opt = OrderedDict(
         nesterov = args.nesterov
     )
 )
-# cosine scheduler
-# args.scheduler = None
-args.scheduler = OrderedDict(
-    name = "cosine_decay_schedule",
-    config = OrderedDict(
-        init_value = args.lr,
-        decay_steps = 5000,  # previous: 5000, 10 epochs
-        alpha = 0.95,
-    )
-)
+args.scheduler = None
+# args.scheduler = OrderedDict(
+#     name = "piecewise_constant_schedule",
+#     config = OrderedDict(
+#         init_value = args.lr,
+#         boundaries_and_scales = {7000: 0.1},
+#     )
+# )
+
 
 # training
 args.num_epochs = 10
