@@ -68,6 +68,7 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
 
   # check unlabeled data
   score = []
+  score_before_check = []
   score_org = []
   idx = []
   expected_label = []
@@ -130,15 +131,19 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
       score_tmp = (infl_fair[range(infl_fair.shape[0]), label_expected]).reshape(-1)
       score_org += score_tmp.tolist()
       infl_fair_true = infl_fair[range(infl_fair.shape[0]), batch['label'].reshape(-1)].reshape(-1)
+      infl_fair_expected = infl_fair[range(infl_fair.shape[0]), label_expected.reshape(-1)].reshape(-1)
       if args.remove_pos:
         infl_true = infl[range(infl.shape[0]), batch['label'].reshape(-1)].reshape(-1) # # case1_remove_posloss
       if args.remove_posOrg:
         infl_true = infl_org[range(infl_org.shape[0]), batch['label'].reshape(-1)].reshape(-1) # case1_remove_poslossOrg
       
-      score_tmp[infl_fair_true > 0] = 0 # case1_remove_unfair
+      score_tmp[infl_fair_expected > 0] = 0 # remove_unfair, use expected label
+      score_before_check += score_tmp.tolist().copy()
+      score_tmp[infl_fair_true > 0] = 0 # remove_unfair, use true label
       if args.remove_pos or args.remove_posOrg:
-        score_tmp[infl_true > 0] = 0 # case1_remove_posloss or case1_remove_poslossOrg
+        score_tmp[infl_true > 0] = 0 # remove_posloss or remove_poslossOrg
       score += score_tmp.tolist()
+      
       expected_label += label_expected.tolist()
       true_label += batch['label'].tolist()
     # ----------    Reversed strategy (END) -------------------
@@ -213,8 +218,10 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
     max_score = score[sel_idx[-1]]
     if max_score >= 0.0:
       sel_idx = np.arange(len(score))[np.asarray(score) < 0.0]
-    score_org = np.asarray(score_org)
-    sel_true_false_with_labels = score_org <= max_score
+    score_before_check = np.asarray(score_before_check)
+    sel_true_false_with_labels = score_before_check < min(max_score, 0.0)
+    # score_org = np.asarray(score_org)
+    # sel_true_false_with_labels = score_org <= max_score
 
 
 
