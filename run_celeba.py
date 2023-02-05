@@ -102,14 +102,14 @@ args.opt = OrderedDict(
         nesterov = args.nesterov
     )
 )
-args.scheduler = None
-# args.scheduler = OrderedDict(
-#     name = "piecewise_constant_schedule",
-#     config = OrderedDict(
-#         init_value = args.lr,
-#         boundaries_and_scales = {7000: 0.1},
-#     )
-# )
+# args.scheduler = None
+args.scheduler = OrderedDict(
+    name = "piecewise_constant_schedule",
+    config = OrderedDict(
+        init_value = args.lr,
+        boundaries_and_scales = {70000: 0.1},
+    )
+)
 
 
 # training
