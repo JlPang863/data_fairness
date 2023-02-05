@@ -1,12 +1,16 @@
 import numpy as np
 import collections
+import pandas
 result_dict = collections.defaultdict(list)
 cur_name = ''
 
 
 def print_result(acc, dp):
+    rec = []
     for i in range(len(acc)):
-        print(acc[i] + dp[i])
+        # print(acc[i] + dp[i])
+        rec.append(acc[i] + dp[i])
+    print(pandas.DataFrame(rec))
 
 
 
@@ -46,6 +50,8 @@ for val in [0.2, 0.4, 0.8]:
                     pass
                 else:
                     # print(name)
+                    # if col == 'no_conf':
+                    #     print(result_dict[name])
                     if len(result_dict[name]) > 0:
                         acc[-1].append(result_dict[name][0])
                         dp[-1].append(result_dict[name][1])
