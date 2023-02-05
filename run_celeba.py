@@ -18,7 +18,7 @@ parser.add_argument('--tol', type=float, default=0.0) # # get an unfair sample w
 # parser.add_argument('--remove_pos', action='store_true', default=False)
 # parser.add_argument('--remove_posOrg', action='store_true', default=False)
 
-parser.add_argument('--mu', type=float, default=0.0)
+parser.add_argument('--mu', type=float, default=1.0)
 parser.add_argument('--warm_epoch', type=int, default=0)
 parser.add_argument('--strategy', type=int, default=1)
 parser.add_argument('--conf', type=str, default='no_conf', help='no_conf, peer, entropy')
