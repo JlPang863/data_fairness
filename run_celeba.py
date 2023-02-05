@@ -74,7 +74,7 @@ args.scheduler = OrderedDict(
     name = "piecewise_constant_schedule",
     config = OrderedDict(
         init_value = args.lr,
-        # boundaries_and_scales = {70000: 0.1},
+        boundaries_and_scales = {10000: 1.0}, # no decay
     )
 )
 
