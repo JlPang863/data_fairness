@@ -300,7 +300,7 @@ def test(args, state, data):
 def train(args):
   # setup
   set_global_seed(args.train_seed)
-  make_dirs(args)
+  # make_dirs(args)
 
   [train_loader_labeled, train_loader_unlabeled], part_1 = load_celeba_dataset_torch(args, shuffle_files=True, split='train', batch_size=args.train_batch_size, ratio = args.label_ratio)
   idx_with_labels = set(part_1)
@@ -324,7 +324,7 @@ def train(args):
   
 
   # info
-  log_and_save_args(args)
+  # log_and_save_args(args)
   time_start = time.time()
   time_now = time_start
   print('train net...')
@@ -418,7 +418,7 @@ def train(args):
     rec = save_checkpoint(args.save_dir, t+args.datasize*epoch_i//args.train_batch_size, state, rec, save=False)
 
   # wrap it up
-  save_recorder(args.save_dir, rec)
+  # save_recorder(args.save_dir, rec)
   save_name = f'./results/s{args.strategy}_{args.metric}_{args.label_ratio}_new{args.new_data_each_round}_100round_case1_remove_unfair_trainConf{args.train_conf}_posloss{args.remove_pos}_poslossOrg{args.remove_posOrg}.npy'
   np.save(save_name, idx_rec)
 
