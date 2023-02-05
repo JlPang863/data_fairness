@@ -311,7 +311,12 @@ def train(args):
 
   args.image_shape = args.img_size
   # setup
-  model, model_linear = get_model(args)
+  tmp_model = get_model(args)
+  if len(tmp_model) == 2:
+    model, model_linear = tmp_model
+  else:
+    model = tmp_model
+  # model, model_linear = get_model(args)
   args.hidden_size = model_linear.hidden_size
   state = create_train_state(model, args)
 

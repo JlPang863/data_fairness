@@ -468,7 +468,8 @@ ViT_L16 = partial(
 ########################################################################################################################
 
 def get_model(args):
-  linear_flag = False
+  # linear_flag = False
+  model_linear = None
   if args.model == 'mlp':
     model = MLP(features=[64], num_classes=args.num_classes)
   elif args.model == 'vit':
@@ -476,7 +477,7 @@ def get_model(args):
   elif args.model == 'vit-b_8':
     model = ViT_B8(num_classes=args.num_classes)
     model_linear = ViT_B8_linear(num_classes=args.num_classes)
-    linear_flag = True
+    # linear_flag = True
   elif args.model == 'vit-l_16':
     model = ViT_L16(num_classes=args.num_classes)
   elif args.model == 'mlp_3_layer':
@@ -489,10 +490,10 @@ def get_model(args):
     model = SimpleCNN(num_channels=[16, 64, 256], num_classes=args.num_classes)
   else:
     raise NotImplementedError
-  if linear_flag:
-    return model, model_linear
-  else:
-    raise NotImplementedError
+  # if linear_flag:
+  return model, model_linear
+  # else:
+  #   raise NotImplementedError
 
 
 def get_num_params(params):
