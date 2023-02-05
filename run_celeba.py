@@ -48,8 +48,8 @@ args.data_dir = DATA_DIR
 args.dataset = 'celeba'
 
 # model
-args.model = 'resnet18_lowres' 
-# args.model = 'vit-b_8'
+# args.model = 'resnet18_lowres' 
+args.model = 'vit-b_8'
 args.model_seed = META_MODEL_SEED + RUN * SEED_INCR
 # args.load_dir = None
 # args.ckpt = 0
