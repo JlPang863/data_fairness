@@ -13,12 +13,14 @@ metric="dp eop eod"
 
 i=0
 j=0
+
+for LABEL in $label_key
+do
 for LAYER in $sel_layers
 do
 for STG in $strategy
 do
-for LABEL in $label_key
-do
+
 for MTC in $metric:
 do
 
@@ -32,7 +34,7 @@ then
     i=$((i+1))
     j=0
 fi
-if [[ $i -eq 7 ]]
+if [[ $i -eq 8 ]]
 then
     i=0
     echo wait
