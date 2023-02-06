@@ -16,7 +16,10 @@ def get_loss_fair(state, batch, T = None):
         logits, new_model_state = state.apply_fn({'params': params}, batch['feature'], mutable=['batch_stats'])
     if len(logits) == 2: # logits and embeddings
         logits = logits[0]
-    loss_reg, _ = constraints_fair(logits, batch['group'], batch['label'], T = T)
+    if T is None:
+      loss_reg, _ = constraints_fair(logits, batch['group'], batch['label'])
+    else:
+      loss_reg, _ = constraints_fair(logits, batch['group'], batch['label'], T = T)
     # lmd = lmd + mu * loss_reg # TODO
     loss = jnp.sum(mu/2 * loss_reg**2) + jnp.sum(lmd * loss_reg)
     if not args.train_conf:
