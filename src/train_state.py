@@ -272,8 +272,8 @@ def infl_step(state, batch):
     grads = jnp.concatenate([x.reshape(-1) for x in grad_flat_tree[args.sel_layers:]], axis=-1)
     grads_org = jnp.concatenate([x.reshape(-1) for x in grad_org_flat_tree[args.sel_layers:]], axis=-1)
 
-    # import pdb
-  # pdb.set_trace()
+  import pdb
+  pdb.set_trace()
 
 
   return grads, grads_org
