@@ -249,6 +249,9 @@ def infl_step(state, batch):
   Return:
     Grads: (model_size,)
   """
+  args = global_var.get_value('args')
+  
+
 
   # loss_fn_per_sample = get_loss_lmd_dynamic(state, batch, per_sample=True)
   loss_fn = get_loss_fn(state, batch, per_sample=False)
@@ -262,10 +265,14 @@ def infl_step(state, batch):
   grad_flat_tree = jax.tree_util.tree_leaves(grads_tree[0])
   grad_org_flat_tree = jax.tree_util.tree_leaves(grads_tree[1])
 
+  if args.sel_layers > 0:
+    grads = jnp.concatenate([x.reshape(-1) for x in grad_flat_tree[:args.sel_layers]], axis=-1)
+    grads_org = jnp.concatenate([x.reshape(-1) for x in grad_org_flat_tree[:args.sel_layers]], axis=-1)
+  else:
+    grads = jnp.concatenate([x.reshape(-1) for x in grad_flat_tree[args.sel_layers:]], axis=-1)
+    grads_org = jnp.concatenate([x.reshape(-1) for x in grad_org_flat_tree[args.sel_layers:]], axis=-1)
 
-  grads = jnp.concatenate([x.reshape(-1) for x in grad_flat_tree[-4:]], axis=-1)
-  grads_org = jnp.concatenate([x.reshape(-1) for x in grad_org_flat_tree[-4:]], axis=-1)
-  # import pdb
+    # import pdb
   # pdb.set_trace()
 
 
@@ -303,8 +310,7 @@ def infl_step_per_sample(state, batch):
     grads_per_sample = jnp.concatenate([x.reshape(grad_flat_tree[-1].shape[0], grad_flat_tree[-1].shape[1], -1) for x in grad_flat_tree[-2:]], axis=-1) # last layer
   else:
     grads_per_sample = jnp.concatenate([x.reshape(batch['feature'].shape[0],-1) for x in grad_flat_tree[-2:]], axis=-1)
-  import pdb
-  pdb.set_trace()
+
 
   return grads_per_sample, aux[1] # grad and logits
 
