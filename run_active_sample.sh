@@ -16,12 +16,14 @@ j=0
 
 for LABEL in $label_key
 do
+
 for LAYER in $sel_layers
 do
+
 for STG in $strategy
 do
 
-for MTC in $metric:
+for MTC in $metric
 do
 
 echo GPU: $i. Task: $j. Rrunning for ./logs/fair_sampling/$LABEL\_s$STG\_$MTC\_$LAYER.log
