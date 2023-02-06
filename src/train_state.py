@@ -249,7 +249,7 @@ def infl_step(state, batch):
   Return:
     Grads: (model_size,)
   """
-  args = global_var.get_value('args')
+  
   
 
 
@@ -265,15 +265,15 @@ def infl_step(state, batch):
   grad_flat_tree = jax.tree_util.tree_leaves(grads_tree[0])
   grad_org_flat_tree = jax.tree_util.tree_leaves(grads_tree[1])
 
+  args = global_var.get_value('args')
   if args.sel_layers > 0:
-    grads = jnp.concatenate([x.reshape(-1) for x in grad_flat_tree[:args.sel_layers]], axis=-1)
-    grads_org = jnp.concatenate([x.reshape(-1) for x in grad_org_flat_tree[:args.sel_layers]], axis=-1)
+    sel_layers = grad_flat_tree[:args.sel_layers]
+    sel_layers_org = grad_org_flat_tree[:args.sel_layers]
   else:
-    grads = jnp.concatenate([x.reshape(-1) for x in grad_flat_tree[args.sel_layers:]], axis=-1)
-    grads_org = jnp.concatenate([x.reshape(-1) for x in grad_org_flat_tree[args.sel_layers:]], axis=-1)
-
-  import pdb
-  pdb.set_trace()
+    sel_layers = grad_flat_tree[args.sel_layers:]
+    sel_layers_org = grad_org_flat_tree[args.sel_layers:]
+  grads = jnp.concatenate([x.reshape(-1) for x in sel_layers], axis=-1)
+  grads_org = jnp.concatenate([x.reshape(-1) for x in sel_layers_org], axis=-1)
 
 
   return grads, grads_org
@@ -292,25 +292,26 @@ def infl_step_per_sample(state, batch):
 
   
   grads_per_sample_tree, aux = jax.jacrev(loss_fn_per_sample, argnums=0, has_aux=True)(state.params)
-  # {'embedding': state.params['embedding'], 'head': state.params['head']} # TODO try this
 
-  # pdb.set_trace()
-  # grads_per_sample_tree, aux = our_jacrev(loss_fn_per_sample, argnums=0, has_aux=True)(state.params)
-  
   grad_flat_tree = jax.tree_util.tree_leaves(grads_per_sample_tree)
-  # grad_org_flat_tree = jax.tree_util.tree_leaves(grads_per_sample_tree[1])
-
 
   # if batch['label'] is None:
   #   grads_per_sample = jnp.concatenate([x.reshape(grad_flat_tree[-1].shape[0], grad_flat_tree[-1].shape[1], -1) for x in grad_flat_tree[-4:]], axis=-1)  # last two layers
   # else:
   #   grads_per_sample = jnp.concatenate([x.reshape(batch['feature'].shape[0],-1) for x in grad_flat_tree[-4:]], axis=-1)
     
-  if batch['label'] is None:
-    grads_per_sample = jnp.concatenate([x.reshape(grad_flat_tree[-1].shape[0], grad_flat_tree[-1].shape[1], -1) for x in grad_flat_tree[-2:]], axis=-1) # last layer
-  else:
-    grads_per_sample = jnp.concatenate([x.reshape(batch['feature'].shape[0],-1) for x in grad_flat_tree[-2:]], axis=-1)
 
+
+  args = global_var.get_value('args')
+  if args.sel_layers > 0:
+    sel_layers = grad_flat_tree[:args.sel_layers]
+  else:
+    sel_layers = grad_flat_tree[args.sel_layers:]
+
+  if batch['label'] is None:
+    grads_per_sample = jnp.concatenate([x.reshape(sel_layers[-1].shape[0], sel_layers[-1].shape[1], -1) for x in sel_layers], axis=-1) # last layer
+  else:
+    grads_per_sample = jnp.concatenate([x.reshape(batch['feature'].shape[0],-1) for x in sel_layers], axis=-1)
 
   return grads_per_sample, aux[1] # grad and logits
 
@@ -330,7 +331,15 @@ def infl_step_fair(state, batch):
   
   grad_flat_tree = jax.tree_util.tree_leaves(grads_per_sample_tree)
 
-  grads_per_sample = jnp.concatenate([x.reshape(-1) for x in grad_flat_tree[-4:]], axis=-1)
+  # grads_per_sample = jnp.concatenate([x.reshape(-1) for x in grad_flat_tree[-4:]], axis=-1)
+  args = global_var.get_value('args')
+  if args.sel_layers > 0:
+    sel_layers = grad_flat_tree[:args.sel_layers]
+  else:
+    sel_layers = grad_flat_tree[args.sel_layers:]
+
+  grads_per_sample = jnp.concatenate([x.reshape(-1) for x in sel_layers], axis=-1)
+
   # import pdb
   # pdb.set_trace()
     
