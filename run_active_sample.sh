@@ -26,7 +26,7 @@ do
 
 echo GPU: $i. Task: $j. Rrunning for ./logs/fair_sampling/$LABEL\_s$STG\_$MTC\_$LAYER.log
 
-CUDA_VISIBLE_DEVICES=$i nohup python3 run_celeba.py --method plain  --warm_epoch 0  --metric $MTC --label_ratio 0.02 --val_ratio 0.1 --strategy $STG --sel_layers $LAYER --label_key $LABEL > ./logs/fair_sampling/$LABEL\_s$STG\_$MTC\_$LAYER.log
+CUDA_VISIBLE_DEVICES=$i nohup python3 run_celeba.py --method plain  --warm_epoch 0  --metric $MTC --label_ratio 0.02 --val_ratio 0.1 --strategy $STG --sel_layers $LAYER --label_key $LABEL > ./logs/fair_sampling/$LABEL\_s$STG\_$MTC\_$LAYER.log & 
 
 j=$((j+1))
 if [[ $j -eq 2 ]]
