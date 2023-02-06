@@ -136,9 +136,9 @@ if __name__ == "__main__":
     args.label_key = attributes_names.index(args.label_key)
 
     if args.model == 'resnet18_lowres':
-        sel_layers = 2
+        args.sel_layers = 2
     elif args.model == 'vit-b_8':
-        sel_layers = -2
+        args.sel_layers = -2
     global_var.init()
     global_var.set_value('args', args)
     train(args) # disparity mitigation with our method
