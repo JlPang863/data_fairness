@@ -272,6 +272,7 @@ def infl_step(state, batch):
   else:
     sel_layers = grad_flat_tree[args.sel_layers:]
     sel_layers_org = grad_org_flat_tree[args.sel_layers:]
+  print(f'selected layers: {sel_layers}')
   grads = jnp.concatenate([x.reshape(-1) for x in sel_layers], axis=-1)
   grads_org = jnp.concatenate([x.reshape(-1) for x in sel_layers_org], axis=-1)
 

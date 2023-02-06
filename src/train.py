@@ -414,7 +414,7 @@ def train(args):
             used_idx = set(part_1 + sampled_idx)
             print(f'Use {len(used_idx)} samples. Get {len(idx_with_labels)} labels. Ratio: {len(used_idx)/len(idx_with_labels)}')
             idx_rec.append((epoch_i, args.infl_random_seed, used_idx, idx_with_labels))
-            save_name = f'./results/s{args.strategy}_{args.metric}_{args.label_ratio}_new{args.new_data_each_round}_100round_case1_remove_unfair_trainConf{args.train_conf}_posloss{args.remove_pos}_poslossOrg{args.remove_posOrg}.npy'
+            save_name = f'./results/s{args.strategy}_{args.metric}_{args.label_ratio}_new{args.new_data_each_round}_100round.npy'
             np.save(save_name, idx_rec)
 
           
@@ -426,7 +426,7 @@ def train(args):
 
   # wrap it up
   # save_recorder(args.save_dir, rec)
-  save_name = f'./results/s{args.strategy}_{args.metric}_{args.label_ratio}_new{args.new_data_each_round}_100round_case1_remove_unfair_trainConf{args.train_conf}_posloss{args.remove_pos}_poslossOrg{args.remove_posOrg}.npy'
+  save_name = f'./results/s{args.strategy}_{args.metric}_{args.label_ratio}_new{args.new_data_each_round}_100round.npy'
   np.save(save_name, idx_rec)
 
   # return test_metric
