@@ -6,8 +6,8 @@
 
 sel_layers="2"
 strategy="1"
-# label_key="Smiling Straight_Hair Attractive"
-label_key="Pale_Skin Young Big_Nose"
+label_key="Smiling Straight_Hair Attractive"
+# label_key="Pale_Skin Young Big_Nose"
 metric="dp eop eod"
 
 i=0
@@ -27,7 +27,7 @@ do
 
 echo GPU: $i. Task: $j. Rrunning for ./logs/fair_sampling/$LABEL\_s$STG\_$MTC\_$LAYER.log
 
-CUDA_VISIBLE_DEVICES=$i nohup python3 run_celeba.py --method plain  --warm_epoch 0  --metric $MTC --label_ratio 0.02 --val_ratio 0.1 --strategy $STG --sel_layers $LAYER --label_key $LABEL > ./logs/fair_sampling/$LABEL\_s$STG\_$MTC\_$LAYER.log & 
+CUDA_VISIBLE_DEVICES=$i nohup python3 run_celeba.py --method plain  --warm_epoch 0  --metric $MTC --label_ratio 0.02 --val_ratio 0.1 --strategy $STG --sel_layers $LAYER --label_key $LABEL > ./logs/fair_sampling/res18_$LABEL\_s$STG\_$MTC\_$LAYER.log & 
 
 j=$((j+1))
 if [[ $j -eq 2 ]]
@@ -71,7 +71,7 @@ do
 
 echo GPU: $i. Task: $j. Rrunning for ./logs/fair_sampling/$LABEL\_s$STG\_$MTC\_$LAYER.log
 
-CUDA_VISIBLE_DEVICES=$i nohup python3 run_celeba.py --method plain  --warm_epoch 0  --metric $MTC --label_ratio 0.02 --val_ratio 0.1 --strategy $STG --sel_layers $LAYER --label_key $LABEL > ./logs/fair_sampling/$LABEL\_s$STG\_$MTC\_$LAYER.log & 
+CUDA_VISIBLE_DEVICES=$i nohup python3 run_celeba.py --method plain  --warm_epoch 0  --metric $MTC --label_ratio 0.02 --val_ratio 0.1 --strategy $STG --sel_layers $LAYER --label_key $LABEL > ./logs/fair_sampling/res18_$LABEL\_s$STG\_$MTC\_$LAYER.log & 
 
 
 cat ./logs/fair_sampling/$LABEL\_s$STG\_$MTC\_$LAYER.log | grep "97.57\|95.05\|92.52"  | grep "test" |  awk '{ acc +=  $20; fr += $27 } END {print acc/NR, fr/NR}'
