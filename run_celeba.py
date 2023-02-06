@@ -20,6 +20,7 @@ parser.add_argument('--tol', type=float, default=0.0) # # get an unfair sample w
 
 parser.add_argument('--mu', type=float, default=1.0)
 parser.add_argument('--warm_epoch', type=int, default=0)
+parser.add_argument('--sel_layers', type=int, default=2)
 parser.add_argument('--strategy', type=int, default=1)
 parser.add_argument('--conf', type=str, default='no_conf', help='no_conf, peer, entropy')
 parser.add_argument('--label_key', type=str, default='Smiling', help="5_o_Clock_Shadow Arched_Eyebrows Attractive Bags_Under_Eyes Bald Bangs Big_Lips Big_Nose Black_Hair Blond_Hair Blurry Brown_Hair Bushy_Eyebrows Chubby Double_Chin Eyeglasses Goatee Gray_Hair Heavy_Makeup High_Cheekbones Male Mouth_Slightly_Open Mustache Narrow_Eyes No_Beard Oval_Face Pale_Skin Pointy_Nose Receding_Hairline Rosy_Cheeks Sideburns Smiling Straight_Hair Wavy_Hair Wearing_Earrings Wearing_Hat Wearing_Lipstick Wearing_Necklace Wearing_Necktie Young")
@@ -48,8 +49,8 @@ args.data_dir = DATA_DIR
 args.dataset = 'celeba'
 
 # model
-args.model = 'resnet18_lowres' 
-# args.model = 'vit-b_8'
+# args.model = 'resnet18_lowres' 
+args.model = 'vit-b_8'
 args.model_seed = META_MODEL_SEED + RUN * SEED_INCR
 # args.load_dir = None
 # args.ckpt = 0
@@ -136,9 +137,9 @@ if __name__ == "__main__":
     args.label_key = attributes_names.index(args.label_key)
 
     if args.model == 'resnet18_lowres':
-        args.sel_layers = 2
+        args.sel_layers = args.sel_layers
     elif args.model == 'vit-b_8':
-        args.sel_layers = -2
+        args.sel_layers = -args.sel_layers
     global_var.init()
     global_var.set_value('args', args)
     train(args) # disparity mitigation with our method
