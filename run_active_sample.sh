@@ -4,12 +4,10 @@
 # CUDA_VISIBLE_DEVICES=0 python3 run_celeba.py --method plain  --warm_epoch 0  --metric dp --label_ratio 0.05 --val_ratio 0.1 --strategy 2 
 
 
-sel_layers="2 4"
-strategy="2 5"
+sel_layers="2"
+strategy="1"
 label_key="Smiling Straight_Hair Attractive"
 metric="dp eop eod"
-
-
 
 i=0
 j=0
@@ -49,19 +47,20 @@ done
 done
 
 
-
-sel_layers="2"
-strategy="1"
+sel_layers="2 4"
+strategy="2 5"
 label_key="Smiling Straight_Hair Attractive"
 metric="dp eop eod"
 
 
 
+for LAYER in $sel_layers
+do
+
 for LABEL in $label_key
 do
 
-for LAYER in $sel_layers
-do
+
 
 for STG in $strategy
 do
@@ -90,3 +89,5 @@ done
 done
 done
 done
+
+
