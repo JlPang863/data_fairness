@@ -76,15 +76,15 @@ def load_recorder(load_dir, verbose=True):
   return rec
 
 
-def record_test(rec, t, T, t_prev, t_start, train_metric, test_metric, init=False, val_metric = None):
+def record_test(rec, t, T, t_prev, t_start, train_metric, test_metric, init=False, val_metric = None, metric = 'dp'):
   rec = record_test_stats(rec, t, test_metric)
   t_now = time.time()
   t_incr, t_tot = t_now - t_prev, t_now - t_start
   
   if val_metric:
-    print_stats(t, T, t_incr, t_tot, train_metric, val_metric, init, is_val=True)
+    print_stats(t, T, t_incr, t_tot, train_metric, val_metric, init, is_val=True, metric = metric)
   else:
-    print_stats(t, T, t_incr, t_tot, train_metric, test_metric, init, is_val=False)
+    print_stats(t, T, t_incr, t_tot, train_metric, test_metric, init, is_val=False, metric = metric)
 
 
 
