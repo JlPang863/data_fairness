@@ -21,7 +21,7 @@ def get_loss_fair(state, batch, T = None):
     else:
       loss_reg, _ = constraints_fair(logits, batch['group'], batch['label'], T = T)
     # lmd = lmd + mu * loss_reg # TODO
-    loss = jnp.sum(mu/2 * loss_reg**2) + jnp.sum(lmd * loss_reg)
+    loss = jnp.sum(mu/2 * loss_reg**2) # + jnp.sum(lmd * loss_reg)
     if not args.train_conf:
       loss += constraints_confidence(logits)
     return loss, (new_model_state, logits, lmd)
