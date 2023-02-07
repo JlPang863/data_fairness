@@ -77,6 +77,8 @@ def create_train_state(model, args, params=None, return_opt = False):
 
 
     tx = opt_clsname(**opt_config)
+    import pdb
+    pdb.set_trace()
   except:
     # default optimizer
     tx = optax.sgd(learning_rate=args.lr, momentum=args.momentum, nesterov=args.nesterov)
