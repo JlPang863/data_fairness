@@ -97,8 +97,7 @@ def load_celeba_dataset_torch(args, shuffle_files=False, split='train', batch_si
       transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
   ])
 
-  # args.input_shape = (1, args.img_size, args.img_size, 3)
-  args.input_shape = args.img_size
+  args.input_shape = (1, args.img_size, args.img_size, 3)
   if split == 'train':
     transform = train_transform
   else:

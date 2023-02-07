@@ -28,8 +28,8 @@ class TrainState(train_state.TrainState):
 ########################################################################################################################
 
 def initialized(key, input_shape, model): 
-  if isinstance(input_shape, int):
-    input_shape = (1, input_shape, input_shape, 3)
+  # if isinstance(input_shape, int):
+  #   input_shape = (1, input_shape, input_shape, 3)
   @jax.jit
   def init(*args):
     return model.init(*args)
@@ -37,8 +37,8 @@ def initialized(key, input_shape, model):
   return variables['params'], variables['batch_stats']
 
 def initialized_vit(key, input_shape, model):
-  if isinstance(input_shape, int):
-    input_shape = (1, input_shape, input_shape, 3)
+  # if isinstance(input_shape, int):
+  #   input_shape = (1, input_shape, input_shape, 3)
 
   @jax.jit
   def init(*args):
