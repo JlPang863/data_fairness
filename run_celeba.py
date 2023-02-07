@@ -1,4 +1,4 @@
-from src import train, global_var
+from src import train, train_general, global_var
 from collections import OrderedDict
 import argparse
 
@@ -142,5 +142,6 @@ if __name__ == "__main__":
         args.sel_layers = -args.sel_layers
     global_var.init()
     global_var.set_value('args', args)
-    train(args) # disparity mitigation with our method
+    # train(args)
+    train_general(args)
 

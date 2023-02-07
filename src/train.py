@@ -3,7 +3,7 @@ import jax
 from jax import numpy as jnp
 import numpy as np
 import time
-from .data import  load_celeba_dataset_torch, preprocess_func_celeba_torch
+from .data import  load_celeba_dataset_torch, preprocess_func_celeba_torch, load_data
 from .models import get_model
 from .recorder import init_recorder, record_train_stats, save_recorder, record_test, save_checkpoint
 import pdb
@@ -431,6 +431,142 @@ def train(args):
 
   # return test_metric
 
+
+def train_general(args):
+  # setup
+  set_global_seed(args.train_seed)
+  # make_dirs(args)
+
+  train_loader_labeled, train_loader_unlabeled, idx_with_labels = load_data(args, args.dataset, mode = 'train')
+  # [train_loader_labeled, train_loader_unlabeled], part_1 = load_celeba_dataset_torch(args, shuffle_files=True, split='train', batch_size=args.train_batch_size, ratio = args.label_ratio)
+  # idx_with_labels = set(part_1)
+  
+  val_loader, test_loader = load_data(args, args.dataset, mode = 'val')
+
+  # [val_loader, test_loader], _ = load_celeba_dataset_torch(args, shuffle_files=True, split='test', batch_size=args.test_batch_size, ratio = args.val_ratio)
+
+  args.image_shape = args.img_size
+  # setup
+  tmp_model = get_model(args)
+  if len(tmp_model) == 2:
+    model, model_linear = tmp_model
+  else:
+    model = tmp_model
+  # model, model_linear = get_model(args)
+  # args.hidden_size = model_linear.hidden_size
+  state = create_train_state(model, args)
+
+
+  # get model size
+  flat_tree = jax.tree_util.tree_leaves(state.params)
+  num_layers = len(flat_tree)
+  print(f'Numer of layers {num_layers}')
+
+  rec = init_recorder()
+
+  
+
+  # info
+  # log_and_save_args(args)
+  time_start = time.time()
+  time_now = time_start
+  print('train net...')
+
+  # begin training
+  lmd = args.lmd
+  loss = 0.0
+  loss_rec = [loss]
+  train_step = get_train_step(args.method)
+  # epoch_pre = 0
+  sampled_idx = []
+  idx_rec = []
+  used_idx = idx_with_labels.copy()
+  for epoch_i in range(args.num_epochs):
+
+
+    t = 0
+    num_sample_cur = 0
+    print(f'Epoch {epoch_i}')
+    # if epoch_i < args.warm_epoch: 
+    #   print(f'warmup epoch = {epoch_i+1}/{args.warm_epoch}')
+    # if epoch_i == args.warm_epoch:
+    #   state_reg = create_train_state(model, args, params=state.params) # use the full model
+    while t * args.train_batch_size < args.datasize:
+      for example in train_loader_labeled:
+        # pdb.set_trace()
+        bsz = example[0].shape[0]
+
+        num_sample_cur += bsz
+        example = preprocess_func_celeba_torch(example, args, noisy_attribute = None)
+        t += 1
+        if t * args.train_batch_size > args.datasize:
+          break
+        # load data
+        if args.balance_batch:
+          image, group, label = example['feature'], example['group'], example['label']
+          num_a, num_b = jnp.sum((group == 0) * 1.0), jnp.sum((group == 1) * 1.0)
+          min_num = min(num_a, num_b).astype(int)
+          total_idx = jnp.arange(len(group))
+          if min_num > 0:
+            group_a = total_idx[group == 0]
+            group_b = total_idx[group == 1]
+            group_a = group_a.repeat(args.train_batch_size//2//len(group_a)+1)[:args.train_batch_size//2]
+            group_b = group_b.repeat(args.train_batch_size//2//len(group_b)+1)[:args.train_batch_size//2]
+
+            sel_idx = jnp.concatenate((group_a,group_b))
+            batch = {'feature': jnp.array(image[sel_idx]), 'label': jnp.array(label[sel_idx]), 'group': jnp.array(group[sel_idx])}
+          else:
+            print(f'current batch only contains one group')
+            continue
+
+        else:
+          batch = example
+
+        # train
+        if args.method == 'plain':
+          state, train_metric = train_step(state, batch)
+        elif args.method in ['fix_lmd','dynamic_lmd']:
+          state, train_metric, lmd = train_step(state, batch, lmd = lmd, T=None)
+        else:
+          raise NameError('Undefined optimization mechanism')
+
+        rec = record_train_stats(rec, t-1, train_metric, 0)
+      
+        if t % args.log_steps == 0:
+          # test
+          # epoch_pre = epoch_i
+          test_metric = test(args, state, test_loader)
+          rec, time_now = record_test(rec, t+args.datasize*epoch_i//args.train_batch_size, args.datasize*args.num_epochs//args.train_batch_size, time_now, time_start, train_metric, test_metric, metric = args.metric)
+          if epoch_i >= args.warm_epoch:
+            # infl 
+            args.infl_random_seed = t+args.datasize*epoch_i//args.train_batch_size + args.train_seed
+            sampled_idx_tmp, sel_org_idx_with_labels= sample_by_infl(args, state, val_loader, train_loader_unlabeled, num = args.new_data_each_round)
+            sampled_idx += sampled_idx_tmp
+            idx_with_labels.update(sel_org_idx_with_labels)
+            val_metric = test(args, state, val_loader)
+            _, time_now = record_test(rec, t+args.datasize*epoch_i//args.train_batch_size, args.datasize*args.num_epochs//args.train_batch_size, time_now, time_start, train_metric, test_metric, val_metric=val_metric, metric = args.metric)
+
+
+            # [train_loader_labeled, train_loader_unlabeled], _ = load_celeba_dataset_torch(args, shuffle_files=True, split='train', batch_size=args.train_batch_size, ratio = args.label_ratio, sampled_idx=sampled_idx)
+            train_loader_labeled, train_loader_unlabeled, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx)
+            # used_idx = set(part_1 + sampled_idx)
+            used_idx.update(sampled_idx)
+            print(f'Use {len(used_idx)} samples. Get {len(idx_with_labels)} labels. Ratio: {len(used_idx)/len(idx_with_labels)}')
+            idx_rec.append((epoch_i, args.infl_random_seed, used_idx, idx_with_labels))
+            # save_name = f'./results/s{args.strategy}_{args.metric}_{args.label_ratio}_new{args.new_data_each_round}_100round.npy'
+            # np.save(save_name, idx_rec)
+
+          
+          # print(f'lmd is {lmd}')
+
+
+
+    rec = save_checkpoint(args.save_dir, t+args.datasize*epoch_i//args.train_batch_size, state, rec, save=False)
+
+  # wrap it up
+  # save_recorder(args.save_dir, rec)
+  # save_name = f'./results/s{args.strategy}_{args.metric}_{args.label_ratio}_new{args.new_data_each_round}_100round.npy'
+  # np.save(save_name, idx_rec)
 
 
 def fair_train(args):

@@ -155,3 +155,18 @@ def load_celeba_dataset_torch(args, shuffle_files=False, split='train', batch_si
     return [dataloader_1, dataloader_2], part1, part2
   else:
     return [dataloader_1, dataloader_2], part1
+
+
+def load_data(args, dataset, mode = 'train', sampled_idx = None):
+  
+  if dataset == 'celeba':
+    if mode == 'train':
+      [train_loader_labeled, train_loader_unlabeled], part_1 = load_celeba_dataset_torch(args, shuffle_files=True, split='train', batch_size=args.train_batch_size, ratio = args.label_ratio, sampled_idx=sampled_idx)
+      idx_with_labels = set(part_1)
+      return train_loader_labeled, train_loader_unlabeled, idx_with_labels
+    elif mode == 'val':
+      [val_loader, test_loader], _ = load_celeba_dataset_torch(args, shuffle_files=True, split='test', batch_size=args.test_batch_size, ratio = args.val_ratio)
+      return val_loader, test_loader
+    else:
+      raise NotImplementedError('mode should be either train or val')
+
