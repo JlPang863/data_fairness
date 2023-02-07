@@ -438,14 +438,10 @@ def train_general(args):
   # make_dirs(args)
 
   train_loader_labeled, train_loader_unlabeled, idx_with_labels = load_data(args, args.dataset, mode = 'train')
-  # [train_loader_labeled, train_loader_unlabeled], part_1 = load_celeba_dataset_torch(args, shuffle_files=True, split='train', batch_size=args.train_batch_size, ratio = args.label_ratio)
-  # idx_with_labels = set(part_1)
-  
   val_loader, test_loader = load_data(args, args.dataset, mode = 'val')
 
-  # [val_loader, test_loader], _ = load_celeba_dataset_torch(args, shuffle_files=True, split='test', batch_size=args.test_batch_size, ratio = args.val_ratio)
 
-  args.image_shape = args.img_size
+  
   # setup
   tmp_model = get_model(args)
   if len(tmp_model) == 2:

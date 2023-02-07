@@ -27,16 +27,19 @@ class TrainState(train_state.TrainState):
 #  Train
 ########################################################################################################################
 
-def initialized(key, image_size, model): # TODO: image_size --> input_shape
-  input_shape = (1, image_size, image_size, 3)
+def initialized(key, input_shape, model): 
+  if isinstance(input_shape, int):
+    input_shape = (1, input_shape, input_shape, 3)
   @jax.jit
   def init(*args):
     return model.init(*args)
   variables = init({'params': key}, jnp.ones(input_shape))
   return variables['params'], variables['batch_stats']
 
-def initialized_vit(key, image_size, model):
-  input_shape = (1, image_size, image_size, 3)
+def initialized_vit(key, input_shape, model):
+  if isinstance(input_shape, int):
+    input_shape = (1, input_shape, input_shape, 3)
+
   @jax.jit
   def init(*args):
     return model.init(*args)
@@ -66,8 +69,7 @@ def create_train_state(model, args, params=None, return_opt = False):
   default_lr = custom_scheduler(args.lr)
   rng = jax.random.PRNGKey(args.model_seed)
   lr_scheduler = None
-  # tx = optax.sgd(args.lr, args.momentum)
-  # tx = optax.sgd(args.lr, args.momentum, nesterov=True)
+
   # instantiate optax optimizer
   try:
     opt_clsname = getattr(optax, args.opt['name'])
@@ -79,26 +81,19 @@ def create_train_state(model, args, params=None, return_opt = False):
       lr_scheduler = scheduler_clsname(**args.scheduler['config'])
       opt_config['learning_rate'] = lr_scheduler
     else:
-      # custom_scheduler = optax.make_schedule(custom_scheduler)
-      
       opt_config['learning_rate'] = default_lr
-      import pdb
-      pdb.set_trace()
-
 
     tx = opt_clsname(**opt_config)
-    import pdb
-    pdb.set_trace()
   except:
     # default optimizer
     tx = optax.sgd(learning_rate=default_lr, momentum=args.momentum, nesterov=args.nesterov)
 
   if params is None:
     if 'vit' in args.model:
-      params = initialized_vit(rng, args.image_shape, model)  
+      params = initialized_vit(rng, args.input_shape, model)  
       batch_stats = None
     else:
-      params, batch_stats = initialized(rng, args.image_shape, model)
+      params, batch_stats = initialized(rng, args.input_shape, model)
   else:
     batch_stats = None
 
