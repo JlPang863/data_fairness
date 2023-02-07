@@ -63,7 +63,7 @@ def create_train_state(model, args, params=None, return_opt = False):
   def custom_scheduler(init_lr):
     return optax.piecewise_constant_schedule(init_value=init_lr,
                                             boundaries_and_scales={1:1.0})
-
+  default_lr = custom_scheduler(args.lr)
   rng = jax.random.PRNGKey(args.model_seed)
   lr_scheduler = None
   # tx = optax.sgd(args.lr, args.momentum)
@@ -80,8 +80,8 @@ def create_train_state(model, args, params=None, return_opt = False):
       opt_config['learning_rate'] = lr_scheduler
     else:
       # custom_scheduler = optax.make_schedule(custom_scheduler)
-      custom_lr = custom_scheduler(args.lr)
-      opt_config['learning_rate'] = custom_lr
+      
+      opt_config['learning_rate'] = default_lr
       import pdb
       pdb.set_trace()
 
@@ -91,7 +91,7 @@ def create_train_state(model, args, params=None, return_opt = False):
     pdb.set_trace()
   except:
     # default optimizer
-    tx = optax.sgd(learning_rate=args.lr, momentum=args.momentum, nesterov=args.nesterov)
+    tx = optax.sgd(learning_rate=default_lr, momentum=args.momentum, nesterov=args.nesterov)
 
   if params is None:
     if 'vit' in args.model:
