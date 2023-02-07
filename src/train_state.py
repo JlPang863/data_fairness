@@ -60,6 +60,11 @@ def create_train_state_linear(model, args, params=None): # TODO: will be removed
   return state
 
 def create_train_state(model, args, params=None, return_opt = False):
+  def custom_scheduler(init_lr):
+    def schedule(i):
+        return init_lr
+    return schedule
+
   rng = jax.random.PRNGKey(args.model_seed)
   lr_scheduler = None
   # tx = optax.sgd(args.lr, args.momentum)
@@ -74,6 +79,10 @@ def create_train_state(model, args, params=None, return_opt = False):
       scheduler_clsname = getattr(optax, args.scheduler['name'])
       lr_scheduler = scheduler_clsname(**args.scheduler['config'])
       opt_config['learning_rate'] = lr_scheduler
+    else:
+      custom_scheduler = optax.optimizers.make_schedule(custom_scheduler)
+      custom_lr = custom_scheduler(args.lr)
+      opt_config['learning_rate'] = custom_lr
 
 
     tx = opt_clsname(**opt_config)
