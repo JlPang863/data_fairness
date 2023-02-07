@@ -80,9 +80,11 @@ def create_train_state(model, args, params=None, return_opt = False):
       lr_scheduler = scheduler_clsname(**args.scheduler['config'])
       opt_config['learning_rate'] = lr_scheduler
     else:
-      custom_scheduler = optax.optimizers.make_schedule(custom_scheduler)
+      custom_scheduler = optax.make_schedule(custom_scheduler)
       custom_lr = custom_scheduler(args.lr)
       opt_config['learning_rate'] = custom_lr
+      import pdb
+      pdb.set_trace()
 
 
     tx = opt_clsname(**opt_config)
