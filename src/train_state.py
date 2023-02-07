@@ -61,9 +61,8 @@ def create_train_state_linear(model, args, params=None): # TODO: will be removed
 
 def create_train_state(model, args, params=None, return_opt = False):
   def custom_scheduler(init_lr):
-    def schedule(i):
-        return init_lr
-    return schedule
+    return optax.piecewise_constant_schedule(init_value=init_lr,
+                                            boundaries_and_scales={1:1.0})
 
   rng = jax.random.PRNGKey(args.model_seed)
   lr_scheduler = None
@@ -80,7 +79,7 @@ def create_train_state(model, args, params=None, return_opt = False):
       lr_scheduler = scheduler_clsname(**args.scheduler['config'])
       opt_config['learning_rate'] = lr_scheduler
     else:
-      custom_scheduler = optax.make_schedule(custom_scheduler)
+      # custom_scheduler = optax.make_schedule(custom_scheduler)
       custom_lr = custom_scheduler(args.lr)
       opt_config['learning_rate'] = custom_lr
       import pdb
