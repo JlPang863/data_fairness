@@ -76,7 +76,7 @@ def get_table(focus):
 
 sel_layers = [2, 4]
 strategy = [1, 2, 5]
-label_key = ['Smiling', 'Straight_Hair', 'Attractive']
+label_key = ['Smiling', 'Straight_Hair', 'Attractive', 'Pale_Skin' 'Young', 'Big_Nose']
 metrics = ['dp', 'eop', 'eod']
 
 # read logs, then save the processed results to dict
