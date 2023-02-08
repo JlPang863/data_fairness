@@ -474,6 +474,7 @@ def train_general(args):
   sampled_idx = []
   idx_rec = []
   used_idx = idx_with_labels.copy()
+  print(f'train with {args.datasize} samples (with replacement) in one epoch')
   for epoch_i in range(args.num_epochs):
 
 

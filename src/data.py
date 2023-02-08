@@ -197,10 +197,13 @@ def load_celeba_dataset_torch(args, shuffle_files=False, split='train', batch_si
   args.input_shape = (1, args.img_size, args.img_size, 3)
   if split == 'train':
     transform = train_transform
+    args.datasize = len(ds)
   else:
     transform = test_transform
 
   ds = my_celeba(root = args.data_dir, split = split, target_type = 'attr', transform = transform, download = True)
+
+    
 
   # data split
   # train --> train_labeled (1) + train_unlabeled (2), ratio is for train_labeled
@@ -281,7 +284,8 @@ def load_compas_dataset_torch(args, shuffle_files=False, split='train', batch_si
   import pdb
   pdb.set_trace()
   args.input_shape = ds.feature.shape[1]
-  args.datasize = len(ds)
+  if split == 'train':
+    args.datasize = len(ds)
 
 
   # data split
