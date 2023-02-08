@@ -16,28 +16,27 @@ import sklearn.preprocessing as preprocessing
 def preprocess_func_compas_torch(example, args, noisy_attribute = None):
   """ preprocess the data
   """
+
+  feature, group, label = example[0].numpy(), example[2].numpy().astype(np.uint8), example[1].numpy().astype(np.uint8)
   import pdb
   pdb.set_trace()
-  image, group, label = example[args.feature_key].numpy(), example[args.attr_key][:,args.group_key].numpy().astype(np.uint8), example[args.attr_key][:,args.label_key].numpy().astype(np.uint8)
-  # pdb.set_trace()
-  image = image.transpose((0, 2, 3, 1)) 
   # use str to avoid error in Jax tree
   # args.feature_key, args.label_key, args.group_key = f'{args.feature_key}', f'{args.label_key}', f'{args.group_key}' 
   
   if noisy_attribute is None:
     data = {
-      'feature': image,
+      'feature': feature,
       'label': label,
       'group': group,
-      'index': example[args.idx_key].numpy()
+      'index': example[3].numpy()
     }
   else:
     noisy_attribute = noisy_attribute[:,0]
     data = {
-      'feature': image,
+      'feature': feature,
       'label': label,
       'group': noisy_attribute,
-      'index': example[args.idx_key].numpy()
+      'index': example[3].numpy()
     }
     # print(np.mean((noisy_attribute==group)*1.0))
   # global_var.set_value('args', args)
@@ -187,8 +186,8 @@ class CompasDataset(torch.utils.data.Dataset):
       return len(self.label)
 
   def __getitem__(self, index):
-      feature, label = self.feature[index], self.label[index]
-      return feature, label, index
+      feature, label, group = self.feature[index], self.label[index], self.true_attribute[index]
+      return feature, label, group, index
 
 
 def load_celeba_dataset_torch(args, shuffle_files=False, split='train', batch_size=128, ratio = 0.1, sampled_idx = None, return_part2 = False, fair_train=False):

@@ -494,7 +494,7 @@ def train_general(args):
         bsz = example[0].shape[0]
 
         num_sample_cur += bsz
-        example = preprocess_func_torch2jax(example, args, noisy_attribute = None)
+        example = preprocess_func_torch2jax(example, args)
         t += 1
         if t * args.train_batch_size > args.datasize:
           break
