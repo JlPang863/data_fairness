@@ -120,7 +120,7 @@ class CompasDataset(torch.utils.data.Dataset):
   
 
 
-  def __init__(self, data_file):
+  def __init__(self, data_file, args, split = 'train'):
       FEATURES_CLASSIFICATION = ["age_cat", "sex", "priors_count", "c_charge_degree"] #features to be used for classification
       CONT_VARIABLES = ["priors_count"] # continuous features, will need to be handled separately from categorical features, categorical features will be encoded using one-hot
       CLASS_FEATURE = "two_year_recid" # the decision variable
@@ -167,6 +167,19 @@ class CompasDataset(torch.utils.data.Dataset):
       self.label = torch.tensor(Y, dtype=torch.long)
       self.true_attribute = data['race']       
       self.score = torch.tensor(self.df.decile_score.to_list(), dtype=torch.long).view(-1,1)
+
+      idx = list(range(len(self.label)))
+      random.Random(args.train_seed).shuffle(idx)
+      num = int(len(self.label) * 0.2)
+      if split == 'train':
+        idx = idx[:num].copy()
+      else:
+        idx = idx[num:].copy()
+      idx = np.asarray(idx)
+      self.feature = self.feature[idx]
+      self.label = self.label[idx]
+      self.true_attribute = self.true_attribute[idx]  
+      self.score = self.score[idx]
 
       print(f'dataset construction done. \nShape of X {self.feature.shape}. \nShape of Y {self.label.shape}')
     
@@ -266,20 +279,8 @@ def load_compas_dataset_torch(args, shuffle_files=False, split='train', batch_si
   # get compas data
   df = preprocess_compas()
   race_encode(df)
-  ds = CompasDataset(df.copy())
+  ds = CompasDataset(df.copy(), args, split=split)
 
-  idx = list(range(len(ds)))
-  random.Random(args.train_seed).shuffle(idx)
-  num = int(len(ds) * 0.2)
-  train_idx = idx[:num].copy()
-  val_idx = idx[num:].copy()
-
-  if split == 'train':
-    ds = torch.utils.data.Subset(ds, train_idx)
-  else:
-    ds = torch.utils.data.Subset(ds, val_idx)
-  import pdb
-  pdb.set_trace()
   args.input_shape = ds.feature.shape[1]
   if split == 'train':
     args.datasize = len(ds)
