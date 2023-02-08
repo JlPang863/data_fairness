@@ -42,13 +42,14 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
   Get influence score of each unlabeled_data on val_data, then sample according to scores
   For fairness, the sign is very important
   """
+  preprocess_func_torch2jax = gen_preprocess_func_torch2jax(args)
   print('begin calculating influence')
   num_samples = 0.0
   grad_sum = 0.0
   grad_org_sum = 0.0
   grad_fair_sum = 0.0
   for example in val_data: # Need to run on the validation dataset to avoid the negative effect of distribution shift, e.g., DP is not robust to distribution shift. For fairness, val data may be iid as test data 
-    batch = preprocess_func_celeba_torch(example, args)
+    batch = preprocess_func_torch2jax(example, args)
     bsz = batch['feature'].shape[0]
     grads, grads_org = np.asarray(infl_step(state, batch))
 
@@ -74,7 +75,7 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
   expected_label = []
   true_label = []
   for example in unlabeled_data:
-    batch = preprocess_func_celeba_torch(example, args)
+    batch = preprocess_func_torch2jax(example, args)
     batch_unlabeled = batch.copy()
     batch_unlabeled['label'] = None # get grad for each label. We do not know labels of samples in unlabeled data
     # grads_each_sample = np.asarray(infl_step_per_sample(state, batch_unlabeled))
@@ -310,6 +311,8 @@ def train(args):
   
   [val_loader, test_loader], _ = load_celeba_dataset_torch(args, shuffle_files=True, split='test', batch_size=args.test_batch_size, ratio = args.val_ratio)
 
+  preprocess_func_torch2jax = gen_preprocess_func_torch2jax(args)
+
   args.image_shape = args.img_size
   # setup
   tmp_model = get_model(args)
@@ -361,7 +364,7 @@ def train(args):
         bsz = example[0].shape[0]
 
         num_sample_cur += bsz
-        example = preprocess_func_celeba_torch(example, args, noisy_attribute = None)
+        example = preprocess_func_torch2jax(example, args, noisy_attribute = None)
         t += 1
         if t * args.train_batch_size > args.datasize:
           break
@@ -567,6 +570,7 @@ def fair_train(args):
   # setup
   set_global_seed(args.train_seed)
   make_dirs(args)
+  preprocess_func_torch2jax = gen_preprocess_func_torch2jax(args)
 
 
   if args.strategy == 1:
@@ -647,8 +651,8 @@ def fair_train(args):
         bsz = example[0].shape[0]
 
         num_sample_cur += bsz
-        batch = preprocess_func_celeba_torch(example, args, noisy_attribute = None)
-        batch_fair = preprocess_func_celeba_torch(example_fair, args, noisy_attribute = None)
+        batch = preprocess_func_torch2jax(example, args, noisy_attribute = None)
+        batch_fair = preprocess_func_torch2jax(example_fair, args, noisy_attribute = None)
         t += 1
         if t * args.train_batch_size > args.datasize:
           break

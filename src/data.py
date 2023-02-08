@@ -279,10 +279,6 @@ def load_compas_dataset_torch(args, shuffle_files=False, split='train', batch_si
   else:
     ds = torch.utils.data.Subset(ds, val_idx)
 
-
-
-  import pdb
-  pdb.set_trace()
   args.input_shape = ds.feature.shape[1]
   if split == 'train':
     args.datasize = len(ds)
