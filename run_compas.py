@@ -78,7 +78,7 @@ args.save_steps =  EP_STEPS
 # args.datasize = 202599
 args.num_classes = 2
 args.balance_batch = False
-args.new_data_each_round = 64 # 1024
+args.new_data_each_round = 32 # 1024
 
 
 args.train_conf = False
