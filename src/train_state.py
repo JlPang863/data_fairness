@@ -37,9 +37,6 @@ def initialized(key, input_shape, model):
   return variables['params'], variables['batch_stats']
 
 def initialized_vit(key, input_shape, model):
-  # if isinstance(input_shape, int):
-  #   input_shape = (1, input_shape, input_shape, 3)
-
   @jax.jit
   def init(*args):
     return model.init(*args)
@@ -89,11 +86,12 @@ def create_train_state(model, args, params=None, return_opt = False):
     tx = optax.sgd(learning_rate=default_lr, momentum=args.momentum, nesterov=args.nesterov)
 
   if params is None:
-    if 'vit' in args.model:
+    if 'resnet' in args.model:
+      params, batch_stats = initialized(rng, args.input_shape, model)
+    else:
       params = initialized_vit(rng, args.input_shape, model)  
       batch_stats = None
-    else:
-      params, batch_stats = initialized(rng, args.input_shape, model)
+      
   else:
     batch_stats = None
 
