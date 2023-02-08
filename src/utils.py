@@ -10,6 +10,8 @@ import pandas as pd
 from datetime import datetime
 # from .models import get_apply_fn_test, get_model
 # from .train_state import get_train_state
+import warnings
+
 
 
 ########################################################################################################################
@@ -115,9 +117,12 @@ def preprocess_compas(filename = "compas-scores-two-years.csv"):
         (raw_data['score_text'] != 'N/A')
         )]
     # length of staying in jail
-    import pdb
-    pdb.set_trace()
-    df['length_of_stay'] = (df['c_jail_out'].apply(date_from_str) - df['c_jail_in'].apply(date_from_str)).dt.total_seconds()
+
+
+
+    with warnings.catch_warnings():
+      warnings.simplefilter("ignore")
+      df['length_of_stay'] = (df['c_jail_out'].apply(date_from_str) - df['c_jail_in'].apply(date_from_str)).dt.total_seconds()
     # df.loc['length_of_stay'] = (df['c_jail_out'].apply(date_from_str) - df['c_jail_in'].apply(date_from_str)).dt.total_seconds()
 
 
