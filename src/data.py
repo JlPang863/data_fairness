@@ -13,11 +13,12 @@ import os
 from .utils import preprocess_compas, race_encode
 import sklearn.preprocessing as preprocessing
 
-def preprocess_func_compas_torch(example, args, noisy_attribute = None):
+def preprocess_func_compas_torch(example, args, noisy_attribute = None, num_groups = 2):
   """ preprocess the data
   """
 
   feature, group, label = example[0].numpy(), example[2].numpy().astype(np.uint8), example[1].numpy().astype(np.uint8)
+  group[group >= num_groups] = num_groups - 1
   import pdb
   pdb.set_trace()
   # use str to avoid error in Jax tree
