@@ -529,7 +529,7 @@ def train_general(args):
 
         rec = record_train_stats(rec, t-1, train_metric, 0)
       
-        if t % args.log_steps == 0:
+        if t % args.log_steps == 0 or (t+1) * args.train_batch_size > args.datasize:
           # test
           # epoch_pre = epoch_i
           test_metric = test(args, state, test_loader)
