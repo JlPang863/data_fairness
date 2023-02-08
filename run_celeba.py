@@ -6,17 +6,10 @@ import argparse
 
 # Options ----------------------------------------------------------------------
 parser = argparse.ArgumentParser()
-parser.add_argument('--method', type=str, default='plain', help="plain fix_lmd dynamic_lmd admm")
-# parser.add_argument('--fe_sel', type=int, default=0, help="0--5")
+parser.add_argument('--method', type=str, default='plain', help="plain fix_lmd dynamic_lmd")
 parser.add_argument('--metric', type=str, default='dp', help="dp eop eod")
-# parser.add_argument('--model_sel', type=int, default=1, help="VGG-Face, Facenet Facenet512,OpenFace, DeepFace, DeepID, ArcFace, Dlib, SFace")
-# parser.add_argument('--e1', type=float, default=0.0)
-# parser.add_argument('--e2', type=float, default=0.0)
 parser.add_argument('--lmd', type=float, default=0.0)
 parser.add_argument('--tol', type=float, default=0.0) # # get an unfair sample wp tol
-# parser.add_argument('--train_conf', action='store_true', default=False)
-# parser.add_argument('--remove_pos', action='store_true', default=False)
-# parser.add_argument('--remove_posOrg', action='store_true', default=False)
 
 parser.add_argument('--mu', type=float, default=1.0)
 parser.add_argument('--warm_epoch', type=int, default=0)
@@ -52,8 +45,6 @@ args.dataset = 'celeba'
 # args.model = 'resnet18_lowres' 
 args.model = 'vit-b_8'
 args.model_seed = META_MODEL_SEED + RUN * SEED_INCR
-# args.load_dir = None
-# args.ckpt = 0
 
 
 # optimizer
@@ -71,13 +62,7 @@ args.opt = OrderedDict(
     )
 )
 args.scheduler = None
-# args.scheduler = OrderedDict(
-#     name = "piecewise_constant_schedule",
-#     config = OrderedDict(
-#         init_value = args.lr,
-#         boundaries_and_scales = {10000: 1.0}, # fix lr, no decay
-#     )
-# )
+
 
 
 # training
@@ -85,10 +70,7 @@ args.num_epochs = 10
 args.EP_STEPS = EP_STEPS
 args.train_seed = META_TRAIN_SEED + RUN * SEED_INCR
 args.train_batch_size = 256
-# args.train_batch_size = 64
 args.test_batch_size = 4096
-# args.augment = True
-# args.track_forgetting = True
 # checkpoints
 args.log_steps = EP_STEPS
 args.save_steps =  EP_STEPS
@@ -97,36 +79,20 @@ args.save_steps =  EP_STEPS
 # experiment
 args.datasize = 202599
 args.num_classes = 2
-# args.attr_key = "attributes"
-# args.feature_key = "image"
 args.attr_key = 1
 args.feature_key = 0
 args.idx_key = 2
-# args.label_key = "Smiling" 
-# args.label_key = "Attractive" 
 args.group_key = "Male"
 args.img_size = 32
 args.balance_batch = False
 args.new_data_each_round = 256 # 1024
-# args.sampling_rounds = args.num_epochs * 2
+
 
 args.train_conf = False
 args.remove_pos = True
 args.remove_posOrg = False
 
 
-# method_list = [
-#         "Facenet", 
-#         "Facenet512", 
-#         "OpenFace", 
-#         "ArcFace", 
-#         "Dlib", 
-#         "SFace",
-#         ]
-# if args.fe_sel == 6:
-#     args.feature_extractor = 'None'
-# else:
-#     args.feature_extractor = method_list[args.fe_sel]
 args.save_dir = EXPS_DIR + f'/{EXP}/{args.method}/run_{RUN}_{args.label_key}_warm{args.warm_epoch}_metric_{args.metric}'
 if __name__ == "__main__":
 

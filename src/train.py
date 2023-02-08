@@ -448,8 +448,6 @@ def train_general(args):
     model, model_linear = tmp_model
   else:
     model = tmp_model
-  # model, model_linear = get_model(args)
-  # args.hidden_size = model_linear.hidden_size
   state = create_train_state(model, args)
 
 
@@ -463,15 +461,12 @@ def train_general(args):
   
 
   # info
-  # log_and_save_args(args)
   time_start = time.time()
   time_now = time_start
   print('train net...')
 
   # begin training
   lmd = args.lmd
-  loss = 0.0
-  loss_rec = [loss]
   train_step = get_train_step(args.method)
   # epoch_pre = 0
   sampled_idx = []
@@ -521,8 +516,8 @@ def train_general(args):
         # train
         if args.method == 'plain':
           state, train_metric = train_step(state, batch)
-        elif args.method in ['fix_lmd','dynamic_lmd']:
-          state, train_metric, lmd = train_step(state, batch, lmd = lmd, T=None)
+        # elif args.method in ['fix_lmd','dynamic_lmd']:
+        #   state, train_metric, lmd = train_step(state, batch, lmd = lmd, T=None)
         else:
           raise NameError('Undefined optimization mechanism')
 
