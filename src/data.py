@@ -170,7 +170,7 @@ class CompasDataset(torch.utils.data.Dataset):
 
       idx = list(range(len(self.label)))
       random.Random(args.train_seed).shuffle(idx)
-      num = int(len(self.label) * 0.2)
+      num = int(len(self.label) * 0.8)
       if split == 'train':
         idx = idx[:num].copy()
       else:
