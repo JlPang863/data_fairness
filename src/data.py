@@ -19,8 +19,7 @@ def preprocess_func_compas_torch(example, args, noisy_attribute = None, num_grou
 
   feature, group, label = example[0].numpy(), example[2].numpy().astype(np.uint8), example[1].numpy().astype(np.uint8)
   group[group >= num_groups] = num_groups - 1
-  import pdb
-  pdb.set_trace()
+
   # use str to avoid error in Jax tree
   # args.feature_key, args.label_key, args.group_key = f'{args.feature_key}', f'{args.label_key}', f'{args.group_key}' 
   
