@@ -197,12 +197,12 @@ def load_celeba_dataset_torch(args, shuffle_files=False, split='train', batch_si
   args.input_shape = (1, args.img_size, args.img_size, 3)
   if split == 'train':
     transform = train_transform
-    args.datasize = len(ds)
   else:
     transform = test_transform
 
   ds = my_celeba(root = args.data_dir, split = split, target_type = 'attr', transform = transform, download = True)
-
+  if split == 'train':
+    args.datasize = len(ds)
     
 
   # data split
