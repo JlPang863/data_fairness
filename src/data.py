@@ -116,7 +116,7 @@ class my_celeba(torchvision.datasets.CelebA):
 
 
 
-class CompasDataset(Dataset):
+class CompasDataset(torch.utils.data.Dataset):
   import sklearn.preprocessing as preprocessing
 
 
