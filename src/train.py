@@ -443,11 +443,12 @@ def train_general(args):
 
   
   # setup
-  tmp_model = get_model(args)
-  if len(tmp_model) == 2:
-    model, model_linear = tmp_model
-  else:
-    model = tmp_model
+  model = get_model(args)
+  # tmp_model = get_model(args)
+  # if len(tmp_model) == 2:
+  #   model, model_linear = tmp_model
+  # else:
+  #   model = tmp_model
   state = create_train_state(model, args)
 
 

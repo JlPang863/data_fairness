@@ -7,6 +7,7 @@ import argparse
 # Options ----------------------------------------------------------------------
 parser = argparse.ArgumentParser()
 parser.add_argument('--method', type=str, default='plain', help="plain fix_lmd dynamic_lmd")
+parser.add_argument('--model', type=str, default='vit-b_8_lowres', help="resnet18_lowres vit-b_8_lowres")
 parser.add_argument('--metric', type=str, default='dp', help="dp eop eod")
 parser.add_argument('--lmd', type=float, default=0.0)
 parser.add_argument('--tol', type=float, default=0.0) # # get an unfair sample wp tol
@@ -43,7 +44,7 @@ args.dataset = 'celeba'
 
 # model
 # args.model = 'resnet18_lowres' 
-args.model = 'vit-b_8'
+# args.model = 'vit-b_8_lowers'
 args.model_seed = META_MODEL_SEED + RUN * SEED_INCR
 
 
@@ -102,9 +103,9 @@ if __name__ == "__main__":
     args.group_key = attributes_names.index(args.group_key)
     args.label_key = attributes_names.index(args.label_key)
 
-    if args.model == 'resnet18_lowres':
+    if 'resnet' in args.model:
         args.sel_layers = args.sel_layers
-    elif args.model == 'vit-b_8':
+    elif 'vit' in args.model:
         args.sel_layers = -args.sel_layers
     global_var.init()
     global_var.set_value('args', args)

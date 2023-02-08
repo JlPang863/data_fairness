@@ -392,33 +392,33 @@ class VisionTransformer(nn.Module):
       return x # logits
 
 
-class ViT_last(nn.Module):
-  """VisionTransformer."""
+# class ViT_last(nn.Module):
+#   """VisionTransformer."""
 
-  num_classes: int
-  hidden_size: int
-  head_bias_init: float = 0.
+#   num_classes: int
+#   hidden_size: int
+#   head_bias_init: float = 0.
   
 
 
-  @nn.compact
-  def __call__(self, inputs, *, train=True):
+#   @nn.compact
+#   def __call__(self, inputs, *, train=True):
 
-    x = inputs
-    if self.num_classes:
-      x = nn.Dense(
-          features=self.num_classes,
-          name='head',
-          kernel_init=nn.initializers.zeros,
-          bias_init=nn.initializers.constant(self.head_bias_init))(x)
-      return x # logits
-    else:
-      raise ValueError('num_class invalid')
+#     x = inputs
+#     if self.num_classes:
+#       x = nn.Dense(
+#           features=self.num_classes,
+#           name='head',
+#           kernel_init=nn.initializers.zeros,
+#           bias_init=nn.initializers.constant(self.head_bias_init))(x)
+#       return x # logits
+#     else:
+#       raise ValueError('num_class invalid')
 
 ViT_S8 = partial(
   VisionTransformer, 
   hidden_size=384, 
-  patches=SimpleNamespace(size=(8, 8)), 
+  patches=SimpleNamespace(size=(32, 32)), 
   transformer=dict(
     attention_dropout_rate = 0.0,
     dropout_rate = 0.0,
@@ -432,6 +432,20 @@ ViT_S8 = partial(
 ViT_B8 = partial(
   VisionTransformer, 
   hidden_size=768, 
+  patches=SimpleNamespace(size=(32, 32)),
+  transformer=dict(
+    attention_dropout_rate = 0.0,
+    dropout_rate = 0.0,
+    mlp_dim = 3072,
+    num_heads = 12,
+    num_layers = 12,    
+  ),
+  model_name="ViT-B/8"
+)
+
+ViT_B8_lowres = partial(
+  VisionTransformer, 
+  hidden_size=768, 
   patches=SimpleNamespace(size=(8, 8)), 
   transformer=dict(
     attention_dropout_rate = 0.0,
@@ -442,10 +456,10 @@ ViT_B8 = partial(
   ),
   model_name="ViT-B/8"
 )
-ViT_B8_linear = partial(
-  ViT_last, 
-  hidden_size=768, 
-)
+# ViT_B8_linear = partial(
+#   ViT_last, 
+#   hidden_size=768, 
+# )
 
 ViT_L16 = partial(
   VisionTransformer, 
@@ -476,8 +490,8 @@ def get_model(args):
     model = ViT_S8(num_classes=args.num_classes)
   elif args.model == 'vit-b_8':
     model = ViT_B8(num_classes=args.num_classes)
-    model_linear = ViT_B8_linear(num_classes=args.num_classes)
-    # linear_flag = True
+  elif args.model == 'vit-b_8_lowres':
+    model = ViT_B8_lowres(num_classes=args.num_classes)
   elif args.model == 'vit-l_16':
     model = ViT_L16(num_classes=args.num_classes)
   elif args.model == 'mlp_3_layer':
@@ -490,8 +504,9 @@ def get_model(args):
     model = SimpleCNN(num_channels=[16, 64, 256], num_classes=args.num_classes)
   else:
     raise NotImplementedError
+  return model
   # if linear_flag:
-  return model, model_linear
+  # return model, model_linear
   # else:
   #   raise NotImplementedError
 
