@@ -4,7 +4,8 @@ import pandas
 result_dict = collections.defaultdict(list)
 
 
-root = './logs/fair_sampling/vit/'
+# root = './logs/fair_sampling/vit/'
+root = './logs/fair_sampling/compas/'
 
 
 def get_result(file_name):
@@ -67,7 +68,8 @@ def get_table(focus):
             rec = []
             for label in label_key:
                 for metric in metrics:
-                    file_name = f'{label}_s{stg}_{metric}_{layer}'
+                    # file_name = f'{label}_s{stg}_{metric}_{layer}'
+                    file_name = f's{stg}_{metric}_{layer}'
                     rec.append(result_dict[file_name][sel]) # acc_focused: 0, fairness focused: 1
             result.append(rec)
     # print(result)
@@ -76,7 +78,8 @@ def get_table(focus):
 
 sel_layers = [2, 4]
 strategy = [1, 2, 5]
-label_key = ['Smiling', 'Straight_Hair', 'Attractive', 'Pale_Skin' 'Young', 'Big_Nose']
+# label_key = ['Smiling', 'Straight_Hair', 'Attractive', 'Pale_Skin', 'Young', 'Big_Nose']
+label_key = ['Smiling']
 metrics = ['dp', 'eop', 'eod']
 
 # read logs, then save the processed results to dict
