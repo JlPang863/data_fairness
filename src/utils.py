@@ -115,7 +115,8 @@ def preprocess_compas(filename = "compas-scores-two-years.csv"):
         (raw_data['score_text'] != 'N/A')
         )]
     # length of staying in jail
-    df['length_of_stay'] = (df['c_jail_out'].apply(date_from_str) - df['c_jail_in'].apply(date_from_str)).dt.total_seconds()
+    # df['length_of_stay'] = (df['c_jail_out'].apply(date_from_str) - df['c_jail_in'].apply(date_from_str)).dt.total_seconds()
+    df.loc['length_of_stay'] = (df['c_jail_out'].apply(date_from_str) - df['c_jail_in'].apply(date_from_str)).dt.total_seconds()
 
 
     sel_columns = [ 'first', 'last',  'name',
