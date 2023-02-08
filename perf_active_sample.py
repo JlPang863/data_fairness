@@ -5,17 +5,20 @@ result_dict = collections.defaultdict(list)
 
 
 # root = './logs/fair_sampling/vit/'
-root = './logs/fair_sampling/res18/'
+# root = './logs/fair_sampling/res18/'
 
-# root = './logs/fair_sampling/compas/'
+root = './logs/fair_sampling/compas/'
 
 
 def get_result(file_name):
-    
+    if 'vit' in root:
+        remove = 1
+    else:
+        remove = 5
     with open(root+file_name+'.log') as file:
         test_list = []
         val_list = []
-        idx_test, idx_val = -1, -1
+        idx_test, idx_val = -remove, -remove
         for line in file.readlines():
             if 'test' in line:
                 line_ = line.strip('\n').split('|')
@@ -29,11 +32,11 @@ def get_result(file_name):
                 fair = float(line_[-1].strip(' ').split(' ')[3])
                 val_list.append((acc, fair, idx_val))
                 idx_val += 1
-    test_list = test_list[1:]
-    val_list = val_list[1:]
+    test_list = test_list[remove:]
+    val_list = val_list[remove:]
     if len(test_list) == len(val_list):
         # select top k by acc and fair, respectively
-        k = 2
+        k = 3
         acc_val = sorted(val_list, key=lambda x: x[0])[::-1]
         fair_val = sorted(val_list, key=lambda x: x[1])
         # print(acc_val)
@@ -81,8 +84,10 @@ def get_table(focus):
 
 sel_layers = [2, 4]
 strategy = [1, 2, 5]
-label_key = ['Smiling', 'Straight_Hair', 'Attractive', 'Pale_Skin', 'Young', 'Big_Nose']
-# label_key = ['label']
+if 'vit' in root:
+    label_key = ['Smiling', 'Straight_Hair', 'Attractive', 'Pale_Skin', 'Young', 'Big_Nose']
+else:
+    label_key = ['label']
 metrics = ['dp', 'eop', 'eod']
 
 # read logs, then save the processed results to dict

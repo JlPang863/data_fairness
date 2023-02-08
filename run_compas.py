@@ -30,7 +30,7 @@ ROOT = '.'
 EXP = 'exps'
 RUN = 0
 META_MODEL_SEED, META_TRAIN_SEED, SEED_INCR = 42, 4242, 424242
-EP_STEPS = 5  # 200
+EP_STEPS = 10  # 200
 DATA_DIR = '/data2/data'
 EXPS_DIR = ROOT + '/exps'
 
