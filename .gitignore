@@ -12,3 +12,4 @@ fair_learn/exps/exps/*
 exps/exps/*
 data/celeba/*
 
+*.csv
