@@ -280,7 +280,7 @@ def load_compas_dataset_torch(args, shuffle_files=False, split='train', batch_si
   race_encode(df)
   ds = CompasDataset(df.copy(), args, split=split)
 
-  args.input_shape = ds.feature.shape[1]
+  args.input_shape = (1, ds.feature.shape[1])
   if split == 'train':
     args.datasize = len(ds)
 
