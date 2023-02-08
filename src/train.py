@@ -3,7 +3,7 @@ import jax
 from jax import numpy as jnp
 import numpy as np
 import time
-from .data import  load_celeba_dataset_torch, preprocess_func_celeba_torch, load_data
+from .data import  load_celeba_dataset_torch, preprocess_func_celeba_torch, load_data, gen_preprocess_func_torch2jax
 from .models import get_model
 from .recorder import init_recorder, record_train_stats, save_recorder, record_test, save_checkpoint
 import pdb
@@ -283,9 +283,10 @@ def test(args, state, data):
   Test
   """
   logits, labels, groups = [], [], []
+  preprocess_func_torch2jax = gen_preprocess_func_torch2jax(args)
   for example in data:
     # batch = preprocess_func_celeba(example, args)
-    batch = preprocess_func_celeba_torch(example, args, noisy_attribute = None)
+    batch = preprocess_func_torch2jax(example, args, noisy_attribute = None)
     # batch = example
     logit= test_step(state, batch)
     logits.append(logit)
@@ -440,7 +441,7 @@ def train_general(args):
   train_loader_labeled, train_loader_unlabeled, idx_with_labels = load_data(args, args.dataset, mode = 'train')
   val_loader, test_loader = load_data(args, args.dataset, mode = 'val')
 
-
+  preprocess_func_torch2jax = gen_preprocess_func_torch2jax(args)
   
   # setup
   model = get_model(args)
@@ -489,7 +490,7 @@ def train_general(args):
         bsz = example[0].shape[0]
 
         num_sample_cur += bsz
-        example = preprocess_func_celeba_torch(example, args, noisy_attribute = None)
+        example = preprocess_func_torch2jax(example, args, noisy_attribute = None)
         t += 1
         if t * args.train_batch_size > args.datasize:
           break
