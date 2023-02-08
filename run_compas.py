@@ -14,7 +14,7 @@ parser.add_argument('--tol', type=float, default=0.0) # # get an unfair sample w
 
 parser.add_argument('--mu', type=float, default=1.0)
 parser.add_argument('--warm_epoch', type=int, default=0)
-parser.add_argument('--sel_layers', type=int, default=2)
+parser.add_argument('--sel_layers', type=int, default=4)
 parser.add_argument('--strategy', type=int, default=1)
 parser.add_argument('--conf', type=str, default='no_conf', help='no_conf, peer, entropy')
 
@@ -90,9 +90,7 @@ args.save_dir = EXPS_DIR + f'/{EXP}/{args.method}/run_{RUN}_warm{args.warm_epoch
 if __name__ == "__main__":
 
 
-    if 'resnet' in args.model:
-        args.sel_layers = args.sel_layers
-    elif 'vit' in args.model:
+    if 'mlp' in args.model:
         args.sel_layers = -args.sel_layers
     global_var.init()
     global_var.set_value('args', args)
