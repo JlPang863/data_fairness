@@ -11,7 +11,7 @@ from typing import Any, Tuple
 import PIL
 import os
 from .utils import preprocess_compas, race_encode
-
+import sklearn.preprocessing as preprocessing
 
 def preprocess_func_compas_torch(example, args, noisy_attribute = None):
   """ preprocess the data
@@ -117,7 +117,7 @@ class my_celeba(torchvision.datasets.CelebA):
 
 
 class CompasDataset(torch.utils.data.Dataset):
-  import sklearn.preprocessing as preprocessing
+  
 
 
   def __init__(self, data_file):
