@@ -4,10 +4,10 @@ import pandas
 result_dict = collections.defaultdict(list)
 
 
-# root = './logs/fair_sampling/vit/'
+root = './logs/fair_sampling/vit/'
 # root = './logs/fair_sampling/res18/'
 
-root = './logs/fair_sampling/compas/'
+# root = './logs/fair_sampling/compas/'
 
 
 def get_result(file_name):
