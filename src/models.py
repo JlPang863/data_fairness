@@ -485,7 +485,7 @@ def get_model(args):
   # linear_flag = False
   model_linear = None
   if args.model == 'mlp':
-    model = MLP(features=[32], num_classes=args.num_classes)
+    model = MLP(features=[64], num_classes=args.num_classes)
   elif args.model == 'vit':
     model = ViT_S8(num_classes=args.num_classes)
   elif args.model == 'vit-b_8':
