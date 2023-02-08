@@ -5,7 +5,9 @@ result_dict = collections.defaultdict(list)
 
 
 # root = './logs/fair_sampling/vit/'
-root = './logs/fair_sampling/compas/'
+root = './logs/fair_sampling/res18/'
+
+# root = './logs/fair_sampling/compas/'
 
 
 def get_result(file_name):
@@ -68,8 +70,9 @@ def get_table(focus):
             rec = []
             for label in label_key:
                 for metric in metrics:
-                    # file_name = f'{label}_s{stg}_{metric}_{layer}'
-                    file_name = f's{stg}_{metric}_{layer}'
+                    file_name = f'{label}_s{stg}_{metric}_{layer}'
+                    if 'res18' in root:
+                        file_name = 'res18_' + file_name
                     rec.append(result_dict[file_name][sel]) # acc_focused: 0, fairness focused: 1
             result.append(rec)
     # print(result)
@@ -78,8 +81,8 @@ def get_table(focus):
 
 sel_layers = [2, 4]
 strategy = [1, 2, 5]
-# label_key = ['Smiling', 'Straight_Hair', 'Attractive', 'Pale_Skin', 'Young', 'Big_Nose']
-label_key = ['Smiling']
+label_key = ['Smiling', 'Straight_Hair', 'Attractive', 'Pale_Skin', 'Young', 'Big_Nose']
+# label_key = ['label']
 metrics = ['dp', 'eop', 'eod']
 
 # read logs, then save the processed results to dict
@@ -91,6 +94,8 @@ for layer in sel_layers:
                     file_name = f'{label}_s{stg}_{metric}_2'
                 else:
                     file_name = f'{label}_s{stg}_{metric}_{layer}'
+                if 'res18' in root:
+                    file_name = 'res18_' + file_name
                 get_result(file_name)
         
 # get table
