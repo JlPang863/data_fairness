@@ -267,7 +267,8 @@ def infl_step(state, batch):
   grads_tree, aux = jax.jacrev(loss_fn, argnums=0, has_aux=True)(state.params)
   # grads_tree, aux = our_jacrev(loss_fn, argnums=0, has_aux=True)(state.params)
   
-  
+  import pdb
+  pdb.set_trace()
   # grad_flat_tree = jax.tree_util.tree_leaves(grads_tree)
   grad_flat_tree = jax.tree_util.tree_leaves(grads_tree[0])
   grad_org_flat_tree = jax.tree_util.tree_leaves(grads_tree[1])
