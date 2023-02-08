@@ -29,7 +29,7 @@ parser.add_argument('--val_ratio', type=float, default=0.1)
 ROOT = '.'
 EXP = 'exps'
 RUN = 0
-META_MODEL_SEED, META_TRAIN_SEED, SEED_INCR = 42, 4242, 424242
+META_MODEL_SEED, META_TRAIN_SEED, SEED_INCR = 43, 4242, 424242
 EP_STEPS = 20  # 200
 DATA_DIR = '/data2/data'
 EXPS_DIR = ROOT + '/exps'
