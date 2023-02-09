@@ -14,7 +14,7 @@ def get_result(file_name):
     if 'vit' in root:
         remove = 1
     else:
-        remove = 5
+        remove = 3
     with open(root+file_name+'.log') as file:
         test_list = []
         val_list = []
