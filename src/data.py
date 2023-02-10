@@ -337,6 +337,28 @@ def load_compas_dataset_torch(args, shuffle_files=False, split='train', batch_si
   else:
     return [dataloader_1, dataloader_2], part1
 
+def load_jigsaw_dataset(args, mode='train', ratio=0.1):
+    path = args.data_dir  # 'data/'
+    if mode == 'train':
+      with open(os.path.join(path, 'Jigsaw/Jigsaw_train.npy'), 'rb') as f:
+        X, Y, A = np.load(f), np.load(f), np.load(f)
+        # shuffle training data
+        from sklearn import utils
+        X, Y, A = utils.shuffle(X, Y, A)
+    else:
+      with open(os.path.join(path, 'Jigsaw/Jigsaw_test.npy'), 'rb') as f:
+        X, Y, A = np.load(f), np.load(f), np.load(f)
+
+    index = np.arange(X.shape[0])
+    labeled_index, unlabeled_index = np.split(index, [ratio * X.shape[0]])
+    
+    encode_data = lambda X, Y, A, I: return {"feature"=X, "label"=Y, 'group'=A, 'index'=I}
+
+    labled_data = encode_data(X[labeled_index], Y[labeled_index], A[labeled_index], labeled_index)
+    unlabeled_data = encode_data(X[unlabeled_index], Y[unlabeled_index], A[unlabeled_index], unlabeled_index)
+
+    return labeled_data, unlabeled_data
+
 def load_data(args, dataset, mode = 'train', sampled_idx = None):
   
   if dataset == 'celeba':
