@@ -533,7 +533,7 @@ def train_general(args):
           # test
           # epoch_pre = epoch_i
           test_metric = test(args, state, test_loader)
-          rec, time_now = record_test(rec, t+args.datasize*epoch_i//args.train_batch_size, args.datasize*args.num_epochs//args.train_batch_size, time_now, time_start, train_metric, test_metric, metric = args.metric)
+          rec, time_now = record_test(rec, t+args.datasize*epoch_i//args.train_batch_size, args.datasize*args.num_epochs//args.train_batch_size, time_now, time_start, train_metric, test_metric, metric = args.metric, warm = epoch_i < args.warm_epoch)
           if epoch_i >= args.warm_epoch:
             # infl 
             args.infl_random_seed = t+args.datasize*epoch_i//args.train_batch_size + args.train_seed
