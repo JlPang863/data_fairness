@@ -136,6 +136,8 @@ class CompasDataset(torch.utils.data.Dataset):
       X = np.array([]).reshape(len(Y), 0) # empty array with num rows same as num examples, will hstack the features to it
 
       feature_names = []
+      import pdb
+      pdb.set_trace()
       for attr in FEATURES_CLASSIFICATION:
           vals = data[attr]
           if attr in CONT_VARIABLES:
