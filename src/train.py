@@ -521,7 +521,10 @@ def train_general(args):
 
         # train
         if args.method == 'plain':
-          state, train_metric = train_step(state, batch)
+          try:
+            state, train_metric = train_step(state, batch)
+          except:
+            print(batch)
         # elif args.method in ['fix_lmd','dynamic_lmd']:
         #   state, train_metric, lmd = train_step(state, batch, lmd = lmd, T=None)
         else:
@@ -538,7 +541,7 @@ def train_general(args):
 
           val_metric = test(args, state, val_loader)
           _, time_now = record_test(rec, t+args.datasize*epoch_i//args.train_batch_size, args.datasize*args.num_epochs//args.train_batch_size, time_now, time_start, train_metric, test_metric, val_metric=val_metric, metric = args.metric, warm = epoch_i < args.warm_epoch)
-          
+
           if epoch_i >= args.warm_epoch:
             # infl 
             args.infl_random_seed = t+args.datasize*epoch_i//args.train_batch_size + args.train_seed
