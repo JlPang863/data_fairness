@@ -136,21 +136,21 @@ class CompasDataset(torch.utils.data.Dataset):
       X = np.array([]).reshape(len(Y), 0) # empty array with num rows same as num examples, will hstack the features to it
 
       feature_names = []
-      import pdb
-      pdb.set_trace()
+      # import pdb
+      # pdb.set_trace()
       for attr in FEATURES_CLASSIFICATION:
           vals = data[attr]
           if attr in CONT_VARIABLES:
               vals = [float(v) for v in vals]
               vals = preprocessing.scale(vals) # 0 mean and 1 variance
               vals = np.reshape(vals, (len(Y), -1)) # convert from 1-d arr to a 2-d arr with one col
-              pdb.set_trace()
+              # pdb.set_trace()
 
           else: # for binary categorical variables, the label binarizer uses just one var instead of two
               lb = preprocessing.LabelBinarizer()
               lb.fit(vals)
               vals = lb.transform(vals)
-              pdb.set_trace()
+              # pdb.set_trace()
 
 
           # add to learnable features
