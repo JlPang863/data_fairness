@@ -524,6 +524,8 @@ def train_general(args):
           try:
             state, train_metric = train_step(state, batch)
           except:
+            import pdb
+            pdb.set_trace()
             print(batch)
         # elif args.method in ['fix_lmd','dynamic_lmd']:
         #   state, train_metric, lmd = train_step(state, batch, lmd = lmd, T=None)
