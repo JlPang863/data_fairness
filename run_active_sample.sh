@@ -102,8 +102,8 @@ label_key="Smiling Straight_Hair Attractive Pale_Skin Young Big_Nose"
 # label_key="Pale_Skin Young Big_Nose"
 metric="dp eop eod"
 
-# i=0
-# j=0
+i=0
+j=0
 
 for LABEL in $label_key
 do
