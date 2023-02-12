@@ -8,7 +8,7 @@ result_dict = collections.defaultdict(list)
 # root = './logs/fair_sampling/res18/'
 dataset = 'compas'
 root = f'./logs/fair_sampling/{dataset}/'
-tol = 0.05
+tol = 0.1
 
 def extract_line(line):
     line_ = line.strip('\n').split('|')
