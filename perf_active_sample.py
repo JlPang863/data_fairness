@@ -4,20 +4,22 @@ import pandas
 result_dict = collections.defaultdict(list)
 
 
-root = './logs/fair_sampling/vit/'
+# root = './logs/fair_sampling/vit/'
 # root = './logs/fair_sampling/res18/'
 
-# root = './logs/fair_sampling/compas/'
+root = './logs/fair_sampling/compas/'
 
 
 def get_result(file_name):
+    avg_cnt = 3
     if 'vit' in root:
-        remove = 1
+        remove = 0
     else:
-        remove = 3
+        remove = 0
     with open(root+file_name+'.log') as file:
         test_list = []
         val_list = []
+        warm_list = []
         idx_test, idx_val = -remove, -remove
         for line in file.readlines():
             if 'test' in line:
@@ -32,12 +34,19 @@ def get_result(file_name):
                 fair = float(line_[-1].strip(' ').split(' ')[3])
                 val_list.append((acc, fair, idx_val))
                 idx_val += 1
-    # base_perf = test_list[2]
+            elif 'warm' in line:
+                line_ = line.strip('\n').split('|')
+                acc = float(line_[-2].strip(' ').split(' ')[2])
+                fair = float(line_[-1].strip(' ').split(' ')[3])
+                warm_list.append((acc, fair, idx_val))
+
+
+    base_perf = warm_list[-avg_cnt:]
     test_list = test_list[remove:]
     val_list = val_list[remove:]
     if len(test_list) == len(val_list):
         # select top k by acc and fair, respectively
-        k = 3
+        k = avg_cnt
         acc_val = sorted(val_list, key=lambda x: x[0])[::-1]
         fair_val = sorted(val_list, key=lambda x: x[1])
         
