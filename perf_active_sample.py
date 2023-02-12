@@ -21,7 +21,7 @@ def extract_line(line):
 
 
 def get_result(file_name):
-    avg_cnt = 3
+    avg_cnt = 1
     if 'vit' in root:
         remove = 1
     else:
@@ -54,6 +54,7 @@ def get_result(file_name):
     base_perf_v = warm_list_v[-avg_cnt:]
     avg_acc_base_v = np.mean([i[0] for i in base_perf_v])
     avg_acc_base_t = np.mean([i[0] for i in base_perf_t])
+    avg_fair_base_t = np.mean([i[1] for i in base_perf_t])
 
     test_list = test_list[remove:]
     val_list = val_list[remove:]
@@ -92,7 +93,8 @@ def get_result(file_name):
 
         # save result as a dict
         # result_dict[file_name] = [(acc_avg_sel_by_acc_val, fair_avg_sel_by_acc_val), (acc_avg_sel_by_fair_val, fair_avg_sel_by_fair_val)] # [acc_focused, fair_focused]     
-        result_dict[file_name] = [f'({acc_avg_sel_by_acc_val:.3f}, {fair_avg_sel_by_acc_val:.3f})', f'({acc_avg_sel_by_fair_val:.3f}, {fair_avg_sel_by_fair_val:.3f})', sel] # [acc_focused, fair_focused, fair_and_better_than_base_acc]          
+        result_dict[file_name] = [f'({acc_avg_sel_by_acc_val:.3f}, {fair_avg_sel_by_acc_val:.3f})', f'({acc_avg_sel_by_fair_val:.3f}, {fair_avg_sel_by_fair_val:.3f})', sel] # [acc_focused, fair_focused, fair_and_better_than_base_acc]       
+        return f'({avg_acc_base_t:.3f}, {avg_fair_base_t:.3f})'
     else:
         raise RuntimeError('test_list has a different length from val_list')
 
@@ -119,13 +121,19 @@ def get_table(focus):
             rec = []
             for label in label_key:
                 for metric in metrics:
-                    file_name = f'{label}_s{stg}_{metric}_{layer}'
+                    if stg == 0:
+                        file_name = f'{label}'
+                    else:
+                        file_name = f'{label}_s{stg}_{metric}_{layer}'
                     if 'res18' in root:
                         file_name = 'res18_' + file_name
-                    if sel is not None:
-                        rec.append(result_dict[file_name][sel]) # acc_focused: 0, fairness focused: 1
+                    if stg == 0:
+                        rec.append(result_dict[file_name][0])
                     else:
-                        rec.append(result_dict[file_name][result_dict[file_name][2]])
+                        if sel is not None:
+                            rec.append(result_dict[file_name][sel]) # acc_focused: 0, fairness focused: 1
+                        else:
+                            rec.append(result_dict[file_name][result_dict[file_name][2]])
             result.append(rec)
     # print(result)
     
@@ -135,7 +143,7 @@ def get_table(focus):
 
 
 sel_layers = [4]
-strategy = [1, 2, 5]
+strategy = [0, 1, 2, 5]
 if dataset == 'celeba':
     label_key = ['Smiling', 'Straight_Hair', 'Attractive', 'Pale_Skin', 'Young', 'Big_Nose']
 elif dataset == 'compas':
@@ -152,10 +160,12 @@ for layer in sel_layers:
                 # if stg == 1:
                 #     file_name = f'{label}_s{stg}_{metric}_2'
                 # else:
-                file_name = f'{label}_s{stg}_{metric}_{layer}'
-                if 'res18' in root:
-                    file_name = 'res18_' + file_name
-                get_result(file_name)
+                if stg > 0:
+                    file_name = f'{label}_s{stg}_{metric}_{layer}'
+                    if 'res18' in root:
+                        file_name = 'res18_' + file_name
+                    base_pref = get_result(file_name)
+                    result_dict[label] = [base_pref]
         
 # get table
 # get_table(focus = 'acc')
