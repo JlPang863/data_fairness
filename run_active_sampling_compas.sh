@@ -2,7 +2,7 @@
 sel_layers="4"
 strategy="1"
 metric="dp eop eod"
-label_ratio="0.05"
+label_ratio="0.1"
 
 i=0
 j=0
