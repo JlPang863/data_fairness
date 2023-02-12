@@ -523,6 +523,9 @@ def train_general(args):
         if args.method == 'plain':
           try:
             state, train_metric = train_step(state, batch)
+            import pdb
+            pdb.set_trace()
+            print(batch)
           except:
             import pdb
             pdb.set_trace()
