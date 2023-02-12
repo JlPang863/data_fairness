@@ -532,10 +532,13 @@ def train_general(args):
         if t % args.log_steps == 0 or (t+1) * args.train_batch_size > args.datasize:
           # test
           # epoch_pre = epoch_i
-          val_metric = test(args, state, val_loader)
-          _, time_now = record_test(rec, t+args.datasize*epoch_i//args.train_batch_size, args.datasize*args.num_epochs//args.train_batch_size, time_now, time_start, train_metric, test_metric, val_metric=val_metric, metric = args.metric, warm = epoch_i < args.warm_epoch)
+          
           test_metric = test(args, state, test_loader)
           rec, time_now = record_test(rec, t+args.datasize*epoch_i//args.train_batch_size, args.datasize*args.num_epochs//args.train_batch_size, time_now, time_start, train_metric, test_metric, metric = args.metric, warm = epoch_i < args.warm_epoch)
+
+          val_metric = test(args, state, val_loader)
+          _, time_now = record_test(rec, t+args.datasize*epoch_i//args.train_batch_size, args.datasize*args.num_epochs//args.train_batch_size, time_now, time_start, train_metric, test_metric, val_metric=val_metric, metric = args.metric, warm = epoch_i < args.warm_epoch)
+          
           if epoch_i >= args.warm_epoch:
             # infl 
             args.infl_random_seed = t+args.datasize*epoch_i//args.train_batch_size + args.train_seed
