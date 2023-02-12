@@ -352,9 +352,9 @@ def load_jigsaw_dataset(args, mode='train', ratio=0.1):
     index = np.arange(X.shape[0])
     labeled_index, unlabeled_index = np.split(index, [ratio * X.shape[0]])
     
-    encode_data = lambda X, Y, A, I: return {"feature"=X, "label"=Y, 'group'=A, 'index'=I}
+    encode_data = lambda X, Y, A, I: {"feature":X, "label":Y, 'group':A, 'index':I}
 
-    labled_data = encode_data(X[labeled_index], Y[labeled_index], A[labeled_index], labeled_index)
+    labeled_data = encode_data(X[labeled_index], Y[labeled_index], A[labeled_index], labeled_index)
     unlabeled_data = encode_data(X[unlabeled_index], Y[unlabeled_index], A[unlabeled_index], unlabeled_index)
 
     return labeled_data, unlabeled_data
