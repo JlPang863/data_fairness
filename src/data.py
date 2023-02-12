@@ -120,8 +120,8 @@ class CompasDataset(torch.utils.data.Dataset):
 
 
   def __init__(self, data_file, args, split = 'train'):
-      FEATURES_CLASSIFICATION = ["age_cat", "sex", "priors_count", "c_charge_degree"] #features to be used for classification
-      CONT_VARIABLES = ["priors_count"] # continuous features, will need to be handled separately from categorical features, categorical features will be encoded using one-hot
+      FEATURES_CLASSIFICATION = ["age_cat", "sex", "priors_count", "c_charge_degree", 'decile_score', 'length_of_stay'] #features to be used for classification
+      CONT_VARIABLES = ["priors_count", 'decile_score', 'length_of_stay'] # continuous features, will need to be handled separately from categorical features, categorical features will be encoded using one-hot
       CLASS_FEATURE = "two_year_recid" # the decision variable
 
 
@@ -144,11 +144,13 @@ class CompasDataset(torch.utils.data.Dataset):
               vals = [float(v) for v in vals]
               vals = preprocessing.scale(vals) # 0 mean and 1 variance
               vals = np.reshape(vals, (len(Y), -1)) # convert from 1-d arr to a 2-d arr with one col
+              pdb.set_trace()
 
           else: # for binary categorical variables, the label binarizer uses just one var instead of two
               lb = preprocessing.LabelBinarizer()
               lb.fit(vals)
               vals = lb.transform(vals)
+              pdb.set_trace()
 
 
           # add to learnable features
