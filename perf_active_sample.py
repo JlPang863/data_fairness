@@ -79,8 +79,8 @@ def get_table(focus):
     result = []
     for stg in strategy:
         for layer in sel_layers:
-            if stg == 1 and layer == 4:
-                break
+            # if stg == 1 and layer == 4:
+            #     break
             rec = []
             for label in label_key:
                 for metric in metrics:
@@ -116,7 +116,7 @@ def get_table_new(focus):
     file_path = f'result_{focus}_focused.csv'
     print_result(result, file_path)
 
-sel_layers = [2, 4]
+sel_layers = [4]
 strategy = [1, 2, 5]
 if 'vit' in root:
     label_key = ['Smiling', 'Straight_Hair', 'Attractive', 'Pale_Skin', 'Young', 'Big_Nose']
@@ -129,10 +129,10 @@ for layer in sel_layers:
     for stg in strategy:
         for label in label_key:
             for metric in metrics:
-                if stg == 1:
-                    file_name = f'{label}_s{stg}_{metric}_2'
-                else:
-                    file_name = f'{label}_s{stg}_{metric}_{layer}'
+                # if stg == 1:
+                #     file_name = f'{label}_s{stg}_{metric}_2'
+                # else:
+                file_name = f'{label}_s{stg}_{metric}_{layer}'
                 if 'res18' in root:
                     file_name = 'res18_' + file_name
                 get_result(file_name)
