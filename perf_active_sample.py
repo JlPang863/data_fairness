@@ -6,9 +6,18 @@ result_dict = collections.defaultdict(list)
 
 # root = './logs/fair_sampling/vit/'
 # root = './logs/fair_sampling/res18/'
-dataset = 'compas'
+
+# dataset = 'compas'
+# tol = 0.05
+# avg_cnt = 3
+
+dataset = 'celeba'
+tol = 0.05
+avg_cnt = 3
+
+
 root = f'./logs/fair_sampling/{dataset}/'
-tol = 0.1
+
 
 def extract_line(line):
     line_ = line.strip('\n').split('|')
@@ -21,7 +30,7 @@ def extract_line(line):
 
 
 def get_result(file_name):
-    avg_cnt = 1
+    
     if 'vit' in root:
         remove = 1
     else:
@@ -121,10 +130,10 @@ def get_table(focus):
             rec = []
             for label in label_key:
                 for metric in metrics:
-                    if stg == 0:
-                        file_name = f'{label}'
-                    else:
-                        file_name = f'{label}_s{stg}_{metric}_{layer}'
+                    # if stg == 0:
+                    #     file_name = f'{label}'
+                    # else:
+                    file_name = f'{label}_s{stg}_{metric}_{layer}'
                     if 'res18' in root:
                         file_name = 'res18_' + file_name
                     if stg == 0:
@@ -165,7 +174,7 @@ for layer in sel_layers:
                     if 'res18' in root:
                         file_name = 'res18_' + file_name
                     base_pref = get_result(file_name)
-                    result_dict[label] = [base_pref]
+                    result_dict[f'{label}_s0_{metric}_{layer}'] = [base_pref]
         
 # get table
 # get_table(focus = 'acc')
