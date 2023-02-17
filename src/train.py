@@ -408,7 +408,7 @@ def sample_by_infl_without_true_label(args, state, val_data, unlabeled_data, num
     # print(f'[Strategy {args.strategy}] Expected label {expected_label}')  
     # print(f'[Strategy {args.strategy}] True label {true_label}')  
 
-  # sel_org_id = np.asarray(idx)[sel_idx].tolist()  # samples that are used in training
+  sel_org_id = np.asarray(idx)[sel_idx].tolist()  # samples that are used in training
   sel_org_id_and_pseudo_label = np.asarray(idx_ans_pseudo_label)[sel_idx].tolist()  # samples that are used in training
 
 
@@ -418,7 +418,7 @@ def sample_by_infl_without_true_label(args, state, val_data, unlabeled_data, num
   new_labels = {}
   for pair_i in sel_org_id_and_pseudo_label:
     new_labels[pair_i[0]] = pair_i[1]
-  return new_labels
+  return sel_org_id, new_labels
 
 
 
@@ -639,7 +639,7 @@ def train_general(args):
         bsz = example[0].shape[0]
 
         num_sample_cur += bsz
-        example = preprocess_func_torch2jax(example, args, new_labels)
+        example = preprocess_func_torch2jax(example, args, new_labels = new_labels)
         t += 1
         if t * args.train_batch_size > args.datasize:
           break
@@ -697,18 +697,29 @@ def train_general(args):
             # infl 
             args.infl_random_seed = t+args.datasize*epoch_i//args.train_batch_size + args.train_seed
             if args.without_label:
-              new_labels_tmp = sample_by_infl_without_true_label(args, state, val_loader, train_loader_unlabeled, num = args.new_data_each_round)
+              sampled_idx_tmp, new_labels_tmp = sample_by_infl_without_true_label(args, state, val_loader, train_loader_unlabeled, num = args.new_data_each_round)
               new_labels.update(new_labels_tmp)
+              print(f'length of new labels {len(new_labels)}')
+              sampled_idx += sampled_idx_tmp
+              used_idx.update(sampled_idx)
+              print(f'Use {len(used_idx) - len(new_labels)}+{len(new_labels)} = {len(used_idx)} samples.')
+              
+
             else:
               sampled_idx_tmp, sel_org_idx_with_labels = sample_by_infl(args, state, val_loader, train_loader_unlabeled, num = args.new_data_each_round)
-              sampled_idx += sampled_idx_tmp
               idx_with_labels.update(sel_org_idx_with_labels)
-
-              train_loader_labeled, train_loader_unlabeled, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx)
-
+              sampled_idx += sampled_idx_tmp
               used_idx.update(sampled_idx)
               print(f'Use {len(used_idx)} samples. Get {len(idx_with_labels)} labels. Ratio: {len(used_idx)/len(idx_with_labels)}')
               idx_rec.append((epoch_i, args.infl_random_seed, used_idx, idx_with_labels))
+         
+
+            
+
+            train_loader_labeled, train_loader_unlabeled, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx)
+
+              
+              
             # save_name = f'./results/s{args.strategy}_{args.metric}_{args.label_ratio}_new{args.new_data_each_round}_100round.npy'
             # np.save(save_name, idx_rec)
 
