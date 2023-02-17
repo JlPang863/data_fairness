@@ -399,12 +399,12 @@ def sample_by_infl_without_true_label(args, state, val_data, unlabeled_data, num
     # sel_true_false_with_labels = score_before_check < min(max_score, 0.0)
   
 
-  if args.strategy > 1:
-    # check labels
-    true_label = np.asarray(true_label)
-    expected_label = np.asarray(expected_label)
-    expect_acc = np.mean(1.0 * (true_label == expected_label))
-    print(f'[Strategy {args.strategy}] Acc of expected label: {expect_acc}')  
+  # if args.strategy > 1:
+  #   # check labels
+  #   true_label = np.asarray(true_label)
+  #   expected_label = np.asarray(expected_label)
+  #   expect_acc = np.mean(1.0 * (true_label == expected_label))
+  #   print(f'[Strategy {args.strategy}] Acc of expected label: {expect_acc}')  
     # print(f'[Strategy {args.strategy}] Expected label {expected_label}')  
     # print(f'[Strategy {args.strategy}] True label {true_label}')  
 
@@ -616,6 +616,7 @@ def train_general(args):
   print('train net...')
 
   # begin training
+  init_val_acc = 0.0
   lmd = args.lmd
   train_step = get_train_step(args.method)
   # epoch_pre = 0
@@ -694,9 +695,14 @@ def train_general(args):
           _, time_now = record_test(rec, t+args.datasize*epoch_i//args.train_batch_size, args.datasize*args.num_epochs//args.train_batch_size, time_now, time_start, train_metric, test_metric, val_metric=val_metric, metric = args.metric, warm = epoch_i < args.warm_epoch)
 
           if epoch_i >= args.warm_epoch:
+            if init_val_acc == 0.0:
+              init_val_acc = val_metric['accuracy']
+              
+            
+
             # infl 
             args.infl_random_seed = t+args.datasize*epoch_i//args.train_batch_size + args.train_seed
-            if args.without_label:
+            if args.without_label and val_metric['accuracy'] >= init_val_acc - args.tol:
               sampled_idx_tmp, new_labels_tmp = sample_by_infl_without_true_label(args, state, val_loader, train_loader_unlabeled, num = args.new_data_each_round)
               new_labels.update(new_labels_tmp)
               print(f'length of new labels {len(new_labels)}')
