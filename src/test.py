@@ -47,5 +47,7 @@
 # a = set([1,2,3])
 # b = a.copy()
 # b.update([5])
-a = 1
-print(isinstance(a, int))
+# a = 1
+# print(isinstance(a, int))
+import numpy as np
+print(np.random.choice(range(2), 10))

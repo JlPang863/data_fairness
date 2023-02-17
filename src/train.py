@@ -334,6 +334,7 @@ def sample_by_infl_without_true_label(args, state, val_data, unlabeled_data, num
     # Strategy 1 (baseline): random
     if args.strategy == 1:
       score += [1] * batch['label'].shape[0]
+      label_expected = np.random.choice(range(args.num_classes), batch['label'].shape[0])
     # Strategy 2 (idea 1): find the label with least absolute influence, then find the sample with most negative fairness infl
     elif args.strategy == 2:
       label_expected = np.argmin(abs(infl), 1).reshape(-1)
