@@ -42,22 +42,25 @@ def preprocess_func_compas_torch(example, args, noisy_attribute = None, num_grou
   # global_var.set_value('args', args)
   return data
 
-def preprocess_func_celeba_torch(example, args, noisy_attribute = None):
+def preprocess_func_celeba_torch(example, args, noisy_attribute = None, new_labels = {}):
   """ preprocess the data
   """
 
   image, group, label = example[args.feature_key].numpy(), example[args.attr_key][:,args.group_key].numpy().astype(np.uint8), example[args.attr_key][:,args.label_key].numpy().astype(np.uint8)
+  idx = example[args.idx_key].numpy()
   # pdb.set_trace()
   image = image.transpose((0, 2, 3, 1)) 
   # use str to avoid error in Jax tree
   # args.feature_key, args.label_key, args.group_key = f'{args.feature_key}', f'{args.label_key}', f'{args.group_key}' 
   
+  if len(new_labels) > 0:
+    label = np.asarray([new_labels[idx[i]] if idx[i] in new_labels else label[i]  for i in range(len(idx))])
   if noisy_attribute is None:
     data = {
       'feature': image,
       'label': label,
       'group': group,
-      'index': example[args.idx_key].numpy()
+      'index': idx
     }
   else:
     noisy_attribute = noisy_attribute[:,0]
@@ -65,7 +68,7 @@ def preprocess_func_celeba_torch(example, args, noisy_attribute = None):
       'feature': image,
       'label': label,
       'group': noisy_attribute,
-      'index': example[args.idx_key].numpy()
+      'index': idx
     }
     # print(np.mean((noisy_attribute==group)*1.0))
   # global_var.set_value('args', args)

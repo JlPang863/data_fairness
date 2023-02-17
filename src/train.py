@@ -12,6 +12,7 @@ from .train_state import test_step, get_train_step, create_train_state, infl_ste
 from .metrics import compute_metrics, compute_metrics_fair
 from .utils import set_global_seed, make_dirs, log_and_save_args
 from . import global_var
+import collections
 import os
 os.environ["XLA_PYTHON_CLIENT_PREALLOCATE"] = "false"   # This disables the preallocation behavior. JAX will instead allocate GPU memory as needed, potentially decreasing the overall memory usage.
 # os.environ["XLA_PYTHON_CLIENT_MEM_FRACTION"] = ".20" # If preallocation is enabled, this makes JAX preallocate XX% of currently-available GPU memory, instead of the default 90%.
@@ -278,6 +279,147 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
 
 
 
+def sample_by_infl_without_true_label(args, state, val_data, unlabeled_data, num):
+  """
+  Get influence score of each unlabeled_data on val_data, then sample according to scores
+  For fairness, the sign is very important
+  """
+  preprocess_func_torch2jax = gen_preprocess_func_torch2jax(args)
+  print('begin calculating influence')
+  num_samples = 0.0
+  grad_sum = 0.0
+  grad_org_sum = 0.0
+  grad_fair_sum = 0.0
+  for example in val_data: # Need to run on the validation dataset to avoid the negative effect of distribution shift, e.g., DP is not robust to distribution shift. For fairness, val data may be iid as test data 
+    batch = preprocess_func_torch2jax(example, args)
+    bsz = batch['feature'].shape[0]
+    grads, grads_org = np.asarray(infl_step(state, batch))
+
+    grads_fair_batch = np.asarray(infl_step_fair(state, batch))
+
+
+
+    # sum & average
+    grad_sum += grads * bsz
+    grad_org_sum += grads_org * bsz
+    grad_fair_sum += grads_fair_batch * bsz
+    num_samples += bsz
+
+  grad_avg = (grad_sum/num_samples).reshape(-1,1)
+  grad_org_avg = (grad_org_sum/num_samples).reshape(-1,1)
+  grad_fair = (grad_fair_sum/num_samples).reshape(-1,1)
+
+  # check unlabeled data
+  score = []
+  score_before_check = []
+  idx = []
+  idx_ans_pseudo_label = []
+  expected_label = []
+  true_label = []
+  for example in unlabeled_data:
+    batch = preprocess_func_torch2jax(example, args)
+    batch_unlabeled = batch.copy()
+    batch_unlabeled['label'] = None # get grad for each label. We do not know labels of samples in unlabeled data
+    # grads_each_sample = np.asarray(infl_step_per_sample(state, batch_unlabeled))
+    grads_each_sample, logits = infl_step_per_sample(state, batch_unlabeled)
+    grads_each_sample = np.asarray(grads_each_sample)
+    # grad_org_each_sample = np.asarray(grad_org_each_sample)
+    logits = np.asarray(logits)
+    # pdb.set_trace()
+    infl = - np.matmul(grads_each_sample, grad_avg) # new_loss - cur_los  # 
+    infl_org = - np.matmul(grads_each_sample, grad_org_avg) # new_loss - cur_los  # 
+    infl_fair = - np.matmul(grads_each_sample, grad_fair)
+
+
+    # Strategy 1 (baseline): random
+    if args.strategy == 1:
+      score += [1] * batch['label'].shape[0]
+    # Strategy 2 (idea 1): find the label with least absolute influence, then find the sample with most negative fairness infl
+    elif args.strategy == 2:
+      label_expected = np.argmin(abs(infl), 1).reshape(-1)
+
+    # Strategy 3 (idea 2): find the label with minimal influence values (most negative), then find the sample with most negative infl 
+    elif args.strategy == 3:
+      label_expected = np.argmin(infl, 1).reshape(-1)
+
+    # Strategy 4: use true label
+    elif args.strategy == 4:
+      label_expected = batch['label'].reshape(-1)
+
+    # Strategy 4: use model predicted label
+    elif args.strategy == 5:
+      label_expected = np.argmax(logits, 1).reshape(-1)
+
+    if args.strategy > 1:
+      score_tmp = (infl_fair[range(infl_fair.shape[0]), label_expected]).reshape(-1)
+      # score_org += score_tmp.tolist()
+
+
+      if args.remove_pos:
+        infl_expected = infl[range(infl.shape[0]), label_expected].reshape(-1)
+      if args.remove_posOrg:
+        infl_expected = infl_org[range(infl_org.shape[0]), label_expected].reshape(-1)
+      
+
+      
+      
+      if args.remove_pos or args.remove_posOrg:
+        score_tmp[infl_expected > 0] = 0.0
+        # score_before_check += score_tmp.tolist()
+
+
+
+      score += score_tmp.tolist()
+      
+      expected_label += label_expected.tolist()
+
+
+    idx += batch['index'].tolist()
+    idx_ans_pseudo_label += [(batch['index'][i], label_expected[i]) for i in range(len(batch['index']))]
+
+    # print(len(score))
+    if len(score) >= num * 100: # 100
+      break
+
+
+  if args.strategy == 1:
+    sel_idx = list(range(len(score)))
+    random.Random(args.infl_random_seed).shuffle(sel_idx)
+    sel_idx = sel_idx[:num]
+    # sel_true_false_with_labels = sel_idx
+
+  # Strategy 2--5
+  else:
+    sel_idx = np.argsort(score)[:num]
+    max_score = score[sel_idx[-1]]
+    if max_score >= 0.0:
+      sel_idx = np.arange(len(score))[np.asarray(score) < 0.0]
+    # score_before_check = np.asarray(score_before_check)
+    # sel_true_false_with_labels = score_before_check < min(max_score, 0.0)
+  
+
+  if args.strategy > 1:
+    # check labels
+    true_label = np.asarray(true_label)
+    expected_label = np.asarray(expected_label)
+    expect_acc = np.mean(1.0 * (true_label == expected_label))
+    print(f'[Strategy {args.strategy}] Acc of expected label: {expect_acc}')  
+    # print(f'[Strategy {args.strategy}] Expected label {expected_label}')  
+    # print(f'[Strategy {args.strategy}] True label {true_label}')  
+
+  # sel_org_id = np.asarray(idx)[sel_idx].tolist()  # samples that are used in training
+  sel_org_id_and_pseudo_label = np.asarray(idx_ans_pseudo_label)[sel_idx].tolist()  # samples that are used in training
+
+
+  # sel_org_idx_with_labels = np.asarray(idx)[sel_true_false_with_labels].tolist() # samples that have labels
+  # pdb.set_trace()
+  print('calculating influence -- done')
+  new_labels = {}
+  for pair_i in sel_org_id_and_pseudo_label:
+    new_labels[pair_i[0]] = pair_i[1]
+  return new_labels
+
+
 
 def test(args, state, data):
   """
@@ -440,8 +582,10 @@ def train_general(args):
   # setup
   set_global_seed(args.train_seed)
   # make_dirs(args)
-
+  new_labels = {}
   train_loader_labeled, train_loader_unlabeled, idx_with_labels = load_data(args, args.dataset, mode = 'train')
+
+
   val_loader, test_loader = load_data(args, args.dataset, mode = 'val')
 
   preprocess_func_torch2jax = gen_preprocess_func_torch2jax(args)
@@ -494,7 +638,7 @@ def train_general(args):
         bsz = example[0].shape[0]
 
         num_sample_cur += bsz
-        example = preprocess_func_torch2jax(example, args)
+        example = preprocess_func_torch2jax(example, args, new_labels)
         t += 1
         if t * args.train_batch_size > args.datasize:
           break
@@ -551,18 +695,19 @@ def train_general(args):
           if epoch_i >= args.warm_epoch:
             # infl 
             args.infl_random_seed = t+args.datasize*epoch_i//args.train_batch_size + args.train_seed
-            sampled_idx_tmp, sel_org_idx_with_labels= sample_by_infl(args, state, val_loader, train_loader_unlabeled, num = args.new_data_each_round)
-            sampled_idx += sampled_idx_tmp
-            idx_with_labels.update(sel_org_idx_with_labels)
-            
+            if args.without_label:
+              new_labels_tmp = sample_by_infl_without_true_label(args, state, val_loader, train_loader_unlabeled, num = args.new_data_each_round)
+              new_labels.update(new_labels_tmp)
+            else:
+              sampled_idx_tmp, sel_org_idx_with_labels = sample_by_infl(args, state, val_loader, train_loader_unlabeled, num = args.new_data_each_round)
+              sampled_idx += sampled_idx_tmp
+              idx_with_labels.update(sel_org_idx_with_labels)
 
+              train_loader_labeled, train_loader_unlabeled, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx)
 
-            # [train_loader_labeled, train_loader_unlabeled], _ = load_celeba_dataset_torch(args, shuffle_files=True, split='train', batch_size=args.train_batch_size, ratio = args.label_ratio, sampled_idx=sampled_idx)
-            train_loader_labeled, train_loader_unlabeled, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx)
-            # used_idx = set(part_1 + sampled_idx)
-            used_idx.update(sampled_idx)
-            print(f'Use {len(used_idx)} samples. Get {len(idx_with_labels)} labels. Ratio: {len(used_idx)/len(idx_with_labels)}')
-            idx_rec.append((epoch_i, args.infl_random_seed, used_idx, idx_with_labels))
+              used_idx.update(sampled_idx)
+              print(f'Use {len(used_idx)} samples. Get {len(idx_with_labels)} labels. Ratio: {len(used_idx)/len(idx_with_labels)}')
+              idx_rec.append((epoch_i, args.infl_random_seed, used_idx, idx_with_labels))
             # save_name = f'./results/s{args.strategy}_{args.metric}_{args.label_ratio}_new{args.new_data_each_round}_100round.npy'
             # np.save(save_name, idx_rec)
 
