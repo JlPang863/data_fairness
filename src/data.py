@@ -256,7 +256,11 @@ def load_celeba_dataset_torch(args, shuffle_files=False, split='train', batch_si
     # part1 += sampled_idx
     ds_new = torch.utils.data.Subset(ds, sampled_idx)
     part2 = list(set(part2) - set(sampled_idx))
-  print(f'{len(part1)} originally labeled samples, {len(sampled_idx)} new samples, and {len(part2)} unlabeled samples. Total: {len(part1) + len(part2) + len(sampled_idx)}')
+  
+    print(f'{len(part1)} originally labeled samples, {len(sampled_idx)} new samples, and {len(part2)} unlabeled samples. Total: {len(part1) + len(part2) + len(sampled_idx)}')
+  else:
+    print(f'{len(part1)} originally labeled samples, 0 new samples, and {len(part2)} unlabeled samples. Total: {len(part1) + len(part2)}')
+
 
 
   ds_1 = torch.utils.data.Subset(ds, part1)
