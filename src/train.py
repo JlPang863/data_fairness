@@ -585,7 +585,7 @@ def train_general(args):
   # make_dirs(args)
   new_labels = {}
   train_loader_labeled, train_loader_unlabeled, idx_with_labels = load_data(args, args.dataset, mode = 'train')
-
+  train_loader_new = None
 
   val_loader, test_loader = load_data(args, args.dataset, mode = 'val')
 
@@ -624,7 +624,11 @@ def train_general(args):
   idx_rec = []
   used_idx = idx_with_labels.copy()
   print(f'train with {args.datasize} samples (with replacement) in one epoch')
+
   for epoch_i in range(args.num_epochs):
+
+    if train_loader_new is not None:
+      new_iter = iter(train_loader_new)
 
 
     t = 0
@@ -635,8 +639,21 @@ def train_general(args):
     # if epoch_i == args.warm_epoch:
     #   state_reg = create_train_state(model, args, params=state.params) # use the full model
     while t * args.train_batch_size < args.datasize:
+      
+
       for example in train_loader_labeled:
-        # pdb.set_trace()
+        
+        new_data = np.random.choice(range(2), p = [1.0 - args.new_prob, args.new_prob])
+        if train_loader_new is not None  and new_data == 1:
+          try:
+              # Samples the batch
+              example = next(new_iter)
+          except StopIteration:
+              # restart the generator if the previous generator is exhausted.
+              new_iter = iter(train_loader_new)
+              example = next(new_iter)
+
+
         bsz = example[0].shape[0]
 
         num_sample_cur += bsz
@@ -722,7 +739,7 @@ def train_general(args):
 
             
 
-            train_loader_labeled, train_loader_unlabeled, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx)
+            train_loader_labeled, train_loader_unlabeled, train_loader_new, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx)
 
               
               

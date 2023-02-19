@@ -197,7 +197,25 @@ class CompasDataset(torch.utils.data.Dataset):
       return feature, label, group, index
 
 
-def load_celeba_dataset_torch(args, shuffle_files=False, split='train', batch_size=128, ratio = 0.1, sampled_idx = None, return_part2 = False, fair_train=False):
+class my_imagenet(torchvision.datasets.ImageNet):
+      def __getitem__(self, index: int) -> Tuple[Any, Any]:
+        """
+        Args:
+            index (int): Index
+
+        Returns:
+            tuple: (sample, target) where target is class_index of the target class.
+        """
+        path, target = self.samples[index]
+        sample = self.loader(path)
+        if self.transform is not None:
+            sample = self.transform(sample)
+        if self.target_transform is not None:
+            target = self.target_transform(target)
+
+        return sample, target, index
+
+def load_celeba_dataset_torch(args, shuffle_files=False, split='train', batch_size=128, ratio = 0.1, sampled_idx = None, return_part2 = False, fair_train=False, aux_dataset = 'imagenet'):
 
   train_transform = transforms.Compose([
       transforms.Resize(args.img_size),
@@ -235,9 +253,10 @@ def load_celeba_dataset_torch(args, shuffle_files=False, split='train', batch_si
   part2 = idx[num:]
 
   if sampled_idx is not None:
-    part1 += sampled_idx
+    # part1 += sampled_idx
+    ds_new = torch.utils.data.Subset(ds, sampled_idx)
     part2 = list(set(part2) - set(sampled_idx))
-  print(f'{len(part1)} labeled samples and {len(part2)} unlabeled samples. Total: {len(part1) + len(part2)}')
+  print(f'{len(part1)} originally labeled samples, {len(sampled_idx)} new samples, and {len(part2)} unlabeled samples. Total: {len(part1) + len(part2) + len(sampled_idx)}')
 
 
   ds_1 = torch.utils.data.Subset(ds, part1)
@@ -246,7 +265,9 @@ def load_celeba_dataset_torch(args, shuffle_files=False, split='train', batch_si
   else:
     ds_2 = torch.utils.data.Subset(ds, part1) # just a placeholder
 
-  
+  if aux_dataset == 'imagenet':
+    ds_2 = my_imagenet(root = args.data_dir, split='train', transform=train_transform,
+                                     target_transform=None, download=True)
 
   if fair_train:
     dataloader_1 = torch.utils.data.DataLoader(ds_1,
@@ -270,11 +291,23 @@ def load_celeba_dataset_torch(args, shuffle_files=False, split='train', batch_si
                                             shuffle=shuffle_files,
                                             num_workers=1,
                                             drop_last=False)
+    if sampled_idx is not None:
+      dataloader_new = torch.utils.data.DataLoader(ds_new,
+                                              batch_size=batch_size,
+                                              shuffle=shuffle_files,
+                                              num_workers=1,
+                                              drop_last=True)
+
+
 
   if return_part2:
     return [dataloader_1, dataloader_2], part1, part2
   else:
-    return [dataloader_1, dataloader_2], part1
+    if sampled_idx is not None:
+      return [dataloader_1, dataloader_2, dataloader_new], part1
+    else:
+      return [dataloader_1, dataloader_2], part1
+
 
 
 
@@ -370,16 +403,20 @@ def load_data(args, dataset, mode = 'train', sampled_idx = None):
   
   if dataset == 'celeba':
     if mode == 'train':
-      [train_loader_labeled, train_loader_unlabeled], part_1 = load_celeba_dataset_torch(args, shuffle_files=True, split='train', batch_size=args.train_batch_size, ratio = args.label_ratio, sampled_idx=sampled_idx)
+      [train_loader_labeled, train_loader_unlabeled, train_loader_new], part_1 = load_celeba_dataset_torch(args, shuffle_files=True, split='train', batch_size=args.train_batch_size, ratio = args.label_ratio, sampled_idx=sampled_idx)
       idx_with_labels = set(part_1)
-      return train_loader_labeled, train_loader_unlabeled, idx_with_labels
+      if sampled_idx is not None:
+        return train_loader_labeled, train_loader_unlabeled, train_loader_new, idx_with_labels
+      else:
+        return train_loader_labeled, train_loader_unlabeled, idx_with_labels
+
     elif mode == 'val':
       [val_loader, test_loader], _ = load_celeba_dataset_torch(args, shuffle_files=True, split='test', batch_size=args.test_batch_size, ratio = args.val_ratio)
       return val_loader, test_loader
     else:
       raise NotImplementedError('mode should be either train or val')
   elif dataset == 'compas':
-    if mode == 'train':
+    if mode == 'train': # TODO
       [train_loader_labeled, train_loader_unlabeled], part_1 = load_compas_dataset_torch(args, shuffle_files=True, split='train', batch_size=args.train_batch_size, ratio = args.label_ratio, sampled_idx=sampled_idx)
       idx_with_labels = set(part_1)
       return train_loader_labeled, train_loader_unlabeled, idx_with_labels

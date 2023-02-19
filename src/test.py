@@ -50,4 +50,4 @@
 # a = 1
 # print(isinstance(a, int))
 import numpy as np
-print(np.random.choice(range(2), 10))
+print(np.random.choice(range(2), p = [0.5, 0.5]))

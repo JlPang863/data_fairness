@@ -12,8 +12,9 @@ result_dict = collections.defaultdict(list)
 # avg_cnt = 3
 
 dataset = 'celeba'
-tol = 0.05
+tol = 0.02
 avg_cnt = 3
+suffix = '_tol0.02_wolb'
 
 
 root = f'./logs/fair_sampling/{dataset}/'
@@ -35,7 +36,7 @@ def get_result(file_name):
         remove = 1
     else:
         remove = 1
-    with open(root+file_name+'.log') as file:
+    with open(root+file_name + '.log') as file:
         test_list = []
         val_list = []
         warm_list_t, warm_list_v = [], []
@@ -136,6 +137,8 @@ def get_table(focus):
                     file_name = f'{label}_s{stg}_{metric}_{layer}'
                     if 'res18' in root:
                         file_name = 'res18_' + file_name
+                    if suffix:
+                        file_name += suffix
                     if stg == 0:
                         rec.append(result_dict[file_name][0])
                     else:
@@ -173,8 +176,10 @@ for layer in sel_layers:
                     file_name = f'{label}_s{stg}_{metric}_{layer}'
                     if 'res18' in root:
                         file_name = 'res18_' + file_name
+                    if suffix:
+                        file_name += suffix
                     base_pref = get_result(file_name)
-                    result_dict[f'{label}_s0_{metric}_{layer}'] = [base_pref]
+                    result_dict[f'{label}_s0_{metric}_{layer}' + suffix] = [base_pref]
         
 # get table
 # get_table(focus = 'acc')
