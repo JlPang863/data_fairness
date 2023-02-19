@@ -215,7 +215,7 @@ class my_imagenet(torchvision.datasets.ImageNet):
 
         return sample, target, index
 
-def load_celeba_dataset_torch(args, shuffle_files=False, split='train', batch_size=128, ratio = 0.1, sampled_idx = None, return_part2 = False, fair_train=False, aux_dataset = 'imagenet'):
+def load_celeba_dataset_torch(args, shuffle_files=False, split='train', batch_size=128, ratio = 0.1, sampled_idx = None, return_part2 = False, fair_train=False, aux_dataset = None):
 
   train_transform = transforms.Compose([
       transforms.Resize(args.img_size),
