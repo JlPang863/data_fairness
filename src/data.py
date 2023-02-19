@@ -407,11 +407,15 @@ def load_data(args, dataset, mode = 'train', sampled_idx = None):
   
   if dataset == 'celeba':
     if mode == 'train':
-      [train_loader_labeled, train_loader_unlabeled, train_loader_new], part_1 = load_celeba_dataset_torch(args, shuffle_files=True, split='train', batch_size=args.train_batch_size, ratio = args.label_ratio, sampled_idx=sampled_idx)
-      idx_with_labels = set(part_1)
+      
+      
       if sampled_idx is not None:
+        [train_loader_labeled, train_loader_unlabeled, train_loader_new], part_1 = load_celeba_dataset_torch(args, shuffle_files=True, split='train', batch_size=args.train_batch_size, ratio = args.label_ratio, sampled_idx=sampled_idx)
+        idx_with_labels = set(part_1)
         return train_loader_labeled, train_loader_unlabeled, train_loader_new, idx_with_labels
       else:
+        [train_loader_labeled, train_loader_unlabeled], part_1 = load_celeba_dataset_torch(args, shuffle_files=True, split='train', batch_size=args.train_batch_size, ratio = args.label_ratio, sampled_idx=sampled_idx)
+        idx_with_labels = set(part_1)
         return train_loader_labeled, train_loader_unlabeled, idx_with_labels
 
     elif mode == 'val':
