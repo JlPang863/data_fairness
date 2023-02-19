@@ -642,9 +642,9 @@ def train_general(args):
       
 
       for example in train_loader_labeled:
-        
+
         new_data = np.random.choice(range(2), p = [1.0 - args.new_prob, args.new_prob])
-        if train_loader_new is not None  and new_data == 1:
+        if train_loader_new is not None and new_data == 1:
           try:
               # Samples the batch
               example = next(new_iter)
@@ -740,6 +740,7 @@ def train_general(args):
             
 
             train_loader_labeled, train_loader_unlabeled, train_loader_new, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx)
+            new_iter = iter(train_loader_new)
 
               
               
