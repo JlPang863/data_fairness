@@ -49,5 +49,9 @@
 # b.update([5])
 # a = 1
 # print(isinstance(a, int))
-import numpy as np
-print(np.random.choice(range(2), p = [0.5, 0.5]))
+# import numpy as np
+# print(np.random.choice(range(2), p = [0.5, 0.5]))
+
+import torchvision
+ds_2 = torchvision.datasets.ImageNet(root = '/data2/data', split='train', transform=None,
+                                     target_transform=None, download=True)
