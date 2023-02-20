@@ -53,5 +53,26 @@
 # print(np.random.choice(range(2), p = [0.5, 0.5]))
 
 import torchvision
-ds_2 = torchvision.datasets.ImageNet(root = '/data2/data/imgnet/', split='train', transform=None,
+import torchvision.transforms as transforms
+import torch
+train_transform = transforms.Compose([
+    transforms.Resize(args.img_size),
+    # transforms.RandomCrop(32, padding=4), 
+    # transforms.RandomHorizontalFlip(),
+    transforms.ToTensor(),
+    transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
+])
+
+ds_new = torchvision.datasets.ImageNet(root = '/data2/data/imgnet/', split='train', transform=None,
                                      target_transform=None)
+
+dataloader_new = torch.utils.data.DataLoader(ds_new,
+                                        batch_size=min(len(ds_new), 128),
+                                        shuffle=True,
+                                        num_workers=1,
+                                        drop_last=True)
+
+new_iter = iter(dataloader_new)
+example = next(new_iter)
+import pdb
+pdb.set_trace()
