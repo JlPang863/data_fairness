@@ -63,7 +63,7 @@ train_transform = transforms.Compose([
     transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
 ])
 
-ds_new = torchvision.datasets.ImageNet(root = '/data2/data/imgnet/', split='train', transform=None,
+ds_new = torchvision.datasets.ImageNet(root = '/data2/data/imgnet/', split='train', transform=train_transform,
                                      target_transform=None)
 
 dataloader_new = torch.utils.data.DataLoader(ds_new,
