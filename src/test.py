@@ -89,8 +89,7 @@ ds_new = my_imagenet(root = '/data2/data/imgnet/', split='train', transform=trai
 
 # ds_new = torchvision.datasets.ImageNet(root = '/data2/data/imgnet/', split='train', transform=train_transform,
                                     #  target_transform=None)
-import pdb
-pdb.set_trace()
+
 
 dataloader_new = torch.utils.data.DataLoader(ds_new,
                                         batch_size=min(len(ds_new), 128),
@@ -100,3 +99,6 @@ dataloader_new = torch.utils.data.DataLoader(ds_new,
 
 new_iter = iter(dataloader_new)
 example = next(new_iter)
+
+import pdb
+pdb.set_trace()
