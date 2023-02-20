@@ -56,7 +56,7 @@ import torchvision
 import torchvision.transforms as transforms
 import torch
 train_transform = transforms.Compose([
-    transforms.Resize(args.img_size),
+    transforms.Resize(32),
     # transforms.RandomCrop(32, padding=4), 
     # transforms.RandomHorizontalFlip(),
     transforms.ToTensor(),
