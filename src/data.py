@@ -297,7 +297,7 @@ def load_celeba_dataset_torch(args, shuffle_files=False, split='train', batch_si
                                             drop_last=False)
     if sampled_idx is not None:
       dataloader_new = torch.utils.data.DataLoader(ds_new,
-                                              batch_size=batch_size,
+                                              batch_size=min(len(ds_new), batch_size),
                                               shuffle=shuffle_files,
                                               num_workers=1,
                                               drop_last=True)
