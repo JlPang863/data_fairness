@@ -53,5 +53,5 @@
 # print(np.random.choice(range(2), p = [0.5, 0.5]))
 
 import torchvision
-ds_2 = torchvision.datasets.ImageNet(root = '/data2/data', split='train', transform=None,
+ds_2 = torchvision.datasets.ImageNet(root = '/data2/data/imgnet/', split='train', transform=None,
                                      target_transform=None, download=True)
