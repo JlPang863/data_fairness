@@ -642,8 +642,12 @@ def train_general(args):
       
 
       for example in train_loader_labeled:
-
-        new_data = np.random.choice(range(2), p = [1.0 - args.new_prob, args.new_prob])
+        if 0 <= args.new_prob and args.new_prob <= 1:
+          new_data = np.random.choice(range(2), p = [1.0 - args.new_prob, args.new_prob])
+        else:
+          if train_loader_new is not None:
+            new_prob = (len(train_loader_new) + 1) / (len(train_loader_new) + len(train_loader_labeled))
+            new_data = np.random.choice(range(2), p = [1.0 - new_prob, new_prob])
         if train_loader_new is not None and new_data == 1:
           try:
               # Samples the batch
