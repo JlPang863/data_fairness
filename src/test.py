@@ -54,4 +54,4 @@
 
 import torchvision
 ds_2 = torchvision.datasets.ImageNet(root = '/data2/data/imgnet/', split='train', transform=None,
-                                     target_transform=None, download=True)
+                                     target_transform=None)
