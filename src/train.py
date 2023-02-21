@@ -584,12 +584,17 @@ def train_general(args):
   set_global_seed(args.train_seed)
   # make_dirs(args)
   new_labels = {}
-  train_loader_labeled, train_loader_unlabeled, idx_with_labels = load_data(args, args.dataset, mode = 'train')
+  train_loader_labeled, train_loader_unlabeled, idx_with_labels = load_data(args, args.dataset, mode = 'train', aux_dataset=args.aux_data)
   train_loader_new = None
 
   val_loader, test_loader = load_data(args, args.dataset, mode = 'val')
 
-  preprocess_func_torch2jax = gen_preprocess_func_torch2jax(args)
+  preprocess_func_torch2jax = gen_preprocess_func_torch2jax(args.dataset)
+  if args.aux_data is not None:
+    preprocess_func_torch2jax_aux = gen_preprocess_func_torch2jax(args.aux_data)
+  else:
+    preprocess_func_torch2jax_aux = None
+
   
   # setup
   model = get_model(args)
@@ -642,8 +647,9 @@ def train_general(args):
       
 
       for example in train_loader_labeled:
+        new_data = 0
         if train_loader_new is not None:
-          if 0 <= args.new_prob and args.new_prob <= 1 and len(train_loader_new) >= 2: # args.new_prob should be large, e.g., 0.9.   len(train_loader_new) >= len(train_loader_labeled) / 3 means the new data should be sufficient > 25 % of total
+          if 0 <= args.new_prob and args.new_prob <= 1 and len(train_loader_new) >= 2 and args.aux_data is None: # args.new_prob should be large, e.g., 0.9.   len(train_loader_new) >= len(train_loader_labeled) / 3 means the new data should be sufficient > 25 % of total
             new_data = np.random.choice(range(2), p = [1.0 - args.new_prob, args.new_prob])
           else:
             new_prob = (len(train_loader_new) + 1) / (len(train_loader_new) + len(train_loader_labeled))
@@ -662,7 +668,11 @@ def train_general(args):
         bsz = example[0].shape[0]
 
         num_sample_cur += bsz
-        example = preprocess_func_torch2jax(example, args, new_labels = new_labels)
+        if new_data == 0:
+          example = preprocess_func_torch2jax(example, args)
+        else:
+          example = preprocess_func_torch2jax_aux(example, args, new_labels = new_labels)
+
         t += 1
         if t * args.train_batch_size > args.datasize:
           break
@@ -724,7 +734,16 @@ def train_general(args):
 
             # infl 
             args.infl_random_seed = t+args.datasize*epoch_i//args.train_batch_size + args.train_seed
-            if args.without_label and val_metric['accuracy'] >= init_val_acc - args.tol:
+
+            if args.aux_data is not None:
+              sampled_idx_tmp, new_labels_tmp = sample_by_infl_without_true_label(args, state, val_loader, train_loader_unlabeled, num = args.new_data_each_round)
+              new_labels.update(new_labels_tmp)
+              print(f'length of new labels {len(new_labels)}')
+              sampled_idx += sampled_idx_tmp
+              # used_idx.update(sampled_idx)
+              print(f'Use {len(used_idx)}+{len(new_labels)} = {len(used_idx) + len(new_labels)} samples.')
+
+            elif (epoch_i >= args.num_epochs - 2 and val_metric['accuracy'] >= init_val_acc - args.tol): # last two epochs
               sampled_idx_tmp, new_labels_tmp = sample_by_infl_without_true_label(args, state, val_loader, train_loader_unlabeled, num = args.new_data_each_round)
               new_labels.update(new_labels_tmp)
               print(f'length of new labels {len(new_labels)}')
@@ -740,11 +759,8 @@ def train_general(args):
               used_idx.update(sampled_idx)
               print(f'Use {len(used_idx)} samples. Get {len(idx_with_labels)} labels. Ratio: {len(used_idx)/len(idx_with_labels)}')
               idx_rec.append((epoch_i, args.infl_random_seed, used_idx, idx_with_labels))
-         
 
-            
-
-            train_loader_labeled, train_loader_unlabeled, train_loader_new, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx)
+            train_loader_labeled, train_loader_unlabeled, train_loader_new, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx, aux_dataset=args.aux_data)
             new_iter = iter(train_loader_new)
 
               

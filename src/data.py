@@ -42,6 +42,37 @@ def preprocess_func_compas_torch(example, args, noisy_attribute = None, num_grou
   # global_var.set_value('args', args)
   return data
 
+
+
+def preprocess_func_imgnet_torch(example, args, noisy_attribute = None, new_labels = {}):
+  """ preprocess the data
+  """
+
+  image, group, label, idx = example[0].numpy(), None, example[1].numpy().astype(np.uint8),  example[2].numpy()
+
+  image = image.transpose((0, 2, 3, 1)) 
+
+  if len(new_labels) > 0:
+    label = np.asarray([new_labels[idx[i]] if idx[i] in new_labels else label[i]  for i in range(len(idx))])
+  if noisy_attribute is None:
+    data = {
+      'feature': image,
+      'label': label,
+      'group': group,
+      'index': idx
+    }
+  else:
+    noisy_attribute = noisy_attribute[:,0]
+    data = {
+      'feature': image,
+      'label': label,
+      'group': noisy_attribute,
+      'index': idx
+    }
+
+  return data
+
+
 def preprocess_func_celeba_torch(example, args, noisy_attribute = None, new_labels = {}):
   """ preprocess the data
   """
@@ -74,11 +105,14 @@ def preprocess_func_celeba_torch(example, args, noisy_attribute = None, new_labe
   # global_var.set_value('args', args)
   return data
 
-def gen_preprocess_func_torch2jax(args):
-  if args.dataset == 'celeba':
+def gen_preprocess_func_torch2jax(dataset):
+  if dataset == 'celeba':
     return preprocess_func_celeba_torch
-  elif args.dataset == 'compas':
+  elif dataset == 'compas':
     return preprocess_func_compas_torch
+  elif dataset == 'imagenet':
+    return preprocess_func_imgnet_torch
+
 
 
 
@@ -272,6 +306,9 @@ def load_celeba_dataset_torch(args, shuffle_files=False, split='train', batch_si
   if aux_dataset == 'imagenet':
     ds_2 = my_imagenet(root = args.data_dir, split='train', transform=train_transform,
                                      target_transform=None)
+  else:
+    if aux_dataset is not None:
+      raise NameError(f'Undefined dataset {aux_dataset}')
 
   if fair_train:
     dataloader_1 = torch.utils.data.DataLoader(ds_1,
@@ -403,18 +440,18 @@ def load_jigsaw_dataset(args, mode='train', ratio=0.1):
 
     return labeled_data, unlabeled_data
 
-def load_data(args, dataset, mode = 'train', sampled_idx = None):
+def load_data(args, dataset, mode = 'train', sampled_idx = None, aux_dataset = None):
   
   if dataset == 'celeba':
     if mode == 'train':
       
       
       if sampled_idx is not None:
-        [train_loader_labeled, train_loader_unlabeled, train_loader_new], part_1 = load_celeba_dataset_torch(args, shuffle_files=True, split='train', batch_size=args.train_batch_size, ratio = args.label_ratio, sampled_idx=sampled_idx)
+        [train_loader_labeled, train_loader_unlabeled, train_loader_new], part_1 = load_celeba_dataset_torch(args, shuffle_files=True, split='train', batch_size=args.train_batch_size, ratio = args.label_ratio, sampled_idx=sampled_idx, aux_dataset = aux_dataset)
         idx_with_labels = set(part_1)
         return train_loader_labeled, train_loader_unlabeled, train_loader_new, idx_with_labels
       else:
-        [train_loader_labeled, train_loader_unlabeled], part_1 = load_celeba_dataset_torch(args, shuffle_files=True, split='train', batch_size=args.train_batch_size, ratio = args.label_ratio, sampled_idx=sampled_idx)
+        [train_loader_labeled, train_loader_unlabeled], part_1 = load_celeba_dataset_torch(args, shuffle_files=True, split='train', batch_size=args.train_batch_size, ratio = args.label_ratio, sampled_idx=sampled_idx, aux_dataset = aux_dataset)
         idx_with_labels = set(part_1)
         return train_loader_labeled, train_loader_unlabeled, idx_with_labels
 
