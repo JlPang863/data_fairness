@@ -112,6 +112,8 @@ def gen_preprocess_func_torch2jax(dataset):
     return preprocess_func_compas_torch
   elif dataset == 'imagenet':
     return preprocess_func_imgnet_torch
+  else:
+    return None
 
 
 

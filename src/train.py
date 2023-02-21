@@ -43,7 +43,7 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
   Get influence score of each unlabeled_data on val_data, then sample according to scores
   For fairness, the sign is very important
   """
-  preprocess_func_torch2jax = gen_preprocess_func_torch2jax(args)
+  preprocess_func_torch2jax = gen_preprocess_func_torch2jax(args.dataset)
   print('begin calculating influence')
   num_samples = 0.0
   grad_sum = 0.0
@@ -284,7 +284,11 @@ def sample_by_infl_without_true_label(args, state, val_data, unlabeled_data, num
   Get influence score of each unlabeled_data on val_data, then sample according to scores
   For fairness, the sign is very important
   """
-  preprocess_func_torch2jax = gen_preprocess_func_torch2jax(args)
+  preprocess_func_torch2jax = gen_preprocess_func_torch2jax(args.dataset)
+  if args.aux_data is None:
+    preprocess_func_torch2jax_aux = gen_preprocess_func_torch2jax(args.dataset)
+  else:
+    preprocess_func_torch2jax_aux = gen_preprocess_func_torch2jax(args.aux_data)
   print('begin calculating influence')
   num_samples = 0.0
   grad_sum = 0.0
@@ -317,7 +321,7 @@ def sample_by_infl_without_true_label(args, state, val_data, unlabeled_data, num
   expected_label = []
   true_label = []
   for example in unlabeled_data:
-    batch = preprocess_func_torch2jax(example, args)
+    batch = preprocess_func_torch2jax_aux(example, args)
     batch_unlabeled = batch.copy()
     batch_unlabeled['label'] = None # get grad for each label. We do not know labels of samples in unlabeled data
     # grads_each_sample = np.asarray(infl_step_per_sample(state, batch_unlabeled))
@@ -427,7 +431,7 @@ def test(args, state, data):
   Test
   """
   logits, labels, groups = [], [], []
-  preprocess_func_torch2jax = gen_preprocess_func_torch2jax(args)
+  preprocess_func_torch2jax = gen_preprocess_func_torch2jax(args.dataset)
   for example in data:
     # batch = preprocess_func_celeba(example, args)
     batch = preprocess_func_torch2jax(example, args, noisy_attribute = None)
@@ -454,7 +458,7 @@ def train(args):
   
   [val_loader, test_loader], _ = load_celeba_dataset_torch(args, shuffle_files=True, split='test', batch_size=args.test_batch_size, ratio = args.val_ratio)
 
-  preprocess_func_torch2jax = gen_preprocess_func_torch2jax(args)
+  preprocess_func_torch2jax = gen_preprocess_func_torch2jax(args.dataset)
 
   args.image_shape = args.img_size
   # setup
@@ -588,14 +592,13 @@ def train_general(args):
   train_loader_new = None
 
   val_loader, test_loader = load_data(args, args.dataset, mode = 'val')
-  import pdb
-  pdb.set_trace()
+
 
   preprocess_func_torch2jax = gen_preprocess_func_torch2jax(args.dataset)
-  if args.aux_data is not None:
-    preprocess_func_torch2jax_aux = gen_preprocess_func_torch2jax(args.aux_data)
+  if args.aux_data is None:
+    preprocess_func_torch2jax_aux = gen_preprocess_func_torch2jax(args.dataset)
   else:
-    preprocess_func_torch2jax_aux = None
+    preprocess_func_torch2jax_aux = gen_preprocess_func_torch2jax(args.aux_data)
 
   
   # setup
@@ -787,7 +790,7 @@ def fair_train(args):
   # setup
   set_global_seed(args.train_seed)
   make_dirs(args)
-  preprocess_func_torch2jax = gen_preprocess_func_torch2jax(args)
+  preprocess_func_torch2jax = gen_preprocess_func_torch2jax(args.dataset)
 
 
   if args.strategy == 1:
