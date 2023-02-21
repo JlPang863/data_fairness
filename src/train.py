@@ -643,7 +643,9 @@ def train_general(args):
 
       for example in train_loader_labeled:
         if train_loader_new is not None:
-          if 0 <= args.new_prob and args.new_prob <= 1 and len(train_loader_new) >= len(train_loader_labeled) / 3: # args.new_prob should be large, e.g., 0.9.   len(train_loader_new) >= len(train_loader_labeled) / 3 means the new data should be sufficient > 25 % of total
+          if 0 <= args.new_prob and args.new_prob <= 1 and len(train_loader_new) >= 2: # args.new_prob should be large, e.g., 0.9.   len(train_loader_new) >= len(train_loader_labeled) / 3 means the new data should be sufficient > 25 % of total
+            import pdb
+            pdb.set_trace()
             new_data = np.random.choice(range(2), p = [1.0 - args.new_prob, args.new_prob])
           else:
             new_prob = (len(train_loader_new) + 1) / (len(train_loader_new) + len(train_loader_labeled))
