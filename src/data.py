@@ -304,7 +304,7 @@ def load_celeba_dataset_torch(args, shuffle_files=False, split='train', batch_si
     ds_2 = torch.utils.data.Subset(ds, part1) # just a placeholder
 
   if aux_dataset == 'imagenet':
-    ds_2 = my_imagenet(root = args.data_dir, split='train', transform=train_transform,
+    ds_2 = my_imagenet(root = args.data_dir + '/imgnet/', split='train', transform=train_transform,
                                      target_transform=None)
   else:
     if aux_dataset is not None:
