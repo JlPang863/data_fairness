@@ -79,7 +79,7 @@ def preprocess_func_celeba_torch(example, args, noisy_attribute = None, new_labe
 
   image, group, label = example[args.feature_key].numpy(), example[args.attr_key][:,args.group_key].numpy().astype(np.uint8), example[args.attr_key][:,args.label_key].numpy().astype(np.uint8)
   idx = example[args.idx_key].numpy()
-  pdb.set_trace()
+  # pdb.set_trace()
   image = image.transpose((0, 2, 3, 1)) 
   # use str to avoid error in Jax tree
   # args.feature_key, args.label_key, args.group_key = f'{args.feature_key}', f'{args.label_key}', f'{args.group_key}' 
