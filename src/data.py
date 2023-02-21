@@ -251,7 +251,8 @@ class my_imagenet(torchvision.datasets.ImageNet):
 
         return sample, target, index
 
-def load_celeba_dataset_torch(args, shuffle_files=False, split='train', batch_size=128, ratio = 0.1, sampled_idx = None, return_part2 = False, fair_train=False, aux_dataset = None):
+def load_celeba_dataset_torch(args, shuffle_files=False, split='train', batch_size=128, ratio = 0.1, sampled_idx = [], return_part2 = False, fair_train=False, aux_dataset = None):
+
 
   train_transform = transforms.Compose([
       transforms.Resize((args.img_size, args.img_size)),
@@ -288,29 +289,41 @@ def load_celeba_dataset_torch(args, shuffle_files=False, split='train', batch_si
   part1 = idx[:num]
   part2 = idx[num:]
 
-  if sampled_idx is not None:
-    # part1 += sampled_idx
-    ds_new = torch.utils.data.Subset(ds, sampled_idx)
-    part2 = list(set(part2) - set(sampled_idx))
-  
-    print(f'{len(part1)} originally labeled samples, {len(sampled_idx)} new samples, and {len(part2)} unlabeled samples. Total: {len(part1) + len(part2) + len(sampled_idx)}')
+
+  if aux_dataset is None:
+    if len(sampled_idx) > 0:
+      # part1 += sampled_idx
+      ds_new = torch.utils.data.Subset(ds, sampled_idx)
+      part2 = list(set(part2) - set(sampled_idx))
+    
+      print(f'{len(part1)} originally labeled samples, {len(sampled_idx)} new samples, and {len(part2)} unlabeled samples. Total: {len(part1) + len(part2) + len(sampled_idx)}')
+    else:
+      print(f'{len(part1)} originally labeled samples, 0 new samples, and {len(part2)} unlabeled samples. Total: {len(part1) + len(part2)}')
+
+    if len(part2) > 0:
+      ds_2 = torch.utils.data.Subset(ds, part2)
+    else:
+      ds_2 = torch.utils.data.Subset(ds, part1) # just a placeholder
+
+
   else:
-    print(f'{len(part1)} originally labeled samples, 0 new samples, and {len(part2)} unlabeled samples. Total: {len(part1) + len(part2)}')
+    if aux_dataset == 'imagenet':
+      ds_aux = my_imagenet(root = args.data_dir + '/imgnet/', split='train', transform=train_transform,
+                                      target_transform=None)
+      idx_aux = list(range(len(ds)))
+      part2 = list(set(idx_aux) - set(sampled_idx))
+      ds_2 = torch.utils.data.Subset(ds_aux, part2)
+      if len(sampled_idx) > 0:
+        ds_new = torch.utils.data.Subset(ds_aux, sampled_idx)
+      print(f'{len(part1)} originally labeled samples, {len(sampled_idx)} new samples, and {len(part2)} unlabeled samples. Total: {len(part1) + len(part2) + len(sampled_idx)}')
+
+    else:      
+        raise NameError(f'Undefined dataset {aux_dataset}')
 
 
 
   ds_1 = torch.utils.data.Subset(ds, part1)
-  if len(part2) > 0:
-    ds_2 = torch.utils.data.Subset(ds, part2)
-  else:
-    ds_2 = torch.utils.data.Subset(ds, part1) # just a placeholder
 
-  if aux_dataset == 'imagenet':
-    ds_2 = my_imagenet(root = args.data_dir + '/imgnet/', split='train', transform=train_transform,
-                                     target_transform=None)
-  else:
-    if aux_dataset is not None:
-      raise NameError(f'Undefined dataset {aux_dataset}')
 
   if fair_train:
     dataloader_1 = torch.utils.data.DataLoader(ds_1,
