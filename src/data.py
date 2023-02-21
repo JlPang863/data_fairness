@@ -254,7 +254,7 @@ class my_imagenet(torchvision.datasets.ImageNet):
 def load_celeba_dataset_torch(args, shuffle_files=False, split='train', batch_size=128, ratio = 0.1, sampled_idx = None, return_part2 = False, fair_train=False, aux_dataset = None):
 
   train_transform = transforms.Compose([
-      transforms.Resize(args.img_size),
+      transforms.Resize((args.img_size, args.img_size)),
       # transforms.RandomCrop(32, padding=4), 
       # transforms.RandomHorizontalFlip(),
       transforms.ToTensor(),
@@ -262,7 +262,7 @@ def load_celeba_dataset_torch(args, shuffle_files=False, split='train', batch_si
   ])
 
   test_transform = transforms.Compose([
-      transforms.Resize(args.img_size),
+      transforms.Resize((args.img_size, args.img_size)),
       transforms.ToTensor(),
       transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
   ])
