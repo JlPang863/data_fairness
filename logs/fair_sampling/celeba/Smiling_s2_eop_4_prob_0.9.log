@@ -1,0 +1,356 @@
+Files already downloaded and verified
+3255 originally labeled samples, 0 new samples, and 159515 unlabeled samples. Total: 162770
+Files already downloaded and verified
+1996 originally labeled samples, 0 new samples, and 17966 unlabeled samples. Total: 19962
+Numer of layers 200
+train net...
+train with 162770 samples (with replacement) in one epoch
+Epoch 0
+  2.62% | time: 105.7s (  1.8m) | step:    200 | train acc: 0.977 | train loss: 0.067 |warm_t acc: 0.843 (0.857, 0.820) | warm_t eop gap: 0.0672
+  2.62% | time:   5.7s (  1.9m) | step:    200 | train acc: 0.977 | train loss: 0.067 |warm_v acc: 0.853 (0.865, 0.833) | warm_v eop gap: 0.0354
+  5.24% | time:  81.9s (  3.2m) | step:    400 | train acc: 1.000 | train loss: 0.000 |warm_t acc: 0.848 (0.861, 0.827) | warm_t eop gap: 0.0602
+  5.24% | time:   1.4s (  3.2m) | step:    400 | train acc: 1.000 | train loss: 0.000 |warm_v acc: 0.859 (0.873, 0.836) | warm_v eop gap: 0.0481
+  7.86% | time:  81.0s (  4.6m) | step:    600 | train acc: 1.000 | train loss: 0.000 |warm_t acc: 0.847 (0.861, 0.826) | warm_t eop gap: 0.0605
+  7.86% | time:   1.3s (  4.6m) | step:    600 | train acc: 1.000 | train loss: 0.000 |warm_v acc: 0.857 (0.876, 0.825) | warm_v eop gap: 0.0494
+  8.32% | time:  21.3s (  5.0m) | step:    635 | train acc: 1.000 | train loss: 0.000 |warm_t acc: 0.848 (0.861, 0.826) | warm_t eop gap: 0.0608
+  8.32% | time:   1.4s (  5.0m) | step:    635 | train acc: 1.000 | train loss: 0.000 |warm_v acc: 0.860 (0.875, 0.837) | warm_v eop gap: 0.0463
+Epoch 1
+ 10.95% | time:  81.3s (  6.3m) | step:    835 | train acc: 1.000 | train loss: 0.000 |warm_t acc: 0.848 (0.861, 0.826) | warm_t eop gap: 0.0612
+ 10.95% | time:   1.5s (  6.4m) | step:    835 | train acc: 1.000 | train loss: 0.000 |warm_v acc: 0.861 (0.886, 0.820) | warm_v eop gap: 0.0743
+ 13.57% | time:  80.8s (  7.7m) | step:   1035 | train acc: 1.000 | train loss: 0.000 |warm_t acc: 0.847 (0.861, 0.826) | warm_t eop gap: 0.0607
+ 13.57% | time:   1.5s (  7.7m) | step:   1035 | train acc: 1.000 | train loss: 0.000 |warm_v acc: 0.854 (0.867, 0.833) | warm_v eop gap: 0.0413
+ 16.19% | time:  79.0s (  9.1m) | step:   1235 | train acc: 1.000 | train loss: 0.000 |warm_t acc: 0.847 (0.861, 0.826) | warm_t eop gap: 0.0607
+ 16.19% | time:   1.3s (  9.1m) | step:   1235 | train acc: 1.000 | train loss: 0.000 |warm_v acc: 0.854 (0.873, 0.825) | warm_v eop gap: 0.0590
+ 16.65% | time:  23.8s (  9.5m) | step:   1270 | train acc: 1.000 | train loss: 0.000 |warm_t acc: 0.847 (0.861, 0.826) | warm_t eop gap: 0.0601
+ 16.65% | time:   1.5s (  9.5m) | step:   1270 | train acc: 1.000 | train loss: 0.000 |warm_v acc: 0.854 (0.867, 0.832) | warm_v eop gap: 0.0319
+Epoch 2
+ 19.28% | time:  76.7s ( 10.8m) | step:   1471 | train acc: 1.000 | train loss: 0.000 |test acc: 0.847 (0.861, 0.826) | test eop gap: 0.0603
+ 19.28% | time:   1.4s ( 10.8m) | step:   1471 | train acc: 1.000 | train loss: 0.000 |val acc: 0.861 (0.877, 0.835) | val eop gap: 0.0578
+begin calculating influence
+selected layers: [Traced<ShapedArray(float32[768])>with<DynamicJaxprTrace(level=0/1)>, Traced<ShapedArray(float32[8,8,3,768])>with<DynamicJaxprTrace(level=0/1)>, Traced<ShapedArray(float32[2])>with<DynamicJaxprTrace(level=0/1)>, Traced<ShapedArray(float32[768,2])>with<DynamicJaxprTrace(level=0/1)>]
+[Strategy 2] Acc of expected label: 0.84875
+calculating influence -- done
+Use 3511 samples. Get 3640 labels. Ratio: 0.9645604395604396
+Files already downloaded and verified
+3255 originally labeled samples, 256 new samples, and 159259 unlabeled samples. Total: 162770
+ 21.90% | time: 798.8s ( 24.1m) | step:   1671 | train acc: 0.977 | train loss: 0.055 |test acc: 0.653 (0.664, 0.635) | test eop gap: 0.0533
+ 21.90% | time:   1.4s ( 24.1m) | step:   1671 | train acc: 0.977 | train loss: 0.055 |val acc: 0.669 (0.673, 0.664) | val eop gap: 0.0523
+begin calculating influence
+[Strategy 2] Acc of expected label: 0.641171875
+calculating influence -- done
+Use 3512 samples. Get 3643 labels. Ratio: 0.9640406258578095
+Files already downloaded and verified
+3255 originally labeled samples, 257 new samples, and 159258 unlabeled samples. Total: 162770
+ 24.52% | time: 767.8s ( 36.9m) | step:   1871 | train acc: 1.000 | train loss: 0.013 |test acc: 0.753 (0.774, 0.719) | test eop gap: 0.0243
+ 24.52% | time:   1.5s ( 37.0m) | step:   1871 | train acc: 1.000 | train loss: 0.013 |val acc: 0.770 (0.797, 0.726) | val eop gap: 0.0333
+begin calculating influence
+[Strategy 2] Acc of expected label: 0.750703125
+calculating influence -- done
+Use 3768 samples. Get 4136 labels. Ratio: 0.9110251450676983
+Files already downloaded and verified
+3255 originally labeled samples, 513 new samples, and 159002 unlabeled samples. Total: 162770
+ 24.98% | time: 696.2s ( 48.6m) | step:   1906 | train acc: 0.961 | train loss: 0.092 |test acc: 0.612 (0.667, 0.526) | test eop gap: 0.0214
+ 24.98% | time:   1.6s ( 48.6m) | step:   1906 | train acc: 0.961 | train loss: 0.092 |val acc: 0.635 (0.716, 0.512) | val eop gap: 0.0242
+begin calculating influence
+[Strategy 2] Acc of expected label: 0.6
+calculating influence -- done
+Use 3782 samples. Get 4155 labels. Ratio: 0.9102286401925391
+Files already downloaded and verified
+3255 originally labeled samples, 527 new samples, and 158988 unlabeled samples. Total: 162770
+Epoch 3
+ 27.62% | time: 761.5s ( 61.3m) | step:   2107 | train acc: 1.000 | train loss: 0.010 |test acc: 0.722 (0.769, 0.648) | test eop gap: 0.0118
+ 27.62% | time:   1.4s ( 61.3m) | step:   2107 | train acc: 1.000 | train loss: 0.010 |val acc: 0.738 (0.805, 0.638) | val eop gap: 0.0086
+begin calculating influence
+[Strategy 2] Acc of expected label: 0.7134765625
+calculating influence -- done
+Use 4038 samples. Get 4484 labels. Ratio: 0.9005352363960749
+Files already downloaded and verified
+3255 originally labeled samples, 783 new samples, and 158732 unlabeled samples. Total: 162770
+ 30.24% | time: 758.4s ( 74.0m) | step:   2307 | train acc: 1.000 | train loss: 0.011 |test acc: 0.820 (0.838, 0.790) | test eop gap: 0.0129
+ 30.24% | time:   1.4s ( 74.0m) | step:   2307 | train acc: 1.000 | train loss: 0.011 |val acc: 0.838 (0.867, 0.791) | val eop gap: 0.0125
+begin calculating influence
+[Strategy 2] Acc of expected label: 0.824140625
+calculating influence -- done
+Use 4294 samples. Get 4856 labels. Ratio: 0.8842668863261944
+Files already downloaded and verified
+3255 originally labeled samples, 1039 new samples, and 158476 unlabeled samples. Total: 162770
+ 32.86% | time: 756.7s ( 86.6m) | step:   2507 | train acc: 1.000 | train loss: 0.018 |test acc: 0.848 (0.857, 0.833) | test eop gap: 0.0286
+ 32.86% | time:   1.4s ( 86.6m) | step:   2507 | train acc: 1.000 | train loss: 0.018 |val acc: 0.863 (0.883, 0.831) | val eop gap: 0.0226
+begin calculating influence
+[Strategy 2] Acc of expected label: 0.8492578125
+calculating influence -- done
+Use 4550 samples. Get 5294 labels. Ratio: 0.859463543634303
+Files already downloaded and verified
+3255 originally labeled samples, 1295 new samples, and 158220 unlabeled samples. Total: 162770
+ 33.32% | time: 694.1s ( 98.2m) | step:   2542 | train acc: 1.000 | train loss: 0.029 |test acc: 0.848 (0.861, 0.828) | test eop gap: 0.0188
+ 33.32% | time:   1.4s ( 98.2m) | step:   2542 | train acc: 1.000 | train loss: 0.029 |val acc: 0.861 (0.883, 0.826) | val eop gap: 0.0228
+begin calculating influence
+[Strategy 2] Acc of expected label: 0.8505859375
+calculating influence -- done
+Use 4727 samples. Get 5498 labels. Ratio: 0.8597671880683885
+Files already downloaded and verified
+3255 originally labeled samples, 1472 new samples, and 158043 unlabeled samples. Total: 162770
+Epoch 4
+ 35.95% | time: 755.9s (110.8m) | step:   2743 | train acc: 1.000 | train loss: 0.014 |test acc: 0.850 (0.865, 0.827) | test eop gap: 0.0245
+ 35.95% | time:   1.4s (110.8m) | step:   2743 | train acc: 1.000 | train loss: 0.014 |val acc: 0.864 (0.895, 0.814) | val eop gap: 0.0145
+begin calculating influence
+[Strategy 2] Acc of expected label: 0.858046875
+calculating influence -- done
+Use 4983 samples. Get 5852 labels. Ratio: 0.8515037593984962
+Files already downloaded and verified
+3255 originally labeled samples, 1728 new samples, and 157787 unlabeled samples. Total: 162770
+ 38.58% | time: 757.2s (123.4m) | step:   2943 | train acc: 1.000 | train loss: 0.008 |test acc: 0.858 (0.867, 0.844) | test eop gap: 0.0273
+ 38.58% | time:   1.4s (123.5m) | step:   2943 | train acc: 1.000 | train loss: 0.008 |val acc: 0.863 (0.879, 0.836) | val eop gap: 0.0022
+begin calculating influence
+[Strategy 2] Acc of expected label: 0.858125
+calculating influence -- done
+Use 5012 samples. Get 5896 labels. Ratio: 0.850067842605156
+Files already downloaded and verified
+3255 originally labeled samples, 1757 new samples, and 157758 unlabeled samples. Total: 162770
+ 41.20% | time: 759.9s (136.1m) | step:   3143 | train acc: 1.000 | train loss: 0.008 |test acc: 0.861 (0.869, 0.848) | test eop gap: 0.0326
+ 41.20% | time:   1.4s (136.2m) | step:   3143 | train acc: 1.000 | train loss: 0.008 |val acc: 0.870 (0.890, 0.837) | val eop gap: 0.0374
+begin calculating influence
+[Strategy 2] Acc of expected label: 0.8655859375
+calculating influence -- done
+Use 5268 samples. Get 6364 labels. Ratio: 0.8277812696417347
+Files already downloaded and verified
+3255 originally labeled samples, 2013 new samples, and 157502 unlabeled samples. Total: 162770
+ 41.66% | time: 692.0s (147.7m) | step:   3178 | train acc: 1.000 | train loss: 0.009 |test acc: 0.856 (0.869, 0.835) | test eop gap: 0.0250
+ 41.66% | time:   1.5s (147.7m) | step:   3178 | train acc: 1.000 | train loss: 0.009 |val acc: 0.860 (0.888, 0.817) | val eop gap: 0.0256
+begin calculating influence
+[Strategy 2] Acc of expected label: 0.856484375
+calculating influence -- done
+Use 5274 samples. Get 6371 labels. Ratio: 0.8278135300580757
+Files already downloaded and verified
+3255 originally labeled samples, 2019 new samples, and 157496 unlabeled samples. Total: 162770
+Epoch 5
+ 44.29% | time: 755.6s (160.3m) | step:   3379 | train acc: 1.000 | train loss: 0.009 |test acc: 0.861 (0.869, 0.848) | test eop gap: 0.0358
+ 44.29% | time:   1.5s (160.3m) | step:   3379 | train acc: 1.000 | train loss: 0.009 |val acc: 0.862 (0.880, 0.834) | val eop gap: 0.0498
+begin calculating influence
+[Strategy 2] Acc of expected label: 0.868125
+calculating influence -- done
+Use 5530 samples. Get 6858 labels. Ratio: 0.8063575386410032
+Files already downloaded and verified
+3255 originally labeled samples, 2275 new samples, and 157240 unlabeled samples. Total: 162770
+ 46.91% | time: 756.9s (173.0m) | step:   3579 | train acc: 1.000 | train loss: 0.010 |test acc: 0.856 (0.869, 0.835) | test eop gap: 0.0188
+ 46.91% | time:   1.5s (173.0m) | step:   3579 | train acc: 1.000 | train loss: 0.010 |val acc: 0.862 (0.889, 0.818) | val eop gap: 0.0351
+begin calculating influence
+[Strategy 2] Acc of expected label: 0.8604296875
+calculating influence -- done
+Use 5588 samples. Get 6920 labels. Ratio: 0.807514450867052
+Files already downloaded and verified
+3255 originally labeled samples, 2333 new samples, and 157182 unlabeled samples. Total: 162770
+ 49.53% | time: 755.7s (185.6m) | step:   3779 | train acc: 0.961 | train loss: 0.159 |test acc: 0.860 (0.872, 0.841) | test eop gap: 0.0242
+ 49.53% | time:   1.4s (185.6m) | step:   3779 | train acc: 0.961 | train loss: 0.159 |val acc: 0.863 (0.879, 0.839) | val eop gap: 0.0128
+begin calculating influence
+[Strategy 2] Acc of expected label: 0.861875
+calculating influence -- done
+Use 5634 samples. Get 6994 labels. Ratio: 0.805547612239062
+Files already downloaded and verified
+3255 originally labeled samples, 2379 new samples, and 157136 unlabeled samples. Total: 162770
+ 49.99% | time: 691.5s (197.1m) | step:   3814 | train acc: 1.000 | train loss: 0.005 |test acc: 0.858 (0.868, 0.842) | test eop gap: 0.0190
+ 49.99% | time:   1.4s (197.1m) | step:   3814 | train acc: 1.000 | train loss: 0.005 |val acc: 0.868 (0.884, 0.843) | val eop gap: 0.0188
+begin calculating influence
+[Strategy 2] Acc of expected label: 0.8630078125
+calculating influence -- done
+Use 5637 samples. Get 6998 labels. Ratio: 0.8055158616747642
+Files already downloaded and verified
+3255 originally labeled samples, 2382 new samples, and 157133 unlabeled samples. Total: 162770
+Epoch 6
+ 52.62% | time: 755.0s (209.7m) | step:   4014 | train acc: 1.000 | train loss: 0.001 |test acc: 0.858 (0.870, 0.839) | test eop gap: 0.0169
+ 52.62% | time:   1.6s (209.8m) | step:   4014 | train acc: 1.000 | train loss: 0.001 |val acc: 0.861 (0.884, 0.824) | val eop gap: 0.0249
+begin calculating influence
+[Strategy 2] Acc of expected label: 0.8598828125
+calculating influence -- done
+Use 5660 samples. Get 7022 labels. Ratio: 0.8060381657647394
+Files already downloaded and verified
+3255 originally labeled samples, 2405 new samples, and 157110 unlabeled samples. Total: 162770
+ 55.24% | time: 755.8s (222.3m) | step:   4214 | train acc: 1.000 | train loss: 0.002 |test acc: 0.861 (0.872, 0.843) | test eop gap: 0.0276
+ 55.24% | time:   1.4s (222.4m) | step:   4214 | train acc: 1.000 | train loss: 0.002 |val acc: 0.865 (0.884, 0.836) | val eop gap: 0.0206
+begin calculating influence
+[Strategy 2] Acc of expected label: 0.8598828125
+calculating influence -- done
+Use 5670 samples. Get 7040 labels. Ratio: 0.8053977272727273
+Files already downloaded and verified
+3255 originally labeled samples, 2415 new samples, and 157100 unlabeled samples. Total: 162770
+ 57.86% | time: 757.7s (235.0m) | step:   4414 | train acc: 1.000 | train loss: 0.001 |test acc: 0.860 (0.873, 0.840) | test eop gap: 0.0172
+ 57.86% | time:   1.5s (235.0m) | step:   4414 | train acc: 1.000 | train loss: 0.001 |val acc: 0.857 (0.877, 0.827) | val eop gap: 0.0019
+begin calculating influence
+[Strategy 2] Acc of expected label: 0.863515625
+calculating influence -- done
+Use 5748 samples. Get 7145 labels. Ratio: 0.804478656403079
+Files already downloaded and verified
+3255 originally labeled samples, 2493 new samples, and 157022 unlabeled samples. Total: 162770
+ 58.32% | time: 689.7s (246.5m) | step:   4449 | train acc: 0.984 | train loss: 0.075 |test acc: 0.863 (0.874, 0.846) | test eop gap: 0.0255
+ 58.32% | time:   1.5s (246.5m) | step:   4449 | train acc: 0.984 | train loss: 0.075 |val acc: 0.870 (0.887, 0.843) | val eop gap: 0.0325
+begin calculating influence
+[Strategy 2] Acc of expected label: 0.8651953125
+calculating influence -- done
+Use 6004 samples. Get 7512 labels. Ratio: 0.7992545260915868
+Files already downloaded and verified
+3255 originally labeled samples, 2749 new samples, and 156766 unlabeled samples. Total: 162770
+Epoch 7
+ 60.95% | time: 760.7s (259.2m) | step:   4650 | train acc: 1.000 | train loss: 0.003 |test acc: 0.869 (0.877, 0.856) | test eop gap: 0.0243
+ 60.95% | time:   1.4s (259.2m) | step:   4650 | train acc: 1.000 | train loss: 0.003 |val acc: 0.875 (0.883, 0.862) | val eop gap: 0.0087
+begin calculating influence
+[Strategy 2] Acc of expected label: 0.8719140625
+calculating influence -- done
+Use 6260 samples. Get 7864 labels. Ratio: 0.7960325534079349
+Files already downloaded and verified
+3255 originally labeled samples, 3005 new samples, and 156510 unlabeled samples. Total: 162770
+ 63.57% | time: 755.5s (271.8m) | step:   4850 | train acc: 0.996 | train loss: 0.008 |test acc: 0.859 (0.873, 0.838) | test eop gap: 0.0211
+ 63.57% | time:   1.4s (271.9m) | step:   4850 | train acc: 0.996 | train loss: 0.008 |val acc: 0.864 (0.881, 0.838) | val eop gap: 0.0272
+begin calculating influence
+[Strategy 2] Acc of expected label: 0.858671875
+calculating influence -- done
+Use 6277 samples. Get 7888 labels. Ratio: 0.7957657200811359
+Files already downloaded and verified
+3255 originally labeled samples, 3022 new samples, and 156493 unlabeled samples. Total: 162770
+ 66.19% | time: 748.2s (284.3m) | step:   5050 | train acc: 1.000 | train loss: 0.002 |test acc: 0.862 (0.874, 0.841) | test eop gap: 0.0286
+ 66.19% | time:   1.5s (284.4m) | step:   5050 | train acc: 1.000 | train loss: 0.002 |val acc: 0.863 (0.884, 0.830) | val eop gap: 0.0523
+begin calculating influence
+[Strategy 2] Acc of expected label: 0.870234375
+calculating influence -- done
+Use 6419 samples. Get 8098 labels. Ratio: 0.7926648555198814
+Files already downloaded and verified
+3255 originally labeled samples, 3164 new samples, and 156351 unlabeled samples. Total: 162770
+ 66.65% | time: 677.5s (295.7m) | step:   5085 | train acc: 1.000 | train loss: 0.008 |test acc: 0.864 (0.875, 0.847) | test eop gap: 0.0304
+ 66.65% | time:   1.5s (295.7m) | step:   5085 | train acc: 1.000 | train loss: 0.008 |val acc: 0.873 (0.895, 0.840) | val eop gap: 0.0492
+begin calculating influence
+[Strategy 2] Acc of expected label: 0.8721875
+calculating influence -- done
+Use 6579 samples. Get 8300 labels. Ratio: 0.7926506024096386
+Files already downloaded and verified
+3255 originally labeled samples, 3324 new samples, and 156191 unlabeled samples. Total: 162770
+Epoch 8
+ 69.29% | time: 746.6s (308.1m) | step:   5286 | train acc: 1.000 | train loss: 0.014 |test acc: 0.866 (0.878, 0.847) | test eop gap: 0.0284
+ 69.29% | time:   1.5s (308.1m) | step:   5286 | train acc: 1.000 | train loss: 0.014 |val acc: 0.869 (0.893, 0.831) | val eop gap: 0.0225
+begin calculating influence
+[Strategy 2] Acc of expected label: 0.8685546875
+calculating influence -- done
+Use 6596 samples. Get 8320 labels. Ratio: 0.7927884615384615
+Files already downloaded and verified
+3255 originally labeled samples, 3341 new samples, and 156174 unlabeled samples. Total: 162770
+ 71.91% | time: 746.7s (320.6m) | step:   5486 | train acc: 1.000 | train loss: 0.002 |test acc: 0.860 (0.873, 0.841) | test eop gap: 0.0263
+ 71.91% | time:   1.4s (320.6m) | step:   5486 | train acc: 1.000 | train loss: 0.002 |val acc: 0.870 (0.893, 0.834) | val eop gap: 0.0550
+begin calculating influence
+[Strategy 2] Acc of expected label: 0.8672265625
+calculating influence -- done
+Use 6852 samples. Get 8694 labels. Ratio: 0.7881297446514838
+Files already downloaded and verified
+3255 originally labeled samples, 3597 new samples, and 155918 unlabeled samples. Total: 162770
+ 74.53% | time: 747.7s (333.1m) | step:   5686 | train acc: 1.000 | train loss: 0.004 |test acc: 0.869 (0.879, 0.854) | test eop gap: 0.0502
+ 74.53% | time:   1.4s (333.1m) | step:   5686 | train acc: 1.000 | train loss: 0.004 |val acc: 0.885 (0.905, 0.856) | val eop gap: 0.0561
+begin calculating influence
+[Strategy 2] Acc of expected label: 0.87109375
+calculating influence -- done
+Use 7108 samples. Get 9030 labels. Ratio: 0.7871539313399778
+Files already downloaded and verified
+3255 originally labeled samples, 3853 new samples, and 155662 unlabeled samples. Total: 162770
+ 74.99% | time: 695.3s (344.7m) | step:   5721 | train acc: 0.996 | train loss: 0.017 |test acc: 0.866 (0.877, 0.847) | test eop gap: 0.0263
+ 74.99% | time:   1.3s (344.7m) | step:   5721 | train acc: 0.996 | train loss: 0.017 |val acc: 0.872 (0.889, 0.845) | val eop gap: 0.0161
+begin calculating influence
+[Strategy 2] Acc of expected label: 0.87078125
+calculating influence -- done
+Use 7170 samples. Get 9104 labels. Ratio: 0.7875659050966608
+Files already downloaded and verified
+3255 originally labeled samples, 3915 new samples, and 155600 unlabeled samples. Total: 162770
+Epoch 9
+ 77.62% | time: 748.7s (357.2m) | step:   5922 | train acc: 0.992 | train loss: 0.026 |test acc: 0.871 (0.880, 0.856) | test eop gap: 0.0364
+ 77.62% | time:   1.3s (357.2m) | step:   5922 | train acc: 0.992 | train loss: 0.026 |val acc: 0.877 (0.894, 0.850) | val eop gap: 0.0426
+begin calculating influence
+[Strategy 2] Acc of expected label: 0.8730859375
+calculating influence -- done
+Use 7426 samples. Get 9512 labels. Ratio: 0.7806980656013457
+Files already downloaded and verified
+3255 originally labeled samples, 4171 new samples, and 155344 unlabeled samples. Total: 162770
+ 80.25% | time: 753.0s (369.8m) | step:   6122 | train acc: 0.992 | train loss: 0.022 |test acc: 0.874 (0.881, 0.863) | test eop gap: 0.0324
+ 80.25% | time:   1.4s (369.8m) | step:   6122 | train acc: 0.992 | train loss: 0.022 |val acc: 0.879 (0.889, 0.863) | val eop gap: 0.0409
+begin calculating influence
+[Strategy 2] Acc of expected label: 0.8766796875
+calculating influence -- done
+Use 7682 samples. Get 9982 labels. Ratio: 0.7695852534562212
+Files already downloaded and verified
+3255 originally labeled samples, 4427 new samples, and 155088 unlabeled samples. Total: 162770
+ 82.87% | time: 752.5s (382.3m) | step:   6322 | train acc: 1.000 | train loss: 0.002 |test acc: 0.873 (0.882, 0.858) | test eop gap: 0.0294
+ 82.87% | time:   1.3s (382.3m) | step:   6322 | train acc: 1.000 | train loss: 0.002 |val acc: 0.883 (0.894, 0.866) | val eop gap: 0.0379
+begin calculating influence
+[Strategy 2] Acc of expected label: 0.876640625
+calculating influence -- done
+Use 7938 samples. Get 10322 labels. Ratio: 0.7690370083317186
+Files already downloaded and verified
+3255 originally labeled samples, 4683 new samples, and 154832 unlabeled samples. Total: 162770
+ 83.33% | time: 691.7s (393.9m) | step:   6357 | train acc: 1.000 | train loss: 0.010 |test acc: 0.875 (0.884, 0.861) | test eop gap: 0.0345
+ 83.33% | time:   1.3s (393.9m) | step:   6357 | train acc: 1.000 | train loss: 0.010 |val acc: 0.880 (0.895, 0.855) | val eop gap: 0.0774
+begin calculating influence
+[Strategy 2] Acc of expected label: 0.8774609375
+calculating influence -- done
+Use 8194 samples. Get 10797 labels. Ratio: 0.7589145132907289
+Files already downloaded and verified
+3255 originally labeled samples, 4939 new samples, and 154576 unlabeled samples. Total: 162770
+Epoch 10
+ 85.96% | time: 740.7s (406.2m) | step:   6558 | train acc: 0.996 | train loss: 0.026 |test acc: 0.872 (0.881, 0.856) | test eop gap: 0.0346
+ 85.96% | time:   1.5s (406.3m) | step:   6558 | train acc: 0.996 | train loss: 0.026 |val acc: 0.886 (0.897, 0.870) | val eop gap: 0.0243
+begin calculating influence
+[Strategy 2] Acc of expected label: 0.873125
+calculating influence -- done
+Use 8254 samples. Get 10873 labels. Ratio: 0.7591281155154971
+Files already downloaded and verified
+3255 originally labeled samples, 4999 new samples, and 154516 unlabeled samples. Total: 162770
+ 88.58% | time: 737.7s (418.6m) | step:   6758 | train acc: 1.000 | train loss: 0.006 |test acc: 0.873 (0.882, 0.858) | test eop gap: 0.0254
+ 88.58% | time:   1.4s (418.6m) | step:   6758 | train acc: 1.000 | train loss: 0.006 |val acc: 0.879 (0.897, 0.850) | val eop gap: 0.0533
+begin calculating influence
+[Strategy 2] Acc of expected label: 0.8747265625
+calculating influence -- done
+Use 8269 samples. Get 10896 labels. Ratio: 0.75890234948605
+Files already downloaded and verified
+3255 originally labeled samples, 5014 new samples, and 154501 unlabeled samples. Total: 162770
+ 91.20% | time: 741.2s (430.9m) | step:   6958 | train acc: 1.000 | train loss: 0.002 |test acc: 0.880 (0.886, 0.870) | test eop gap: 0.0345
+ 91.20% | time:   1.1s (431.0m) | step:   6958 | train acc: 1.000 | train loss: 0.002 |val acc: 0.884 (0.898, 0.862) | val eop gap: 0.0626
+begin calculating influence
+[Strategy 2] Acc of expected label: 0.881484375
+calculating influence -- done
+Use 8525 samples. Get 11321 labels. Ratio: 0.7530253511173924
+Files already downloaded and verified
+3255 originally labeled samples, 5270 new samples, and 154245 unlabeled samples. Total: 162770
+ 91.66% | time: 676.4s (442.2m) | step:   6993 | train acc: 0.980 | train loss: 0.068 |test acc: 0.876 (0.886, 0.859) | test eop gap: 0.0324
+ 91.66% | time:   1.3s (442.3m) | step:   6993 | train acc: 0.980 | train loss: 0.068 |val acc: 0.885 (0.899, 0.864) | val eop gap: 0.0377
+begin calculating influence
+[Strategy 2] Acc of expected label: 0.8761328125
+calculating influence -- done
+Use 8781 samples. Get 11728 labels. Ratio: 0.7487210095497954
+Files already downloaded and verified
+3255 originally labeled samples, 5526 new samples, and 153989 unlabeled samples. Total: 162770
+Epoch 11
+ 94.30% | time: 730.9s (454.4m) | step:   7194 | train acc: 1.000 | train loss: 0.003 |test acc: 0.879 (0.886, 0.867) | test eop gap: 0.0252
+ 94.30% | time:   1.5s (454.5m) | step:   7194 | train acc: 1.000 | train loss: 0.003 |val acc: 0.889 (0.898, 0.876) | val eop gap: 0.0239
+begin calculating influence
+[Strategy 2] Acc of expected label: 0.881875
+calculating influence -- done
+Use 8941 samples. Get 11970 labels. Ratio: 0.7469507101086048
+Files already downloaded and verified
+3255 originally labeled samples, 5686 new samples, and 153829 unlabeled samples. Total: 162770
+ 96.92% | time: 735.6s (466.7m) | step:   7394 | train acc: 0.996 | train loss: 0.009 |test acc: 0.880 (0.888, 0.866) | test eop gap: 0.0239
+ 96.92% | time:   1.5s (466.7m) | step:   7394 | train acc: 0.996 | train loss: 0.009 |val acc: 0.885 (0.901, 0.861) | val eop gap: 0.0523
+begin calculating influence
+[Strategy 2] Acc of expected label: 0.881484375
+calculating influence -- done
+Use 8979 samples. Get 12011 labels. Ratio: 0.7475647323286987
+Files already downloaded and verified
+3255 originally labeled samples, 5724 new samples, and 153791 unlabeled samples. Total: 162770
+ 99.54% | time: 740.8s (479.1m) | step:   7594 | train acc: 0.996 | train loss: 0.019 |test acc: 0.880 (0.889, 0.867) | test eop gap: 0.0232
+ 99.54% | time:   1.4s (479.1m) | step:   7594 | train acc: 0.996 | train loss: 0.019 |val acc: 0.884 (0.903, 0.855) | val eop gap: 0.0310
+begin calculating influence
+[Strategy 2] Acc of expected label: 0.8780078125
+calculating influence -- done
+Use 9235 samples. Get 12402 labels. Ratio: 0.7446379616190937
+Files already downloaded and verified
+3255 originally labeled samples, 5980 new samples, and 153535 unlabeled samples. Total: 162770
+100.00% | time: 687.1s (490.6m) | step:   7629 | train acc: 0.945 | train loss: 0.171 |test acc: 0.874 (0.882, 0.862) | test eop gap: 0.0212
+100.00% | time:   1.6s (490.6m) | step:   7629 | train acc: 0.945 | train loss: 0.171 |val acc: 0.889 (0.907, 0.861) | val eop gap: 0.0524
+begin calculating influence
+[Strategy 2] Acc of expected label: 0.880859375
+calculating influence -- done
+Use 9491 samples. Get 12746 labels. Ratio: 0.7446257649458654
+Files already downloaded and verified
+3255 originally labeled samples, 6236 new samples, and 153279 unlabeled samples. Total: 162770

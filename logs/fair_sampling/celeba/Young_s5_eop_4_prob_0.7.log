@@ -1,0 +1,35 @@
+Files already downloaded and verified
+3255 originally labeled samples, 0 new samples, and 159515 unlabeled samples. Total: 162770
+Files already downloaded and verified
+1996 originally labeled samples, 0 new samples, and 17966 unlabeled samples. Total: 19962
+Numer of layers 200
+train net...
+train with 162770 samples (with replacement) in one epoch
+Epoch 0
+  2.62% | time:  92.7s (  1.5m) | step:    200 | train acc: 0.926 | train loss: 0.190 |warm_t acc: 0.775 (0.826, 0.695) | warm_t eop gap: 0.0604
+  2.62% | time:   6.4s (  1.7m) | step:    200 | train acc: 0.926 | train loss: 0.190 |warm_v acc: 0.783 (0.832, 0.701) | warm_v eop gap: 0.0689
+  5.24% | time:  77.8s (  2.9m) | step:    400 | train acc: 0.770 | train loss: 0.491 |warm_t acc: 0.757 (0.827, 0.645) | warm_t eop gap: 0.0354
+  5.24% | time:   1.4s (  3.0m) | step:    400 | train acc: 0.770 | train loss: 0.491 |warm_v acc: 0.772 (0.833, 0.675) | warm_v eop gap: 0.0391
+  7.86% | time:  77.1s (  4.3m) | step:    600 | train acc: 0.898 | train loss: 0.223 |warm_t acc: 0.765 (0.814, 0.687) | warm_t eop gap: 0.1042
+  7.86% | time:   1.4s (  4.3m) | step:    600 | train acc: 0.898 | train loss: 0.223 |warm_v acc: 0.764 (0.816, 0.679) | warm_v eop gap: 0.1102
+  8.32% | time:  25.1s (  4.7m) | step:    635 | train acc: 0.969 | train loss: 0.116 |warm_t acc: 0.751 (0.796, 0.679) | warm_t eop gap: 0.1213
+  8.32% | time:   1.3s (  4.7m) | step:    635 | train acc: 0.969 | train loss: 0.116 |warm_v acc: 0.751 (0.796, 0.682) | warm_v eop gap: 0.1211
+Epoch 1
+ 10.95% | time:  77.3s (  6.0m) | step:    835 | train acc: 0.871 | train loss: 0.321 |warm_t acc: 0.775 (0.832, 0.685) | warm_t eop gap: 0.0733
+ 10.95% | time:   1.5s (  6.0m) | step:    835 | train acc: 0.871 | train loss: 0.321 |warm_v acc: 0.791 (0.849, 0.699) | warm_v eop gap: 0.0756
+ 13.57% | time:  77.8s (  7.3m) | step:   1035 | train acc: 0.969 | train loss: 0.090 |warm_t acc: 0.750 (0.798, 0.672) | warm_t eop gap: 0.1344
+ 13.57% | time:   1.5s (  7.4m) | step:   1035 | train acc: 0.969 | train loss: 0.090 |warm_v acc: 0.761 (0.801, 0.698) | warm_v eop gap: 0.1083
+ 16.19% | time:  78.3s (  8.7m) | step:   1235 | train acc: 1.000 | train loss: 0.000 |warm_t acc: 0.755 (0.806, 0.674) | warm_t eop gap: 0.1168
+ 16.19% | time:   1.5s (  8.7m) | step:   1235 | train acc: 1.000 | train loss: 0.000 |warm_v acc: 0.763 (0.812, 0.691) | warm_v eop gap: 0.1026
+ 16.65% | time:  25.3s (  9.1m) | step:   1270 | train acc: 1.000 | train loss: 0.000 |warm_t acc: 0.755 (0.806, 0.673) | warm_t eop gap: 0.1170
+ 16.65% | time:   1.2s (  9.1m) | step:   1270 | train acc: 1.000 | train loss: 0.000 |warm_v acc: 0.775 (0.815, 0.711) | warm_v eop gap: 0.0879
+Epoch 2
+ 19.28% | time:  72.7s ( 10.3m) | step:   1471 | train acc: 1.000 | train loss: 0.000 |test acc: 0.755 (0.806, 0.674) | test eop gap: 0.1177
+ 19.28% | time:   1.5s ( 10.4m) | step:   1471 | train acc: 1.000 | train loss: 0.000 |val acc: 0.776 (0.810, 0.721) | val eop gap: 0.0727
+begin calculating influence
+selected layers: [Traced<ShapedArray(float32[768])>with<DynamicJaxprTrace(level=0/1)>, Traced<ShapedArray(float32[8,8,3,768])>with<DynamicJaxprTrace(level=0/1)>, Traced<ShapedArray(float32[2])>with<DynamicJaxprTrace(level=0/1)>, Traced<ShapedArray(float32[768,2])>with<DynamicJaxprTrace(level=0/1)>]
+[Strategy 5] Acc of expected label: 0.7698828125
+calculating influence -- done
+Use 3279 samples. Get 3295 labels. Ratio: 0.995144157814871
+Files already downloaded and verified
+3255 originally labeled samples, 24 new samples, and 159491 unlabeled samples. Total: 162770
