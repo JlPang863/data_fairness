@@ -310,7 +310,7 @@ def load_celeba_dataset_torch(args, shuffle_files=False, split='train', batch_si
     if aux_dataset == 'imagenet':
       ds_aux = my_imagenet(root = args.data_dir + '/imgnet/', split='train', transform=train_transform,
                                       target_transform=None)
-      idx_aux = list(range(len(ds)))
+      idx_aux = list(range(len(ds_aux)))
       part2 = list(set(idx_aux) - set(sampled_idx))
       ds_2 = torch.utils.data.Subset(ds_aux, part2)
       if len(sampled_idx) > 0:
