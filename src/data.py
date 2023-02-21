@@ -455,13 +455,13 @@ def load_jigsaw_dataset(args, mode='train', ratio=0.1):
 
     return labeled_data, unlabeled_data
 
-def load_data(args, dataset, mode = 'train', sampled_idx = None, aux_dataset = None):
+def load_data(args, dataset, mode = 'train', sampled_idx = [], aux_dataset = None):
   
   if dataset == 'celeba':
     if mode == 'train':
       
       
-      if sampled_idx is not None:
+      if len(sampled_idx) > 0:
         [train_loader_labeled, train_loader_unlabeled, train_loader_new], part_1 = load_celeba_dataset_torch(args, shuffle_files=True, split='train', batch_size=args.train_batch_size, ratio = args.label_ratio, sampled_idx=sampled_idx, aux_dataset = aux_dataset)
         idx_with_labels = set(part_1)
         return train_loader_labeled, train_loader_unlabeled, train_loader_new, idx_with_labels

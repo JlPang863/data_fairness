@@ -794,7 +794,7 @@ def fair_train(args):
 
 
   if args.strategy == 1:
-    [_, _], part1, part2 = load_celeba_dataset_torch(args, shuffle_files=True, split='train', batch_size=args.train_batch_size, ratio = args.label_ratio, sampled_idx=None, return_part2=True)
+    [_, _], part1, part2 = load_celeba_dataset_torch(args, shuffle_files=True, split='train', batch_size=args.train_batch_size, ratio = args.label_ratio, sampled_idx=[], return_part2=True)
     load_name = f'./results/s2_{args.metric}_{args.label_ratio}_new{args.new_data_each_round}_100round_case1_remove_unfair_trainConf{args.train_conf}_posloss{args.remove_pos}_poslossOrg{args.remove_posOrg}.npy'
     indices = np.load(load_name, allow_pickle=True)
     sel_idx = list(indices[args.sel_round][2])
