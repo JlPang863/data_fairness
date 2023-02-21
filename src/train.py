@@ -642,20 +642,21 @@ def train_general(args):
       
 
       for example in train_loader_labeled:
-        if 0 <= args.new_prob and args.new_prob <= 1:
-          new_data = np.random.choice(range(2), p = [1.0 - args.new_prob, args.new_prob])
-        else:
-          if train_loader_new is not None:
+        if train_loader_new is not None:
+          if 0 <= args.new_prob and args.new_prob <= 1 and len(train_loader_new) >= len(train_loader_labeled) / 3: # args.new_prob should be large, e.g., 0.9.   len(train_loader_new) >= len(train_loader_labeled) / 3 means the new data should be sufficient > 25 % of total
+            new_data = np.random.choice(range(2), p = [1.0 - args.new_prob, args.new_prob])
+          else:
             new_prob = (len(train_loader_new) + 1) / (len(train_loader_new) + len(train_loader_labeled))
             new_data = np.random.choice(range(2), p = [1.0 - new_prob, new_prob])
-        if train_loader_new is not None and new_data == 1:
-          try:
-              # Samples the batch
-              example = next(new_iter)
-          except StopIteration:
-              # restart the generator if the previous generator is exhausted.
-              new_iter = iter(train_loader_new)
-              example = next(new_iter)
+
+          if new_data == 1:
+            try:
+                # Samples the batch
+                example = next(new_iter)
+            except StopIteration:
+                # restart the generator if the previous generator is exhausted.
+                new_iter = iter(train_loader_new)
+                example = next(new_iter)
 
 
         bsz = example[0].shape[0]

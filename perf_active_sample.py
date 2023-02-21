@@ -12,9 +12,10 @@ result_dict = collections.defaultdict(list)
 # avg_cnt = 3
 
 dataset = 'celeba'
-tol = 0.02
+tol = 0.1
 avg_cnt = 3
-suffix = '_tol0.02_wolb'
+# suffix = '_tol0.02_wolb'
+suffix = '_prob_0.9'
 
 
 root = f'./logs/fair_sampling/{dataset}/'
@@ -149,15 +150,16 @@ def get_table(focus):
             result.append(rec)
     # print(result)
     
-    file_path = f'result_{dataset}_{focus}_focused.csv'
+    file_path = f'result_{dataset}_{focus}_focused_{suffix}.csv'
 
     print_result(result, file_path)
 
 
 sel_layers = [4]
-strategy = [0, 1, 2, 5]
+strategy = [0, 2, 5]
 if dataset == 'celeba':
-    label_key = ['Smiling', 'Straight_Hair', 'Attractive', 'Pale_Skin', 'Young', 'Big_Nose']
+    # label_key = ['Smiling', 'Straight_Hair', 'Attractive', 'Pale_Skin', 'Young', 'Big_Nose']
+    label_key = ['Smiling', 'Attractive', 'Big_Nose']
 elif dataset == 'compas':
     label_key = ['label']
 else:
