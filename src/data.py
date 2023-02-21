@@ -347,7 +347,7 @@ def load_celeba_dataset_torch(args, shuffle_files=False, split='train', batch_si
                                             shuffle=shuffle_files,
                                             num_workers=1,
                                             drop_last=False)
-    if sampled_idx is not None:
+    if len(sampled_idx) > 0:
       dataloader_new = torch.utils.data.DataLoader(ds_new,
                                               batch_size=min(len(ds_new), batch_size),
                                               shuffle=shuffle_files,
@@ -359,7 +359,7 @@ def load_celeba_dataset_torch(args, shuffle_files=False, split='train', batch_si
   if return_part2:
     return [dataloader_1, dataloader_2], part1, part2
   else:
-    if sampled_idx is not None:
+    if len(sampled_idx) > 0:
       return [dataloader_1, dataloader_2, dataloader_new], part1
     else:
       return [dataloader_1, dataloader_2], part1
