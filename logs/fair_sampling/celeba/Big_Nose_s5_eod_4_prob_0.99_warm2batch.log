@@ -1,0 +1,356 @@
+Files already downloaded and verified
+3255 originally labeled samples, 0 new samples, and 159515 unlabeled samples. Total: 162770
+Files already downloaded and verified
+1996 originally labeled samples, 0 new samples, and 17966 unlabeled samples. Total: 19962
+Numer of layers 200
+train net...
+train with 162770 samples (with replacement) in one epoch
+Epoch 0
+  2.62% | time:  95.0s (  1.6m) | step:    200 | train acc: 0.965 | train loss: 0.100 |warm_t acc: 0.762 (0.850, 0.623) | warm_t eod gap: 0.1722
+  2.62% | time:   4.8s (  1.7m) | step:    200 | train acc: 0.965 | train loss: 0.100 |warm_v acc: 0.762 (0.848, 0.617) | warm_v eod gap: 0.1916
+  5.24% | time:  81.8s (  3.0m) | step:    400 | train acc: 0.703 | train loss: 0.730 |warm_t acc: 0.641 (0.701, 0.546) | warm_t eod gap: 0.1311
+  5.24% | time:   1.4s (  3.1m) | step:    400 | train acc: 0.703 | train loss: 0.730 |warm_v acc: 0.625 (0.704, 0.499) | warm_v eod gap: 0.1459
+  7.86% | time:  81.1s (  4.4m) | step:    600 | train acc: 0.832 | train loss: 0.405 |warm_t acc: 0.761 (0.862, 0.601) | warm_t eod gap: 0.1922
+  7.86% | time:   1.3s (  4.4m) | step:    600 | train acc: 0.832 | train loss: 0.405 |warm_v acc: 0.755 (0.855, 0.593) | warm_v eod gap: 0.1955
+  8.32% | time:  21.8s (  4.8m) | step:    635 | train acc: 0.836 | train loss: 0.358 |warm_t acc: 0.783 (0.881, 0.628) | warm_t eod gap: 0.1424
+  8.32% | time:   1.4s (  4.8m) | step:    635 | train acc: 0.836 | train loss: 0.358 |warm_v acc: 0.770 (0.883, 0.600) | warm_v eod gap: 0.1202
+Epoch 1
+ 10.95% | time:  81.4s (  6.2m) | step:    835 | train acc: 0.922 | train loss: 0.192 |warm_t acc: 0.754 (0.845, 0.608) | warm_t eod gap: 0.2260
+ 10.95% | time:   1.4s (  6.2m) | step:    835 | train acc: 0.922 | train loss: 0.192 |warm_v acc: 0.738 (0.832, 0.589) | warm_v eod gap: 0.1781
+ 13.57% | time:  80.6s (  7.5m) | step:   1035 | train acc: 1.000 | train loss: 0.003 |warm_t acc: 0.744 (0.832, 0.604) | warm_t eod gap: 0.2073
+ 13.57% | time:   1.5s (  7.6m) | step:   1035 | train acc: 1.000 | train loss: 0.003 |warm_v acc: 0.744 (0.829, 0.611) | warm_v eod gap: 0.1960
+ 16.19% | time:  79.1s (  8.9m) | step:   1235 | train acc: 1.000 | train loss: 0.000 |warm_t acc: 0.744 (0.830, 0.606) | warm_t eod gap: 0.2092
+ 16.19% | time:   1.4s (  8.9m) | step:   1235 | train acc: 1.000 | train loss: 0.000 |warm_v acc: 0.745 (0.829, 0.623) | warm_v eod gap: 0.2232
+ 16.65% | time:  24.0s (  9.3m) | step:   1270 | train acc: 1.000 | train loss: 0.000 |warm_t acc: 0.744 (0.830, 0.607) | warm_t eod gap: 0.2114
+ 16.65% | time:   1.4s (  9.3m) | step:   1270 | train acc: 1.000 | train loss: 0.000 |warm_v acc: 0.755 (0.841, 0.618) | warm_v eod gap: 0.2018
+Epoch 2
+ 19.28% | time:  74.3s ( 10.6m) | step:   1471 | train acc: 1.000 | train loss: 0.000 |test acc: 0.744 (0.831, 0.606) | test eod gap: 0.2081
+ 19.28% | time:   1.1s ( 10.6m) | step:   1471 | train acc: 1.000 | train loss: 0.000 |val acc: 0.753 (0.842, 0.610) | val eod gap: 0.1882
+begin calculating influence
+selected layers: [Traced<ShapedArray(float32[768])>with<DynamicJaxprTrace(level=0/1)>, Traced<ShapedArray(float32[8,8,3,768])>with<DynamicJaxprTrace(level=0/1)>, Traced<ShapedArray(float32[2])>with<DynamicJaxprTrace(level=0/1)>, Traced<ShapedArray(float32[768,2])>with<DynamicJaxprTrace(level=0/1)>]
+[Strategy 5] Acc of expected label: 0.730546875
+calculating influence -- done
+Use 3511 samples. Get 3634 labels. Ratio: 0.9661529994496423
+Files already downloaded and verified
+3255 originally labeled samples, 256 new samples, and 159259 unlabeled samples. Total: 162770
+ 21.90% | time: 770.8s ( 23.4m) | step:   1671 | train acc: 0.910 | train loss: 0.180 |test acc: 0.785 (0.887, 0.621) | test eod gap: 0.0335
+ 21.90% | time:   1.4s ( 23.4m) | step:   1671 | train acc: 0.910 | train loss: 0.180 |val acc: 0.776 (0.872, 0.627) | val eod gap: 0.0424
+begin calculating influence
+[Strategy 5] Acc of expected label: 0.7648828125
+calculating influence -- done
+Use 3767 samples. Get 4028 labels. Ratio: 0.9352035749751738
+Files already downloaded and verified
+3255 originally labeled samples, 512 new samples, and 159003 unlabeled samples. Total: 162770
+ 24.52% | time: 755.7s ( 36.0m) | step:   1871 | train acc: 1.000 | train loss: 0.000 |test acc: 0.788 (0.895, 0.618) | test eod gap: 0.0000
+ 24.52% | time:   1.4s ( 36.1m) | step:   1871 | train acc: 1.000 | train loss: 0.000 |val acc: 0.792 (0.880, 0.647) | val eod gap: 0.0000
+begin calculating influence
+[Strategy 5] Acc of expected label: 0.76125
+calculating influence -- done
+Use 3767 samples. Get 4028 labels. Ratio: 0.9352035749751738
+Files already downloaded and verified
+3255 originally labeled samples, 512 new samples, and 159003 unlabeled samples. Total: 162770
+ 24.98% | time: 682.1s ( 47.4m) | step:   1906 | train acc: 1.000 | train loss: 0.001 |test acc: 0.788 (0.895, 0.618) | test eod gap: 0.0000
+ 24.98% | time:   1.3s ( 47.5m) | step:   1906 | train acc: 1.000 | train loss: 0.001 |val acc: 0.792 (0.891, 0.638) | val eod gap: 0.0000
+begin calculating influence
+[Strategy 5] Acc of expected label: 0.7628515625
+calculating influence -- done
+Use 4023 samples. Get 4439 labels. Ratio: 0.9062851993692274
+Files already downloaded and verified
+3255 originally labeled samples, 768 new samples, and 158747 unlabeled samples. Total: 162770
+Epoch 3
+ 27.62% | time: 743.2s ( 59.8m) | step:   2107 | train acc: 1.000 | train loss: 0.008 |test acc: 0.788 (0.895, 0.618) | test eod gap: 0.0000
+ 27.62% | time:   1.4s ( 59.9m) | step:   2107 | train acc: 1.000 | train loss: 0.008 |val acc: 0.790 (0.887, 0.631) | val eod gap: 0.0000
+begin calculating influence
+[Strategy 5] Acc of expected label: 0.761484375
+calculating influence -- done
+Use 4279 samples. Get 4843 labels. Ratio: 0.8835432583109643
+Files already downloaded and verified
+3255 originally labeled samples, 1024 new samples, and 158491 unlabeled samples. Total: 162770
+ 30.24% | time: 750.2s ( 72.4m) | step:   2307 | train acc: 1.000 | train loss: 0.000 |test acc: 0.788 (0.895, 0.618) | test eod gap: 0.0000
+ 30.24% | time:   1.4s ( 72.4m) | step:   2307 | train acc: 1.000 | train loss: 0.000 |val acc: 0.786 (0.880, 0.643) | val eod gap: 0.0000
+begin calculating influence
+[Strategy 5] Acc of expected label: 0.7620703125
+calculating influence -- done
+Use 4279 samples. Get 4843 labels. Ratio: 0.8835432583109643
+Files already downloaded and verified
+3255 originally labeled samples, 1024 new samples, and 158491 unlabeled samples. Total: 162770
+ 32.86% | time: 755.9s ( 85.0m) | step:   2507 | train acc: 1.000 | train loss: 0.000 |test acc: 0.788 (0.895, 0.618) | test eod gap: 0.0000
+ 32.86% | time:   1.5s ( 85.0m) | step:   2507 | train acc: 1.000 | train loss: 0.000 |val acc: 0.789 (0.882, 0.639) | val eod gap: 0.0000
+begin calculating influence
+[Strategy 5] Acc of expected label: 0.7665234375
+calculating influence -- done
+Use 4279 samples. Get 4843 labels. Ratio: 0.8835432583109643
+Files already downloaded and verified
+3255 originally labeled samples, 1024 new samples, and 158491 unlabeled samples. Total: 162770
+ 33.32% | time: 695.6s ( 96.6m) | step:   2542 | train acc: 1.000 | train loss: 0.000 |test acc: 0.788 (0.895, 0.618) | test eod gap: 0.0000
+ 33.32% | time:   1.3s ( 96.6m) | step:   2542 | train acc: 1.000 | train loss: 0.000 |val acc: 0.785 (0.887, 0.631) | val eod gap: 0.0000
+begin calculating influence
+[Strategy 5] Acc of expected label: 0.763125
+calculating influence -- done
+Use 4279 samples. Get 4843 labels. Ratio: 0.8835432583109643
+Files already downloaded and verified
+3255 originally labeled samples, 1024 new samples, and 158491 unlabeled samples. Total: 162770
+Epoch 4
+ 35.95% | time: 758.3s (109.3m) | step:   2743 | train acc: 1.000 | train loss: 0.002 |test acc: 0.788 (0.895, 0.618) | test eod gap: 0.0000
+ 35.95% | time:   1.4s (109.3m) | step:   2743 | train acc: 1.000 | train loss: 0.002 |val acc: 0.785 (0.883, 0.628) | val eod gap: 0.0000
+begin calculating influence
+[Strategy 5] Acc of expected label: 0.76265625
+calculating influence -- done
+Use 4535 samples. Get 5257 labels. Ratio: 0.8626593113943314
+Files already downloaded and verified
+3255 originally labeled samples, 1280 new samples, and 158235 unlabeled samples. Total: 162770
+ 38.58% | time: 757.3s (121.9m) | step:   2943 | train acc: 1.000 | train loss: 0.000 |test acc: 0.788 (0.895, 0.618) | test eod gap: 0.0000
+ 38.58% | time:   1.4s (121.9m) | step:   2943 | train acc: 1.000 | train loss: 0.000 |val acc: 0.787 (0.888, 0.628) | val eod gap: 0.0000
+begin calculating influence
+[Strategy 5] Acc of expected label: 0.7609375
+calculating influence -- done
+Use 4535 samples. Get 5257 labels. Ratio: 0.8626593113943314
+Files already downloaded and verified
+3255 originally labeled samples, 1280 new samples, and 158235 unlabeled samples. Total: 162770
+ 41.20% | time: 755.4s (134.5m) | step:   3143 | train acc: 1.000 | train loss: 0.000 |test acc: 0.788 (0.895, 0.618) | test eod gap: 0.0000
+ 41.20% | time:   1.4s (134.6m) | step:   3143 | train acc: 1.000 | train loss: 0.000 |val acc: 0.779 (0.888, 0.612) | val eod gap: 0.0000
+begin calculating influence
+[Strategy 5] Acc of expected label: 0.76203125
+calculating influence -- done
+Use 4535 samples. Get 5257 labels. Ratio: 0.8626593113943314
+Files already downloaded and verified
+3255 originally labeled samples, 1280 new samples, and 158235 unlabeled samples. Total: 162770
+ 41.66% | time: 692.4s (146.1m) | step:   3178 | train acc: 1.000 | train loss: 0.000 |test acc: 0.788 (0.895, 0.618) | test eod gap: 0.0000
+ 41.66% | time:   1.4s (146.1m) | step:   3178 | train acc: 1.000 | train loss: 0.000 |val acc: 0.786 (0.885, 0.638) | val eod gap: 0.0000
+begin calculating influence
+[Strategy 5] Acc of expected label: 0.76546875
+calculating influence -- done
+Use 4535 samples. Get 5257 labels. Ratio: 0.8626593113943314
+Files already downloaded and verified
+3255 originally labeled samples, 1280 new samples, and 158235 unlabeled samples. Total: 162770
+Epoch 5
+ 44.29% | time: 755.5s (158.7m) | step:   3379 | train acc: 1.000 | train loss: 0.025 |test acc: 0.786 (0.892, 0.618) | test eod gap: 0.0016
+ 44.29% | time:   1.5s (158.7m) | step:   3379 | train acc: 1.000 | train loss: 0.025 |val acc: 0.792 (0.889, 0.638) | val eod gap: 0.0012
+begin calculating influence
+[Strategy 5] Acc of expected label: 0.75796875
+calculating influence -- done
+Use 4791 samples. Get 5585 labels. Ratio: 0.8578334825425247
+Files already downloaded and verified
+3255 originally labeled samples, 1536 new samples, and 157979 unlabeled samples. Total: 162770
+ 46.91% | time: 754.1s (171.3m) | step:   3579 | train acc: 1.000 | train loss: 0.004 |test acc: 0.788 (0.895, 0.618) | test eod gap: 0.0000
+ 46.91% | time:   1.5s (171.3m) | step:   3579 | train acc: 1.000 | train loss: 0.004 |val acc: 0.789 (0.892, 0.621) | val eod gap: 0.0000
+begin calculating influence
+[Strategy 5] Acc of expected label: 0.7618359375
+calculating influence -- done
+Use 4791 samples. Get 5585 labels. Ratio: 0.8578334825425247
+Files already downloaded and verified
+3255 originally labeled samples, 1536 new samples, and 157979 unlabeled samples. Total: 162770
+ 49.53% | time: 754.4s (183.9m) | step:   3779 | train acc: 1.000 | train loss: 0.009 |test acc: 0.788 (0.895, 0.618) | test eod gap: 0.0000
+ 49.53% | time:   1.5s (183.9m) | step:   3779 | train acc: 1.000 | train loss: 0.009 |val acc: 0.793 (0.889, 0.639) | val eod gap: 0.0000
+begin calculating influence
+[Strategy 5] Acc of expected label: 0.7605078125
+calculating influence -- done
+Use 4792 samples. Get 5587 labels. Ratio: 0.857705387506712
+Files already downloaded and verified
+3255 originally labeled samples, 1537 new samples, and 157978 unlabeled samples. Total: 162770
+ 49.99% | time: 695.6s (195.5m) | step:   3814 | train acc: 1.000 | train loss: 0.002 |test acc: 0.788 (0.895, 0.618) | test eod gap: 0.0000
+ 49.99% | time:   1.6s (195.5m) | step:   3814 | train acc: 1.000 | train loss: 0.002 |val acc: 0.787 (0.880, 0.638) | val eod gap: 0.0000
+begin calculating influence
+[Strategy 5] Acc of expected label: 0.76125
+calculating influence -- done
+Use 4796 samples. Get 5593 labels. Ratio: 0.8575004469873055
+Files already downloaded and verified
+3255 originally labeled samples, 1541 new samples, and 157974 unlabeled samples. Total: 162770
+Epoch 6
+ 52.62% | time: 756.5s (208.2m) | step:   4014 | train acc: 1.000 | train loss: 0.005 |test acc: 0.788 (0.895, 0.618) | test eod gap: 0.0000
+ 52.62% | time:   1.3s (208.2m) | step:   4014 | train acc: 1.000 | train loss: 0.005 |val acc: 0.781 (0.884, 0.628) | val eod gap: 0.0000
+begin calculating influence
+[Strategy 5] Acc of expected label: 0.763203125
+calculating influence -- done
+Use 4796 samples. Get 5593 labels. Ratio: 0.8575004469873055
+Files already downloaded and verified
+3255 originally labeled samples, 1541 new samples, and 157974 unlabeled samples. Total: 162770
+ 55.24% | time: 753.6s (220.7m) | step:   4214 | train acc: 1.000 | train loss: 0.002 |test acc: 0.788 (0.895, 0.618) | test eod gap: 0.0000
+ 55.24% | time:   1.5s (220.8m) | step:   4214 | train acc: 1.000 | train loss: 0.002 |val acc: 0.790 (0.891, 0.632) | val eod gap: 0.0000
+begin calculating influence
+[Strategy 5] Acc of expected label: 0.76296875
+calculating influence -- done
+Use 4796 samples. Get 5593 labels. Ratio: 0.8575004469873055
+Files already downloaded and verified
+3255 originally labeled samples, 1541 new samples, and 157974 unlabeled samples. Total: 162770
+ 57.86% | time: 750.7s (233.3m) | step:   4414 | train acc: 1.000 | train loss: 0.000 |test acc: 0.788 (0.895, 0.618) | test eod gap: 0.0000
+ 57.86% | time:   1.5s (233.3m) | step:   4414 | train acc: 1.000 | train loss: 0.000 |val acc: 0.796 (0.897, 0.644) | val eod gap: 0.0000
+begin calculating influence
+[Strategy 5] Acc of expected label: 0.7628125
+calculating influence -- done
+Use 4796 samples. Get 5593 labels. Ratio: 0.8575004469873055
+Files already downloaded and verified
+3255 originally labeled samples, 1541 new samples, and 157974 unlabeled samples. Total: 162770
+ 58.32% | time: 691.4s (244.8m) | step:   4449 | train acc: 1.000 | train loss: 0.003 |test acc: 0.788 (0.895, 0.618) | test eod gap: 0.0000
+ 58.32% | time:   1.5s (244.8m) | step:   4449 | train acc: 1.000 | train loss: 0.003 |val acc: 0.796 (0.896, 0.638) | val eod gap: 0.0000
+begin calculating influence
+[Strategy 5] Acc of expected label: 0.764296875
+calculating influence -- done
+Use 4802 samples. Get 5601 labels. Ratio: 0.857346902338868
+Files already downloaded and verified
+3255 originally labeled samples, 1547 new samples, and 157968 unlabeled samples. Total: 162770
+Epoch 7
+ 60.95% | time: 755.0s (257.4m) | step:   4650 | train acc: 1.000 | train loss: 0.001 |test acc: 0.788 (0.895, 0.618) | test eod gap: 0.0000
+ 60.95% | time:   1.4s (257.4m) | step:   4650 | train acc: 1.000 | train loss: 0.001 |val acc: 0.793 (0.891, 0.639) | val eod gap: 0.0000
+begin calculating influence
+[Strategy 5] Acc of expected label: 0.7603515625
+calculating influence -- done
+Use 4802 samples. Get 5602 labels. Ratio: 0.8571938593359515
+Files already downloaded and verified
+3255 originally labeled samples, 1547 new samples, and 157968 unlabeled samples. Total: 162770
+ 63.57% | time: 753.3s (270.0m) | step:   4850 | train acc: 1.000 | train loss: 0.015 |test acc: 0.788 (0.894, 0.619) | test eod gap: 0.0014
+ 63.57% | time:   1.5s (270.0m) | step:   4850 | train acc: 1.000 | train loss: 0.015 |val acc: 0.784 (0.880, 0.630) | val eod gap: 0.0000
+begin calculating influence
+[Strategy 5] Acc of expected label: 0.7616015625
+calculating influence -- done
+Use 4982 samples. Get 5930 labels. Ratio: 0.8401349072512647
+Files already downloaded and verified
+3255 originally labeled samples, 1727 new samples, and 157788 unlabeled samples. Total: 162770
+ 66.19% | time: 753.5s (282.6m) | step:   5050 | train acc: 1.000 | train loss: 0.001 |test acc: 0.788 (0.895, 0.618) | test eod gap: 0.0000
+ 66.19% | time:   1.5s (282.6m) | step:   5050 | train acc: 1.000 | train loss: 0.001 |val acc: 0.786 (0.888, 0.623) | val eod gap: 0.0000
+begin calculating influence
+[Strategy 5] Acc of expected label: 0.758828125
+calculating influence -- done
+Use 4982 samples. Get 5930 labels. Ratio: 0.8401349072512647
+Files already downloaded and verified
+3255 originally labeled samples, 1727 new samples, and 157788 unlabeled samples. Total: 162770
+ 66.65% | time: 695.1s (294.2m) | step:   5085 | train acc: 1.000 | train loss: 0.001 |test acc: 0.788 (0.895, 0.618) | test eod gap: 0.0000
+ 66.65% | time:   1.5s (294.2m) | step:   5085 | train acc: 1.000 | train loss: 0.001 |val acc: 0.790 (0.887, 0.637) | val eod gap: 0.0000
+begin calculating influence
+[Strategy 5] Acc of expected label: 0.75984375
+calculating influence -- done
+Use 4982 samples. Get 5930 labels. Ratio: 0.8401349072512647
+Files already downloaded and verified
+3255 originally labeled samples, 1727 new samples, and 157788 unlabeled samples. Total: 162770
+Epoch 8
+ 69.29% | time: 756.1s (306.8m) | step:   5286 | train acc: 1.000 | train loss: 0.002 |test acc: 0.788 (0.895, 0.618) | test eod gap: 0.0000
+ 69.29% | time:   1.5s (306.8m) | step:   5286 | train acc: 1.000 | train loss: 0.002 |val acc: 0.781 (0.883, 0.625) | val eod gap: 0.0000
+begin calculating influence
+[Strategy 5] Acc of expected label: 0.7608203125
+calculating influence -- done
+Use 4982 samples. Get 5930 labels. Ratio: 0.8401349072512647
+Files already downloaded and verified
+3255 originally labeled samples, 1727 new samples, and 157788 unlabeled samples. Total: 162770
+ 71.91% | time: 756.6s (319.5m) | step:   5486 | train acc: 1.000 | train loss: 0.003 |test acc: 0.788 (0.895, 0.618) | test eod gap: 0.0000
+ 71.91% | time:   1.4s (319.5m) | step:   5486 | train acc: 1.000 | train loss: 0.003 |val acc: 0.787 (0.895, 0.620) | val eod gap: 0.0000
+begin calculating influence
+[Strategy 5] Acc of expected label: 0.7620703125
+calculating influence -- done
+Use 5100 samples. Get 6085 labels. Ratio: 0.838126540673788
+Files already downloaded and verified
+3255 originally labeled samples, 1845 new samples, and 157670 unlabeled samples. Total: 162770
+ 74.53% | time: 755.4s (332.1m) | step:   5686 | train acc: 1.000 | train loss: 0.000 |test acc: 0.788 (0.895, 0.618) | test eod gap: 0.0000
+ 74.53% | time:   1.5s (332.1m) | step:   5686 | train acc: 1.000 | train loss: 0.000 |val acc: 0.783 (0.886, 0.627) | val eod gap: 0.0000
+begin calculating influence
+[Strategy 5] Acc of expected label: 0.764609375
+calculating influence -- done
+Use 5100 samples. Get 6085 labels. Ratio: 0.838126540673788
+Files already downloaded and verified
+3255 originally labeled samples, 1845 new samples, and 157670 unlabeled samples. Total: 162770
+ 74.99% | time: 695.0s (343.7m) | step:   5721 | train acc: 1.000 | train loss: 0.003 |test acc: 0.788 (0.895, 0.618) | test eod gap: 0.0000
+ 74.99% | time:   1.4s (343.7m) | step:   5721 | train acc: 1.000 | train loss: 0.003 |val acc: 0.783 (0.882, 0.629) | val eod gap: 0.0000
+begin calculating influence
+[Strategy 5] Acc of expected label: 0.764296875
+calculating influence -- done
+Use 5356 samples. Get 6419 labels. Ratio: 0.8343978812899205
+Files already downloaded and verified
+3255 originally labeled samples, 2101 new samples, and 157414 unlabeled samples. Total: 162770
+Epoch 9
+ 77.62% | time: 757.6s (356.3m) | step:   5922 | train acc: 1.000 | train loss: 0.001 |test acc: 0.788 (0.895, 0.618) | test eod gap: 0.0000
+ 77.62% | time:   1.5s (356.4m) | step:   5922 | train acc: 1.000 | train loss: 0.001 |val acc: 0.786 (0.893, 0.623) | val eod gap: 0.0000
+begin calculating influence
+[Strategy 5] Acc of expected label: 0.7586328125
+calculating influence -- done
+Use 5356 samples. Get 6419 labels. Ratio: 0.8343978812899205
+Files already downloaded and verified
+3255 originally labeled samples, 2101 new samples, and 157414 unlabeled samples. Total: 162770
+ 80.25% | time: 754.1s (368.9m) | step:   6122 | train acc: 1.000 | train loss: 0.001 |test acc: 0.788 (0.895, 0.618) | test eod gap: 0.0000
+ 80.25% | time:   1.5s (368.9m) | step:   6122 | train acc: 1.000 | train loss: 0.001 |val acc: 0.779 (0.882, 0.630) | val eod gap: 0.0000
+begin calculating influence
+[Strategy 5] Acc of expected label: 0.758359375
+calculating influence -- done
+Use 5356 samples. Get 6419 labels. Ratio: 0.8343978812899205
+Files already downloaded and verified
+3255 originally labeled samples, 2101 new samples, and 157414 unlabeled samples. Total: 162770
+ 82.87% | time: 751.4s (381.5m) | step:   6322 | train acc: 1.000 | train loss: 0.004 |test acc: 0.788 (0.895, 0.618) | test eod gap: 0.0000
+ 82.87% | time:   1.6s (381.5m) | step:   6322 | train acc: 1.000 | train loss: 0.004 |val acc: 0.794 (0.888, 0.644) | val eod gap: 0.0000
+begin calculating influence
+[Strategy 5] Acc of expected label: 0.759921875
+calculating influence -- done
+Use 5356 samples. Get 6419 labels. Ratio: 0.8343978812899205
+Files already downloaded and verified
+3255 originally labeled samples, 2101 new samples, and 157414 unlabeled samples. Total: 162770
+ 83.33% | time: 691.3s (393.0m) | step:   6357 | train acc: 1.000 | train loss: 0.002 |test acc: 0.788 (0.895, 0.618) | test eod gap: 0.0000
+ 83.33% | time:   1.5s (393.0m) | step:   6357 | train acc: 1.000 | train loss: 0.002 |val acc: 0.789 (0.893, 0.628) | val eod gap: 0.0000
+begin calculating influence
+[Strategy 5] Acc of expected label: 0.7616796875
+calculating influence -- done
+Use 5356 samples. Get 6419 labels. Ratio: 0.8343978812899205
+Files already downloaded and verified
+3255 originally labeled samples, 2101 new samples, and 157414 unlabeled samples. Total: 162770
+Epoch 10
+ 85.96% | time: 752.3s (405.6m) | step:   6558 | train acc: 1.000 | train loss: 0.002 |test acc: 0.788 (0.895, 0.618) | test eod gap: 0.0000
+ 85.96% | time:   1.5s (405.6m) | step:   6558 | train acc: 1.000 | train loss: 0.002 |val acc: 0.777 (0.878, 0.616) | val eod gap: 0.0000
+begin calculating influence
+calculating influence -- done
+length of new labels 0
+Use 5356+0 = 5356 samples.
+Files already downloaded and verified
+3255 originally labeled samples, 2101 new samples, and 157414 unlabeled samples. Total: 162770
+ 88.58% | time: 748.5s (418.1m) | step:   6758 | train acc: 1.000 | train loss: 0.004 |test acc: 0.788 (0.895, 0.618) | test eod gap: 0.0000
+ 88.58% | time:   1.4s (418.1m) | step:   6758 | train acc: 1.000 | train loss: 0.004 |val acc: 0.794 (0.893, 0.633) | val eod gap: 0.0000
+begin calculating influence
+calculating influence -- done
+length of new labels 28
+Use 5356+28 = 5384 samples.
+Files already downloaded and verified
+3255 originally labeled samples, 2129 new samples, and 157386 unlabeled samples. Total: 162770
+ 91.20% | time: 762.8s (430.8m) | step:   6958 | train acc: 1.000 | train loss: 0.009 |test acc: 0.788 (0.895, 0.618) | test eod gap: 0.0000
+ 91.20% | time:   1.6s (430.8m) | step:   6958 | train acc: 1.000 | train loss: 0.009 |val acc: 0.783 (0.884, 0.627) | val eod gap: 0.0000
+begin calculating influence
+calculating influence -- done
+length of new labels 284
+Use 5356+284 = 5640 samples.
+Files already downloaded and verified
+3255 originally labeled samples, 2385 new samples, and 157130 unlabeled samples. Total: 162770
+ 91.66% | time: 693.0s (442.4m) | step:   6993 | train acc: 1.000 | train loss: 0.003 |test acc: 0.788 (0.895, 0.618) | test eod gap: 0.0000
+ 91.66% | time:   1.4s (442.4m) | step:   6993 | train acc: 1.000 | train loss: 0.003 |val acc: 0.786 (0.892, 0.625) | val eod gap: 0.0000
+begin calculating influence
+calculating influence -- done
+length of new labels 284
+Use 5356+284 = 5640 samples.
+Files already downloaded and verified
+3255 originally labeled samples, 2385 new samples, and 157130 unlabeled samples. Total: 162770
+Epoch 11
+ 94.30% | time: 751.3s (454.9m) | step:   7194 | train acc: 1.000 | train loss: 0.001 |test acc: 0.788 (0.895, 0.618) | test eod gap: 0.0000
+ 94.30% | time:   1.5s (455.0m) | step:   7194 | train acc: 1.000 | train loss: 0.001 |val acc: 0.788 (0.887, 0.636) | val eod gap: 0.0000
+begin calculating influence
+calculating influence -- done
+length of new labels 284
+Use 5356+284 = 5640 samples.
+Files already downloaded and verified
+3255 originally labeled samples, 2385 new samples, and 157130 unlabeled samples. Total: 162770
+ 96.92% | time: 749.3s (467.5m) | step:   7394 | train acc: 1.000 | train loss: 0.008 |test acc: 0.788 (0.895, 0.618) | test eod gap: 0.0000
+ 96.92% | time:   1.5s (467.5m) | step:   7394 | train acc: 1.000 | train loss: 0.008 |val acc: 0.792 (0.891, 0.634) | val eod gap: 0.0000
+begin calculating influence
+calculating influence -- done
+length of new labels 284
+Use 5356+284 = 5640 samples.
+Files already downloaded and verified
+3255 originally labeled samples, 2385 new samples, and 157130 unlabeled samples. Total: 162770
+ 99.54% | time: 745.8s (479.9m) | step:   7594 | train acc: 1.000 | train loss: 0.003 |test acc: 0.788 (0.895, 0.618) | test eod gap: 0.0000
+ 99.54% | time:   1.3s (479.9m) | step:   7594 | train acc: 1.000 | train loss: 0.003 |val acc: 0.792 (0.894, 0.626) | val eod gap: 0.0000
+begin calculating influence
+calculating influence -- done
+length of new labels 284
+Use 5356+284 = 5640 samples.
+Files already downloaded and verified
+3255 originally labeled samples, 2385 new samples, and 157130 unlabeled samples. Total: 162770
+100.00% | time: 592.8s (489.8m) | step:   7629 | train acc: 1.000 | train loss: 0.003 |test acc: 0.788 (0.895, 0.618) | test eod gap: 0.0000
+100.00% | time:   1.2s (489.8m) | step:   7629 | train acc: 1.000 | train loss: 0.003 |val acc: 0.792 (0.892, 0.639) | val eod gap: 0.0000
+begin calculating influence
+calculating influence -- done
+length of new labels 284
+Use 5356+284 = 5640 samples.
+Files already downloaded and verified
+3255 originally labeled samples, 2385 new samples, and 157130 unlabeled samples. Total: 162770
