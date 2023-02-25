@@ -12,11 +12,11 @@ result_dict = collections.defaultdict(list)
 # avg_cnt = 3
 
 dataset = 'celeba'
-tol = 0.05
+tol = 0.01
 avg_cnt = 3
 # suffix = '_tol0.02_wolb'
 # suffix = '_prob_0.9'
-suffix = '_prob_0.99_warm2batch'
+suffix = '_prob_0.9_warm2batch_imgaux'
 
 
 root = f'./logs/fair_sampling/{dataset}/'
