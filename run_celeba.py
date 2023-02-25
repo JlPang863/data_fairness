@@ -14,6 +14,7 @@ parser.add_argument('--tol', type=float, default=0.02)
 parser.add_argument('--without_label', default=False, action="store_true") # # get an unfair sample wp tol
 parser.add_argument('--new_prob', type=float, default=0.9) 
 parser.add_argument('--aux_data', type=str, default=None, help="imagenet")
+parser.add_argument('--half_ablation', default=False, action="store_true") # # get an unfair sample wp tol
 
 parser.add_argument('--mu', type=float, default=1.0)
 parser.add_argument('--warm_epoch', type=int, default=0)

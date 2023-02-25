@@ -289,6 +289,11 @@ def load_celeba_dataset_torch(args, shuffle_files=False, split='train', batch_si
   part1 = idx[:num]
   part2 = idx[num:]
 
+  # for half data ablation study
+  if args.half_ablation:
+    part2 = part1[len(part1)//2:].copy()
+    part1 = part1[:len(part1)//2].copy()
+
 
   if aux_dataset is None:
     if len(sampled_idx) > 0:
