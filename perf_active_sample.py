@@ -16,7 +16,8 @@ tol = 0.01
 avg_cnt = 3
 # suffix = '_tol0.02_wolb'
 # suffix = '_prob_0.9'
-suffix = '_prob_0.9_warm2batch_imgaux'
+suffix = '_prob_0.9_warm2batch'
+# suffix = '_prob_0.9_warm2batch_imgaux'
 
 
 root = f'./logs/fair_sampling/{dataset}/'
@@ -160,7 +161,8 @@ sel_layers = [4]
 strategy = [0, 5]
 if dataset == 'celeba':
     # label_key = ['Smiling', 'Straight_Hair', 'Attractive', 'Pale_Skin', 'Young', 'Big_Nose']
-    label_key = ['Smiling', 'Attractive', 'Big_Nose']
+    # label_key = ['Smiling', 'Attractive', 'Big_Nose']
+    label_key = ['Young']
 elif dataset == 'compas':
     label_key = ['label']
 else:
