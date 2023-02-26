@@ -12,7 +12,8 @@ class scut_dataset(torch.utils.data.Dataset):
 
     def __init__(self, root, transform):
         # super(scut_dataset, self).__init__(root, transform)
-        with open(root, 'r') as f:
+        data_dir = root + '/train_test_files/All_labels.txt'
+        with open(root + data_dir, 'r') as f:
             lines = f.readlines()  
             path = []   
             label = [] 
@@ -67,13 +68,13 @@ def main():
     
     # loading data...
     root = '/data2/data/scut_fbp5500/SCUT-FBP5500_v2/'
-    data_dir = root + '/train_test_files/All_labels.txt'
+    
     transform = transforms.Compose([
             transforms.Resize(256),
             transforms.CenterCrop(224),
             transforms.ToTensor(),
             transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),])  
-    dataset = scut_dataset(data_dir, transform=transform)
+    dataset = scut_dataset(root, transform=transform)
     batch_size = 128
     dataloader_new = torch.utils.data.DataLoader(dataset,
                                               batch_size=min(len(dataset), batch_size),
