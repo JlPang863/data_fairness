@@ -13,7 +13,7 @@ class scut_dataset(torch.utils.data.Dataset):
     def __init__(self, root, transform):
         # super(scut_dataset, self).__init__(root, transform)
         data_dir = root + '/train_test_files/All_labels.txt'
-        with open(root + data_dir, 'r') as f:
+        with open(data_dir, 'r') as f:
             lines = f.readlines()  
             path = []   
             label = [] 
