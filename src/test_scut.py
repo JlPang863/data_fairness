@@ -43,23 +43,6 @@ class scut_dataset(torch.utils.data.Dataset):
         return len(self.path)
 
 
-# def read_img(root, filedir, transform=None):
-#     # Data loading
-#     with open(filedir, 'r') as f:
-#         lines = f.readlines()  
-#     output = []    
-#     for line in lines:
-#         linesplit = line.split('\n')[0].split(' ')
-#         addr = linesplit[0]
-#         target = torch.Tensor([float(linesplit[1])])
-#         img = Image.open(os.path.join(root, addr)).convert('RGB')
-
-#         if transform is not None:
-#             img = transform(img)
-        
-#         output.append([img, target])
-
-#     return output
 
 
 def main():
@@ -80,15 +63,12 @@ def main():
                                               num_workers=1,
                                               drop_last=True)
 
-    with torch.no_grad():
-        label = []
-        pred = []
 
-        for i, (img, target, idx) in enumerate(dataloader_new):
-            import pdb
-            pdb.set_trace()
-            # img = img.unsqueeze(0).cuda(non_blocking=True)
-            # target = target.cuda(non_blocking=True)
+    for i, (img, target, idx) in enumerate(dataloader_new):
+        import pdb
+        pdb.set_trace()
+        # img = img.unsqueeze(0).cuda(non_blocking=True)
+        # target = target.cuda(non_blocking=True)
             
 
 if __name__ == '__main__':
