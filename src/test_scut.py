@@ -71,7 +71,7 @@ def main():
             transforms.CenterCrop(224),
             transforms.ToTensor(),
             transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),])  
-    dataset = scut_dataset(root, data_dir, transform=transform)
+    dataset = scut_dataset(data_dir, transform=transform)
     batch_size = 128
     dataloader_new = torch.utils.data.DataLoader(dataset,
                                               batch_size=min(len(dataset), batch_size),
