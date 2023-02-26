@@ -27,6 +27,8 @@ class scut_dataset(torch.utils.data.Dataset):
                     label.append(0)
         self.path = path
         self.label = label
+        self.transform = transform
+        self.root = root
 
 
     def __getitem__(self, index):
