@@ -37,8 +37,6 @@ class scut_dataset(torch.utils.data.Dataset):
         target = self.label[index]
         if self.transform is not None:
             sample = self.transform(sample)
-        if self.target_transform is not None:
-            target = self.target_transform(target)
         return sample, target, index
 
     def __len__(self):
