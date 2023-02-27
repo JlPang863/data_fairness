@@ -740,7 +740,7 @@ def train_general(args):
             # infl 
             args.infl_random_seed = t+args.datasize*epoch_i//args.train_batch_size + args.train_seed
 
-            if args.aux_data is not None:
+            if args.aux_data == 'imagenet':
               sampled_idx_tmp, new_labels_tmp = sample_by_infl_without_true_label(args, state, val_loader, train_loader_unlabeled, num = args.new_data_each_round)
               new_labels.update(new_labels_tmp)
               print(f'length of new labels {len(new_labels)}')

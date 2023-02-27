@@ -73,6 +73,27 @@ def preprocess_func_imgnet_torch(example, args, noisy_attribute = None, new_labe
   return data
 
 
+def preprocess_func_scut_torch(example, args, noisy_attribute = None, new_labels = {}):
+  """ preprocess the data
+  """
+
+  image, group, label, idx = example[0].numpy(), None, example[1].numpy().astype(np.uint8),  example[2].numpy()
+
+  image = image.transpose((0, 2, 3, 1)) 
+
+  if len(new_labels) > 0:
+    label = np.asarray([new_labels[idx[i]] if idx[i] in new_labels else label[i]  for i in range(len(idx))])
+
+  data = {
+    'feature': image,
+    'label': label,
+    'group': group,
+    'index': idx
+  }
+
+
+  return data
+
 def preprocess_func_celeba_torch(example, args, noisy_attribute = None, new_labels = {}):
   """ preprocess the data
   """
@@ -112,6 +133,8 @@ def gen_preprocess_func_torch2jax(dataset):
     return preprocess_func_compas_torch
   elif dataset == 'imagenet':
     return preprocess_func_imgnet_torch
+  elif dataset == 'scut':
+    return preprocess_func_scut_torch
   else:
     return None
 
@@ -233,6 +256,43 @@ class CompasDataset(torch.utils.data.Dataset):
       return feature, label, group, index
 
 
+
+class my_scut(torch.utils.data.Dataset):
+
+    def __init__(self, root, transform):
+        # super(scut_dataset, self).__init__(root, transform)
+        data_dir = root + '/train_test_files/All_labels.txt'
+        with open(data_dir, 'r') as f:
+            lines = f.readlines()  
+            path = []   
+            label = [] 
+            for line in lines:
+                linesplit = line.split('\n')[0].split(' ')
+                addr = linesplit[0]
+                target = torch.Tensor([float(linesplit[1])])
+                path.append(addr)
+                if target > 3.0:
+                    label.append(1)
+                else:
+                    label.append(0)
+        self.path = path
+        self.label = label
+        self.transform = transform
+        self.root = root
+
+
+    def __getitem__(self, index):
+        sample = PIL.Image.open(os.path.join(self.root, "Images", self.path[index]))
+        target = self.label[index]
+        if self.transform is not None:
+            sample = self.transform(sample)
+        return sample, target, index
+
+    def __len__(self):
+        return len(self.path)
+
+
+
 class my_imagenet(torchvision.datasets.ImageNet):
       def __getitem__(self, index: int) -> Tuple[Any, Any]:
         """
@@ -315,6 +375,15 @@ def load_celeba_dataset_torch(args, shuffle_files=False, split='train', batch_si
     if aux_dataset == 'imagenet':
       ds_aux = my_imagenet(root = args.data_dir + '/imgnet/', split='train', transform=train_transform,
                                       target_transform=None)
+      idx_aux = list(range(len(ds_aux)))
+      part2 = list(set(idx_aux) - set(sampled_idx))
+      ds_2 = torch.utils.data.Subset(ds_aux, part2)
+      if len(sampled_idx) > 0:
+        ds_new = torch.utils.data.Subset(ds_aux, sampled_idx)
+      print(f'{len(part1)} originally labeled samples, {len(sampled_idx)} new samples, and {len(part2)} unlabeled samples. Total: {len(part1) + len(part2) + len(sampled_idx)}')
+    
+    elif aux_dataset == 'scut':
+      ds_aux = my_scut(root = args.data_dir + '/scut_fbp5500/SCUT-FBP5500_v2/', transform=train_transform)
       idx_aux = list(range(len(ds_aux)))
       part2 = list(set(idx_aux) - set(sampled_idx))
       ds_2 = torch.utils.data.Subset(ds_aux, part2)
