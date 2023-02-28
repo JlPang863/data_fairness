@@ -44,6 +44,10 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
   For fairness, the sign is very important
   """
   preprocess_func_torch2jax = gen_preprocess_func_torch2jax(args.dataset)
+  if args.aux_data is None:
+    preprocess_func_torch2jax_aux = gen_preprocess_func_torch2jax(args.dataset)
+  else:
+    preprocess_func_torch2jax_aux = gen_preprocess_func_torch2jax(args.aux_data)
   print('begin calculating influence')
   num_samples = 0.0
   grad_sum = 0.0
@@ -76,7 +80,7 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num):
   expected_label = []
   true_label = []
   for example in unlabeled_data:
-    batch = preprocess_func_torch2jax(example, args)
+    batch = preprocess_func_torch2jax_aux(example, args)
     batch_unlabeled = batch.copy()
     batch_unlabeled['label'] = None # get grad for each label. We do not know labels of samples in unlabeled data
     # grads_each_sample = np.asarray(infl_step_per_sample(state, batch_unlabeled))
