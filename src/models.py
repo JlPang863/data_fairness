@@ -476,6 +476,24 @@ ViT_L16 = partial(
 )
 
 
+########################################################################################################################
+#  Text Classification
+########################################################################################################################
+
+class TextClassifier(nn.Module):
+  features: Sequence[int]
+  num_classes: int
+  dtype: Any = jnp.float32
+
+  @nn.compact
+  def __call__(self, x, train=False):
+    x = x.reshape(x.shape[0], -1)
+    for feat in self.features:
+      x = nn.Dense(feat, dtype=self.dtype)(x)
+      x = nn.relu(x)
+    x = nn.Dense(self.num_classes, dtype=self.dtype)(x)
+    return x
+
 
 ########################################################################################################################
 #  Utils
