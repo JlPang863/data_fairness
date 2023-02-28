@@ -649,7 +649,7 @@ def train_general(args):
     if train_loader_new is not None:
       new_iter = iter(train_loader_new)
     if train_loader_new_org is not None:
-      new_iter_org = iter(train_loader_new)
+      new_iter_org = iter(train_loader_new_org)
 
 
     t = 0
