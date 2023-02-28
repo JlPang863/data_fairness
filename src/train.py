@@ -38,13 +38,13 @@ os.environ["XLA_PYTHON_CLIENT_PREALLOCATE"] = "false"   # This disables the prea
 #       print(f'p_true: {p_true},\n p_est: {p_est}')
 #   return T_est, p_est, T_true, p_true.reshape(-1,1)
 
-def sample_by_infl(args, state, val_data, unlabeled_data, num):
+def sample_by_infl(args, state, val_data, unlabeled_data, num, force_org = False):
   """
   Get influence score of each unlabeled_data on val_data, then sample according to scores
   For fairness, the sign is very important
   """
   preprocess_func_torch2jax = gen_preprocess_func_torch2jax(args.dataset)
-  if args.aux_data is None:
+  if args.aux_data is None or force_org:
     preprocess_func_torch2jax_aux = gen_preprocess_func_torch2jax(args.dataset)
   else:
     preprocess_func_torch2jax_aux = gen_preprocess_func_torch2jax(args.aux_data)
@@ -593,7 +593,10 @@ def train_general(args):
   # make_dirs(args)
   new_labels = {}
   train_loader_labeled, train_loader_unlabeled, idx_with_labels = load_data(args, args.dataset, mode = 'train', aux_dataset=args.aux_data)
+  _, train_loader_unlabeled_org, idx_with_labels_org = load_data(args, args.dataset, mode = 'train', aux_dataset=None)
+  args.train_with_org = True
   train_loader_new = None
+  train_loader_new_org = None
 
   val_loader, test_loader = load_data(args, args.dataset, mode = 'val')
 
@@ -635,14 +638,18 @@ def train_general(args):
   train_step = get_train_step(args.method)
   # epoch_pre = 0
   sampled_idx = []
+  sampled_idx_org = []
   idx_rec = []
   used_idx = idx_with_labels.copy()
+  used_idx_org = idx_with_labels_org.copy()
   print(f'train with {args.datasize} samples (with replacement) in one epoch')
 
   for epoch_i in range(args.num_epochs):
 
     if train_loader_new is not None:
       new_iter = iter(train_loader_new)
+    if train_loader_new_org is not None:
+      new_iter_org = iter(train_loader_new)
 
 
     t = 0
@@ -659,10 +666,17 @@ def train_general(args):
         new_data = 0
         if train_loader_new is not None:
           if 0 <= args.new_prob and args.new_prob <= 1 and len(train_loader_new) >= 2: # args.new_prob should be large, e.g., 0.9.   len(train_loader_new) >= len(train_loader_labeled) / 3 means the new data should be sufficient > 25 % of total
-            new_data = np.random.choice(range(2), p = [1.0 - args.new_prob, args.new_prob])
+            if args.train_with_org:
+              new_data = np.random.choice(range(3), p = [1.0 - args.new_prob, args.new_prob / 2.0, args.new_prob / 2.0])
+            else:
+              new_data = np.random.choice(range(2), p = [1.0 - args.new_prob, args.new_prob])
           else:
             new_prob = (len(train_loader_new) + 1) / (len(train_loader_new) + len(train_loader_labeled))
-            new_data = np.random.choice(range(2), p = [1.0 - new_prob, new_prob])
+            if args.train_with_org:
+              new_data = np.random.choice(range(3), p = [1.0 - new_prob * 2.0, new_prob / 2.0, new_prob / 2.0])
+            else:
+              new_data = np.random.choice(range(2), p = [1.0 - new_prob, new_prob])
+
 
           if new_data == 1:
             try:
@@ -672,6 +686,14 @@ def train_general(args):
                 # restart the generator if the previous generator is exhausted.
                 new_iter = iter(train_loader_new)
                 example = next(new_iter)
+          elif new_data == 2:
+            try:
+                # Samples the batch
+                example = next(new_iter_org)
+            except StopIteration:
+                # restart the generator if the previous generator is exhausted.
+                new_iter_org = iter(train_loader_new_org)
+                example = next(new_iter_org)
 
 
         bsz = example[0].shape[0]
@@ -771,6 +793,17 @@ def train_general(args):
 
             train_loader_labeled, train_loader_unlabeled, train_loader_new, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx, aux_dataset=args.aux_data)
             new_iter = iter(train_loader_new)
+
+
+            if args.train_with_org:
+              sampled_idx_tmp, sel_org_idx_with_labels = sample_by_infl(args, state, val_loader, train_loader_unlabeled_org, num = args.new_data_each_round, force_org = args.train_with_org)
+              idx_with_labels_org.update(sel_org_idx_with_labels)
+              sampled_idx_org += sampled_idx_tmp
+              used_idx_org.update(sampled_idx)
+              print(f'[ADD ORG DATA] Use {len(used_idx_org)} samples. Get {len(idx_with_labels_org)} labels. Ratio: {len(used_idx_org)/len(idx_with_labels_org)}')
+              train_loader_labeled_org, train_loader_unlabeled_org, train_loader_new_org, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx_org, aux_dataset=None)
+              new_iter_org = iter(train_loader_new_org)
+              # idx_rec.append((epoch_i, args.infl_random_seed, used_idx_org, idx_with_labels_org))
 
               
               
