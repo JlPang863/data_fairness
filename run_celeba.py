@@ -13,6 +13,7 @@ parser.add_argument('--lmd', type=float, default=0.0)
 parser.add_argument('--tol', type=float, default=0.02) 
 parser.add_argument('--without_label', default=False, action="store_true") # # get an unfair sample wp tol
 parser.add_argument('--new_prob', type=float, default=0.9) 
+parser.add_argument('--ratio_org', type=float, default=0.5) 
 parser.add_argument('--aux_data', type=str, default=None, help="imagenet")
 # parser.add_argument('--aux_data', nargs='+', type=str, default=None, help="imagenet scut self")
 parser.add_argument('--half_ablation', default=False, action="store_true") # # get an unfair sample wp tol
