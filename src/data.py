@@ -412,7 +412,7 @@ def load_celeba_dataset_torch(args, shuffle_files=False, split='train', batch_si
                                             drop_last=False)
   else:
     dataloader_1 = torch.utils.data.DataLoader(ds_1,
-                                              batch_size=batch_size if split == 'train' else 256, # val loader: 512
+                                              batch_size=batch_size if split == 'train' else 512, # val loader: 512
                                               shuffle=shuffle_files,
                                               num_workers=1,
                                               drop_last=True)

@@ -75,7 +75,7 @@ args.scheduler = None
 args.num_epochs = 10 + args.warm_epoch
 args.EP_STEPS = EP_STEPS
 args.train_seed = META_TRAIN_SEED + RUN * SEED_INCR
-args.train_batch_size = 128 # 256
+args.train_batch_size = 256 # 256
 args.test_batch_size = 4096
 # checkpoints
 args.log_steps = EP_STEPS
