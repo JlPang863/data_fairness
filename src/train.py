@@ -791,7 +791,7 @@ def train_general(args):
               print(f'Use {len(used_idx)} samples. Get {len(idx_with_labels)} labels. Ratio: {len(used_idx)/len(idx_with_labels)}')
               idx_rec.append((epoch_i, args.infl_random_seed, used_idx, idx_with_labels))
 
-            train_loader_labeled, train_loader_unlabeled, train_loader_new, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx, aux_dataset=args.aux_data)
+            _, train_loader_unlabeled, train_loader_new, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx, aux_dataset=args.aux_data)
             new_iter = iter(train_loader_new)
 
 
@@ -801,7 +801,7 @@ def train_general(args):
               sampled_idx_org += sampled_idx_tmp
               used_idx_org.update(sampled_idx)
               print(f'[ADD ORG DATA] Use {len(used_idx_org)} samples. Get {len(idx_with_labels_org)} labels. Ratio: {len(used_idx_org)/len(idx_with_labels_org)}')
-              train_loader_labeled_org, train_loader_unlabeled_org, train_loader_new_org, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx_org, aux_dataset=None)
+              _, train_loader_unlabeled_org, train_loader_new_org, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx_org, aux_dataset=None)
               new_iter_org = iter(train_loader_new_org)
               # idx_rec.append((epoch_i, args.infl_random_seed, used_idx_org, idx_with_labels_org))
 
