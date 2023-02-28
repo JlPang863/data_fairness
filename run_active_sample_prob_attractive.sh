@@ -38,7 +38,7 @@ echo GPU: ${all_gpu[$i]}. Task: $j. Rrunning for ./logs/fair_sampling/$LABEL\_s$
 # CUDA_VISIBLE_DEVICES=$i nohup python3 run_celeba.py --method plain  --warm_epoch 2  --metric $MTC --label_ratio 0.02 --val_ratio 0.1 --strategy $STG --sel_layers $LAYER --label_key $LABEL --new_prob $PROB --half_ablation  > ./logs/fair_sampling/celeba/$LABEL\_s$STG\_$MTC\_$LAYER\_prob_$PROB\_warm2batch_half_ablation.log & 
 
 
-# CUDA_VISIBLE_DEVICES=${all_gpu[$i]} nohup python3 run_celeba.py --method plain  --warm_epoch 2  --metric $MTC --label_ratio 0.02 --val_ratio 0.1 --strategy $STG --sel_layers $LAYER --label_key $LABEL --new_prob $PROB  --aux_data scut  --ratio_org $RATIO  > ./logs/fair_sampling/celeba/$LABEL\_s$STG\_$MTC\_$LAYER\_prob_$PROB\_warm2batch_scut_org_$RATIO.log & 
+CUDA_VISIBLE_DEVICES=${all_gpu[$i]} nohup python3 run_celeba.py --method plain  --warm_epoch 2  --metric $MTC --label_ratio 0.02 --val_ratio 0.1 --strategy $STG --sel_layers $LAYER --label_key $LABEL --new_prob $PROB  --aux_data scut  --ratio_org $RATIO  > ./logs/fair_sampling/celeba/$LABEL\_s$STG\_$MTC\_$LAYER\_prob_$PROB\_warm2batch_scut_org_$RATIO.log & 
 
 j=$((j+1))
 if [[ $j -eq 3 ]]
