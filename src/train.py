@@ -699,7 +699,7 @@ def train_general(args):
         bsz = example[0].shape[0]
 
         num_sample_cur += bsz
-        if new_data == 0:
+        if new_data in [0, 2]:
           example = preprocess_func_torch2jax(example, args)
         else:
           example = preprocess_func_torch2jax_aux(example, args, new_labels = new_labels)
