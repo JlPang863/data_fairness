@@ -673,7 +673,7 @@ def train_general(args):
           else:
             new_prob = (len(train_loader_new) + 1) / (len(train_loader_new) + len(train_loader_labeled))
             if args.train_with_org:
-              new_data = np.random.choice(range(3), p = [1.0 - new_prob * 2.0, new_prob / 2.0, new_prob / 2.0])
+              new_data = np.random.choice(range(3), p = [1.0 - new_prob, new_prob / 2.0, new_prob / 2.0])
             else:
               new_data = np.random.choice(range(2), p = [1.0 - new_prob, new_prob])
 
