@@ -18,7 +18,8 @@ avg_cnt = 3
 # suffix = '_prob_0.9'
 # suffix = '_prob_0.95_warm2batch'
 # suffix = '_prob_0.95_warm2batch_half_ablation'
-suffix = '_prob_0.99_warm2batch_imgaux'
+# suffix = '_prob_0.99_warm2batch_imgaux'
+suffix = '_prob_0.99_warm2batch_scut_org_0.9'
 
 
 root = f'./logs/fair_sampling/{dataset}/'
@@ -162,8 +163,9 @@ sel_layers = [4]
 strategy = [0, 5]
 if dataset == 'celeba':
     # label_key = ['Smiling', 'Straight_Hair', 'Attractive', 'Pale_Skin', 'Young', 'Big_Nose']
-    label_key = ['Smiling', 'Attractive', 'Big_Nose']
+    # label_key = ['Smiling', 'Attractive', 'Big_Nose']
     # label_key = ['Young']
+    label_key = ['Attractive']
 elif dataset == 'compas':
     label_key = ['label']
 else:

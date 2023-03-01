@@ -271,7 +271,7 @@ class my_scut(torch.utils.data.Dataset):
                 addr = linesplit[0]
                 target = torch.Tensor([float(linesplit[1])])
                 path.append(addr)
-                if target >= 4.0:
+                if target >= 3.0:
                     label.append(1)
                 else:
                     label.append(0)

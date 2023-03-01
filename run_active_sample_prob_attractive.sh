@@ -10,7 +10,8 @@ prob_all="0.9 0.95 0.99"
 ratio_org="0.9"
 
 # all_gpu=(0 2 4 6)
-all_gpu=(1 3 5 7)
+# all_gpu=(1 3 5 7)
+all_gpu=(0 1 2 3 4 5 6)
 
 
 
@@ -48,7 +49,7 @@ then
     i=$((i+1))
     j=0
 fi
-if [[ $i -eq 4 ]]
+if [[ $i -eq 7 ]]
 then
     i=0
     echo wait
