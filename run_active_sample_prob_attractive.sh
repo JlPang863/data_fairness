@@ -7,7 +7,7 @@ metric="dp eop eod"
 TOL="0.02"
 prob_all="0.9 0.95 0.99"
 # ratio_org="0.1 0.3 0.5 0.7 0.9"
-ratio_org="0.9"
+ratio_org="0.3 0.5 0.7 0.9"
 
 # all_gpu=(0 2 4 6)
 # all_gpu=(1 3 5 7)
