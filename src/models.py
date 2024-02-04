@@ -20,11 +20,14 @@ class MLP(nn.Module):
 
   @nn.compact
   def __call__(self, x, train=False):
+    # import pdb
+    # pdb.set_trace()
     x = x.reshape(x.shape[0], -1)
     for feat in self.features:
       x = nn.Dense(feat, dtype=self.dtype)(x)
       x = nn.relu(x)
     x = nn.Dense(self.num_classes, dtype=self.dtype)(x)
+
     return x
 
 
@@ -503,7 +506,12 @@ def get_model(args):
   # linear_flag = False
   model_linear = None
   if args.model == 'mlp':
-    model = MLP(features=[64], num_classes=args.num_classes)
+    if args.dataset == 'jigsaw':
+      model = MLP(features=[256], num_classes=args.num_classes)  # 
+    elif args.dataset == 'adult':
+      model = MLP(features=[64], num_classes=args.num_classes)  # 
+    else:
+      model = MLP(features=[64], num_classes=args.num_classes)
   elif args.model == 'vit':
     model = ViT_S8(num_classes=args.num_classes)
   elif args.model == 'vit-b_8':

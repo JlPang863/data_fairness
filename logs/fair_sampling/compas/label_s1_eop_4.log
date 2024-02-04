@@ -1,10 +1,11 @@
-2023-02-12 06:03:05.600016: W tensorflow/compiler/xla/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'libnvinfer.so.7'; dlerror: libnvinfer.so.7: cannot open shared object file: No such file or directory
-2023-02-12 06:03:05.600098: W tensorflow/compiler/xla/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'libnvinfer_plugin.so.7'; dlerror: libnvinfer_plugin.so.7: cannot open shared object file: No such file or directory
-2023-02-12 06:03:05.600105: W tensorflow/compiler/tf2tensorrt/utils/py_utils.cc:38] TF-TRT Warning: Cannot dlopen some TensorRT libraries. If you would like to use Nvidia GPU with TensorRT, please make sure the missing libraries mentioned above are installed properly.
 dataset construction done. 
 Shape of X torch.Size([4937, 8]). 
 Shape of Y torch.Size([4937])
-493 labeled samples and 4444 unlabeled samples. Total: 4937
+987 labeled samples and 3950 unlabeled samples. Total: 4937
+dataset construction done. 
+Shape of X torch.Size([4937, 8]). 
+Shape of Y torch.Size([4937])
+987 labeled samples and 3950 unlabeled samples. Total: 4937
 dataset construction done. 
 Shape of X torch.Size([1235, 8]). 
 Shape of Y torch.Size([1235])
@@ -13,218 +14,503 @@ Numer of layers 4
 train net...
 train with 4937 samples (with replacement) in one epoch
 Epoch 0
-  3.46% | time:   3.5s (  0.1m) | step:     10 | train acc: 0.641 | train loss: 0.654 |warm_t acc: 0.609 (0.608, 0.610) | warm_t eop gap: 0.1548
-  3.46% | time:   1.3s (  0.1m) | step:     10 | train acc: 0.641 | train loss: 0.654 |warm_v acc: 0.607 (0.613, 0.602) | warm_v eop gap: 0.1272
-  6.57% | time:   1.1s (  0.1m) | step:     19 | train acc: 0.703 | train loss: 0.601 |warm_t acc: 0.682 (0.659, 0.705) | warm_t eop gap: 0.2506
-  6.57% | time:   0.2s (  0.1m) | step:     19 | train acc: 0.703 | train loss: 0.601 |warm_v acc: 0.619 (0.621, 0.618) | warm_v eop gap: 0.2856
+predicted_label 1: 0.4645749; predicted_label 0: 0.5354251
+  2.60% | time:   3.2s (  0.1m) | step:     10 | train acc: 0.512 | train loss: 0.707 |warm_t acc: 0.595 (0.576, 0.614) | warm_t eop gap: 0.1157
+predicted_label 1: 0.42105263; predicted_label 0: 0.57894737
+  2.60% | time:   1.2s (  0.1m) | step:     10 | train acc: 0.512 | train loss: 0.707 |warm_v acc: 0.615 (0.605, 0.626) | warm_v eop gap: 0.1192
+predicted_label 1: 0.42206478; predicted_label 0: 0.5779352
+  4.94% | time:   0.1s (  0.1m) | step:     19 | train acc: 0.750 | train loss: 0.556 |warm_t acc: 0.676 (0.655, 0.697) | warm_t eop gap: 0.2749
+predicted_label 1: 0.42510122; predicted_label 0: 0.5748988
+  4.94% | time:   0.0s (  0.1m) | step:     19 | train acc: 0.750 | train loss: 0.556 |warm_v acc: 0.636 (0.613, 0.659) | warm_v eop gap: 0.2327
 Epoch 1
- 10.03% | time:   1.2s (  0.1m) | step:     29 | train acc: 0.688 | train loss: 0.590 |warm_t acc: 0.670 (0.651, 0.689) | warm_t eop gap: 0.2576
- 10.03% | time:   0.2s (  0.1m) | step:     29 | train acc: 0.688 | train loss: 0.590 |warm_v acc: 0.640 (0.621, 0.659) | warm_v eop gap: 0.2027
- 13.15% | time:   1.2s (  0.1m) | step:     38 | train acc: 0.672 | train loss: 0.581 |warm_t acc: 0.674 (0.657, 0.691) | warm_t eop gap: 0.2663
- 13.15% | time:   0.2s (  0.1m) | step:     38 | train acc: 0.672 | train loss: 0.581 |warm_v acc: 0.652 (0.621, 0.683) | warm_v eop gap: 0.1612
+predicted_label 1: 0.45850202; predicted_label 0: 0.541498
+  7.53% | time:   0.0s (  0.1m) | step:     29 | train acc: 0.699 | train loss: 0.589 |warm_t acc: 0.672 (0.643, 0.701) | warm_t eop gap: 0.2529
+predicted_label 1: 0.46153846; predicted_label 0: 0.53846157
+  7.53% | time:   0.0s (  0.1m) | step:     29 | train acc: 0.699 | train loss: 0.589 |warm_v acc: 0.632 (0.605, 0.659) | warm_v eop gap: 0.1913
+predicted_label 1: 0.47672066; predicted_label 0: 0.52327937
+  9.87% | time:   0.0s (  0.1m) | step:     38 | train acc: 0.699 | train loss: 0.591 |warm_t acc: 0.668 (0.645, 0.691) | warm_t eop gap: 0.2427
+predicted_label 1: 0.47368422; predicted_label 0: 0.5263158
+  9.87% | time:   0.0s (  0.1m) | step:     38 | train acc: 0.699 | train loss: 0.591 |warm_v acc: 0.644 (0.613, 0.675) | warm_v eop gap: 0.1687
 Epoch 2
- 16.61% | time:   1.1s (  0.2m) | step:     48 | train acc: 0.734 | train loss: 0.567 |warm_t acc: 0.673 (0.655, 0.691) | warm_t eop gap: 0.2639
- 16.61% | time:   0.2s (  0.2m) | step:     48 | train acc: 0.734 | train loss: 0.567 |warm_v acc: 0.648 (0.629, 0.667) | warm_v eop gap: 0.1764
- 19.72% | time:   1.1s (  0.2m) | step:     57 | train acc: 0.703 | train loss: 0.560 |warm_t acc: 0.673 (0.653, 0.693) | warm_t eop gap: 0.2537
- 19.72% | time:   0.2s (  0.2m) | step:     57 | train acc: 0.703 | train loss: 0.560 |warm_v acc: 0.644 (0.645, 0.642) | warm_v eop gap: 0.2067
+predicted_label 1: 0.492915; predicted_label 0: 0.507085
+ 12.47% | time:   0.1s (  0.1m) | step:     48 | train acc: 0.738 | train loss: 0.538 |warm_t acc: 0.668 (0.649, 0.687) | warm_t eop gap: 0.2647
+predicted_label 1: 0.48987857; predicted_label 0: 0.51012146
+ 12.47% | time:   0.0s (  0.1m) | step:     48 | train acc: 0.738 | train loss: 0.538 |warm_v acc: 0.652 (0.637, 0.667) | warm_v eop gap: 0.2141
+predicted_label 1: 0.5111336; predicted_label 0: 0.48886642
+ 14.81% | time:   0.1s (  0.1m) | step:     57 | train acc: 0.684 | train loss: 0.573 |warm_t acc: 0.662 (0.637, 0.687) | warm_t eop gap: 0.2505
+predicted_label 1: 0.51417005; predicted_label 0: 0.48582998
+ 14.81% | time:   0.0s (  0.1m) | step:     57 | train acc: 0.684 | train loss: 0.573 |warm_v acc: 0.652 (0.637, 0.667) | warm_v eop gap: 0.1915
 Epoch 3
- 23.18% | time:   1.2s (  0.2m) | step:     67 | train acc: 0.692 | train loss: 0.559 |warm_t acc: 0.668 (0.647, 0.689) | warm_t eop gap: 0.2411
- 23.18% | time:   0.2s (  0.2m) | step:     67 | train acc: 0.692 | train loss: 0.559 |warm_v acc: 0.648 (0.645, 0.650) | warm_v eop gap: 0.1878
- 26.30% | time:   1.1s (  0.2m) | step:     76 | train acc: 0.695 | train loss: 0.581 |warm_t acc: 0.666 (0.647, 0.685) | warm_t eop gap: 0.2537
- 26.30% | time:   0.2s (  0.2m) | step:     76 | train acc: 0.695 | train loss: 0.581 |warm_v acc: 0.644 (0.645, 0.642) | warm_v eop gap: 0.1915
+predicted_label 1: 0.5060729; predicted_label 0: 0.49392715
+ 17.40% | time:   0.1s (  0.1m) | step:     67 | train acc: 0.699 | train loss: 0.597 |warm_t acc: 0.665 (0.645, 0.685) | warm_t eop gap: 0.2560
+predicted_label 1: 0.49392715; predicted_label 0: 0.5060729
+ 17.40% | time:   0.0s (  0.1m) | step:     67 | train acc: 0.699 | train loss: 0.597 |warm_v acc: 0.656 (0.637, 0.675) | warm_v eop gap: 0.1953
+predicted_label 1: 0.5060729; predicted_label 0: 0.49392715
+ 19.74% | time:   0.0s (  0.1m) | step:     76 | train acc: 0.676 | train loss: 0.630 |warm_t acc: 0.665 (0.645, 0.685) | warm_t eop gap: 0.2560
+predicted_label 1: 0.48987857; predicted_label 0: 0.51012146
+ 19.74% | time:   0.0s (  0.1m) | step:     76 | train acc: 0.676 | train loss: 0.630 |warm_v acc: 0.652 (0.637, 0.667) | warm_v eop gap: 0.2141
 Epoch 4
- 30.10% | time:   1.1s (  0.3m) | step:     87 | train acc: 0.696 | train loss: 0.580 |warm_t acc: 0.665 (0.643, 0.687) | warm_t eop gap: 0.2301
- 30.10% | time:   0.2s (  0.3m) | step:     87 | train acc: 0.696 | train loss: 0.580 |warm_v acc: 0.644 (0.645, 0.642) | warm_v eop gap: 0.1915
- 33.22% | time:   1.0s (  0.3m) | step:     96 | train acc: 0.715 | train loss: 0.567 |warm_t acc: 0.665 (0.643, 0.687) | warm_t eop gap: 0.2301
- 33.22% | time:   0.2s (  0.3m) | step:     96 | train acc: 0.715 | train loss: 0.567 |warm_v acc: 0.644 (0.645, 0.642) | warm_v eop gap: 0.1915
+predicted_label 1: 0.49595144; predicted_label 0: 0.5040486
+ 22.60% | time:   0.1s (  0.1m) | step:     87 | train acc: 0.660 | train loss: 0.608 |warm_t acc: 0.671 (0.645, 0.697) | warm_t eop gap: 0.2482
+predicted_label 1: 0.49392715; predicted_label 0: 0.5060729
+ 22.60% | time:   0.1s (  0.1m) | step:     87 | train acc: 0.660 | train loss: 0.608 |warm_v acc: 0.656 (0.645, 0.667) | warm_v eop gap: 0.2293
+predicted_label 1: 0.49190286; predicted_label 0: 0.5080972
+ 24.94% | time:   0.2s (  0.1m) | step:     96 | train acc: 0.707 | train loss: 0.570 |warm_t acc: 0.671 (0.643, 0.699) | warm_t eop gap: 0.2404
+predicted_label 1: 0.48987857; predicted_label 0: 0.51012146
+ 24.94% | time:   0.0s (  0.1m) | step:     96 | train acc: 0.707 | train loss: 0.570 |warm_v acc: 0.652 (0.637, 0.667) | warm_v eop gap: 0.2141
 Epoch 5
- 36.68% | time:   1.0s (  0.3m) | step:    106 | train acc: 0.738 | train loss: 0.545 |test acc: 0.667 (0.647, 0.687) | test eop gap: 0.2451
- 36.68% | time:   0.2s (  0.3m) | step:    106 | train acc: 0.738 | train loss: 0.545 |val acc: 0.648 (0.645, 0.650) | val eop gap: 0.1727
+predicted_label 1: 0.4949393; predicted_label 0: 0.50506073
+ 27.53% | time:   0.0s (  0.1m) | step:    106 | train acc: 0.703 | train loss: 0.594 |warm_t acc: 0.670 (0.643, 0.697) | warm_t eop gap: 0.2443
+predicted_label 1: 0.48987857; predicted_label 0: 0.51012146
+ 27.53% | time:   0.0s (  0.1m) | step:    106 | train acc: 0.703 | train loss: 0.594 |warm_v acc: 0.652 (0.637, 0.667) | warm_v eop gap: 0.2141
+predicted_label 1: 0.50303644; predicted_label 0: 0.49696356
+ 29.87% | time:   0.0s (  0.1m) | step:    115 | train acc: 0.719 | train loss: 0.556 |warm_t acc: 0.668 (0.643, 0.693) | warm_t eop gap: 0.2466
+predicted_label 1: 0.5020243; predicted_label 0: 0.4979757
+ 29.87% | time:   0.0s (  0.1m) | step:    115 | train acc: 0.719 | train loss: 0.556 |warm_v acc: 0.664 (0.653, 0.675) | warm_v eop gap: 0.2256
+Epoch 6
+predicted_label 1: 0.50506073; predicted_label 0: 0.4949393
+ 32.47% | time:   0.0s (  0.1m) | step:    125 | train acc: 0.672 | train loss: 0.606 |warm_t acc: 0.666 (0.639, 0.693) | warm_t eop gap: 0.2466
+predicted_label 1: 0.5020243; predicted_label 0: 0.4979757
+ 32.47% | time:   0.0s (  0.1m) | step:    125 | train acc: 0.672 | train loss: 0.606 |warm_v acc: 0.664 (0.653, 0.675) | warm_v eop gap: 0.2256
+predicted_label 1: 0.50506073; predicted_label 0: 0.4949393
+ 34.81% | time:   0.1s (  0.1m) | step:    134 | train acc: 0.707 | train loss: 0.541 |warm_t acc: 0.666 (0.639, 0.693) | warm_t eop gap: 0.2466
+predicted_label 1: 0.5020243; predicted_label 0: 0.4979757
+ 34.81% | time:   0.0s (  0.1m) | step:    134 | train acc: 0.707 | train loss: 0.541 |warm_v acc: 0.664 (0.653, 0.675) | warm_v eop gap: 0.2256
+Epoch 7
+predicted_label 1: 0.51619434; predicted_label 0: 0.4838057
+ 37.40% | time:   0.1s (  0.1m) | step:    144 | train acc: 0.719 | train loss: 0.567 |warm_t acc: 0.663 (0.637, 0.689) | warm_t eop gap: 0.2529
+predicted_label 1: 0.51821864; predicted_label 0: 0.4817814
+ 37.40% | time:   0.0s (  0.1m) | step:    144 | train acc: 0.719 | train loss: 0.567 |warm_v acc: 0.656 (0.645, 0.667) | warm_v eop gap: 0.2067
+predicted_label 1: 0.50303644; predicted_label 0: 0.49696356
+ 39.74% | time:   0.1s (  0.1m) | step:    153 | train acc: 0.699 | train loss: 0.582 |warm_t acc: 0.670 (0.647, 0.693) | warm_t eop gap: 0.2505
+predicted_label 1: 0.51012146; predicted_label 0: 0.48987857
+ 39.74% | time:   0.0s (  0.1m) | step:    153 | train acc: 0.699 | train loss: 0.582 |warm_v acc: 0.656 (0.645, 0.667) | warm_v eop gap: 0.2256
+Epoch 8
+predicted_label 1: 0.5060729; predicted_label 0: 0.49392715
+ 42.60% | time:   0.1s (  0.1m) | step:    164 | train acc: 0.680 | train loss: 0.576 |warm_t acc: 0.671 (0.647, 0.695) | warm_t eop gap: 0.2490
+predicted_label 1: 0.51417005; predicted_label 0: 0.48582998
+ 42.60% | time:   0.0s (  0.1m) | step:    164 | train acc: 0.680 | train loss: 0.576 |warm_v acc: 0.652 (0.645, 0.659) | warm_v eop gap: 0.2256
+predicted_label 1: 0.49392715; predicted_label 0: 0.5060729
+ 44.94% | time:   0.1s (  0.1m) | step:    173 | train acc: 0.688 | train loss: 0.604 |warm_t acc: 0.671 (0.647, 0.695) | warm_t eop gap: 0.2537
+predicted_label 1: 0.51012146; predicted_label 0: 0.48987857
+ 44.94% | time:   0.0s (  0.1m) | step:    173 | train acc: 0.688 | train loss: 0.604 |warm_v acc: 0.656 (0.645, 0.667) | warm_v eop gap: 0.2256
+Epoch 9
+predicted_label 1: 0.5111336; predicted_label 0: 0.48886642
+ 47.53% | time:   0.1s (  0.1m) | step:    183 | train acc: 0.715 | train loss: 0.560 |warm_t acc: 0.668 (0.645, 0.691) | warm_t eop gap: 0.2529
+predicted_label 1: 0.51821864; predicted_label 0: 0.4817814
+ 47.53% | time:   0.0s (  0.1m) | step:    183 | train acc: 0.715 | train loss: 0.560 |warm_v acc: 0.656 (0.645, 0.667) | warm_v eop gap: 0.2067
+predicted_label 1: 0.51214576; predicted_label 0: 0.48785427
+ 49.87% | time:   0.0s (  0.1m) | step:    192 | train acc: 0.664 | train loss: 0.632 |warm_t acc: 0.669 (0.647, 0.691) | warm_t eop gap: 0.2568
+predicted_label 1: 0.51821864; predicted_label 0: 0.4817814
+ 49.87% | time:   0.0s (  0.1m) | step:    192 | train acc: 0.664 | train loss: 0.632 |warm_v acc: 0.656 (0.645, 0.667) | warm_v eop gap: 0.2067
+Epoch 10
+predicted_label 1: 0.49595144; predicted_label 0: 0.5040486
+ 52.47% | time:   0.0s (  0.1m) | step:    202 | train acc: 0.762 | train loss: 0.534 |test acc: 0.669 (0.643, 0.695) | test eop gap: 0.2631
+predicted_label 1: 0.51012146; predicted_label 0: 0.48987857
+ 52.47% | time:   0.0s (  0.1m) | step:    202 | train acc: 0.762 | train loss: 0.534 |val acc: 0.656 (0.645, 0.667) | val eop gap: 0.2256
+Sampling by influence function!
 begin calculating influence
 selected layers: [Traced<ShapedArray(float32[64])>with<DynamicJaxprTrace(level=0/1)>, Traced<ShapedArray(float32[8,64])>with<DynamicJaxprTrace(level=0/1)>, Traced<ShapedArray(float32[2])>with<DynamicJaxprTrace(level=0/1)>, Traced<ShapedArray(float32[64,2])>with<DynamicJaxprTrace(level=0/1)>]
 calculating influence -- done
+Use 2011 samples. Get 2011 labels. Ratio: 1.0
 dataset construction done. 
 Shape of X torch.Size([4937, 8]). 
 Shape of Y torch.Size([4937])
-525 labeled samples and 4412 unlabeled samples. Total: 4937
-Use 525 samples. Get 525 labels. Ratio: 1.0
- 39.79% | time:   2.9s (  0.3m) | step:    115 | train acc: 0.769 | train loss: 0.461 |test acc: 0.659 (0.643, 0.675) | test eop gap: 0.2364
- 39.79% | time:   0.2s (  0.3m) | step:    115 | train acc: 0.769 | train loss: 0.461 |val acc: 0.644 (0.653, 0.634) | val eop gap: 0.1652
+2011 labeled samples and 2926 unlabeled samples. Total: 4937
+args.train_with_org = True!
 begin calculating influence
 calculating influence -- done
+[ADD ORG DATA] Use 2011 samples. Get 2011 labels. Ratio: 1.0
 dataset construction done. 
 Shape of X torch.Size([4937, 8]). 
 Shape of Y torch.Size([4937])
-557 labeled samples and 4380 unlabeled samples. Total: 4937
-Use 557 samples. Get 557 labels. Ratio: 1.0
-Epoch 6
- 43.25% | time:   2.5s (  0.4m) | step:    125 | train acc: 0.676 | train loss: 0.597 |test acc: 0.668 (0.645, 0.691) | test eop gap: 0.2372
- 43.25% | time:   0.2s (  0.4m) | step:    125 | train acc: 0.676 | train loss: 0.597 |val acc: 0.656 (0.653, 0.659) | val eop gap: 0.2256
+2011 labeled samples and 2926 unlabeled samples. Total: 4937
+predicted_label 1: 0.43623483; predicted_label 0: 0.56376517
+ 54.81% | time:   3.7s (  0.2m) | step:    211 | train acc: 0.562 | train loss: 0.712 |test acc: 0.682 (0.649, 0.715) | test eop gap: 0.2671
+predicted_label 1: 0.44129556; predicted_label 0: 0.5587045
+ 54.81% | time:   0.1s (  0.2m) | step:    211 | train acc: 0.562 | train loss: 0.712 |val acc: 0.652 (0.653, 0.650) | val eop gap: 0.2933
+Sampling by influence function!
 begin calculating influence
 calculating influence -- done
+Use 2011 samples. Get 2011 labels. Ratio: 1.0
 dataset construction done. 
 Shape of X torch.Size([4937, 8]). 
 Shape of Y torch.Size([4937])
-589 labeled samples and 4348 unlabeled samples. Total: 4937
-Use 589 samples. Get 589 labels. Ratio: 1.0
- 46.37% | time:   2.2s (  0.4m) | step:    134 | train acc: 0.691 | train loss: 0.561 |test acc: 0.673 (0.645, 0.701) | test eop gap: 0.2286
- 46.37% | time:   0.2s (  0.4m) | step:    134 | train acc: 0.691 | train loss: 0.561 |val acc: 0.660 (0.645, 0.675) | val eop gap: 0.2104
+3035 labeled samples and 2926 unlabeled samples. Total: 5961
+args.train_with_org = True!
 begin calculating influence
 calculating influence -- done
+[ADD ORG DATA] Use 2011 samples. Get 2403 labels. Ratio: 0.8368705784436121
 dataset construction done. 
 Shape of X torch.Size([4937, 8]). 
 Shape of Y torch.Size([4937])
-621 labeled samples and 4316 unlabeled samples. Total: 4937
-Use 621 samples. Get 621 labels. Ratio: 1.0
-Epoch 7
- 49.83% | time:   2.3s (  0.5m) | step:    144 | train acc: 0.691 | train loss: 0.592 |test acc: 0.682 (0.647, 0.717) | test eop gap: 0.2341
- 49.83% | time:   0.3s (  0.5m) | step:    144 | train acc: 0.691 | train loss: 0.592 |val acc: 0.652 (0.637, 0.667) | val eop gap: 0.2141
-begin calculating influence
-calculating influence -- done
-dataset construction done. 
-Shape of X torch.Size([4937, 8]). 
-Shape of Y torch.Size([4937])
-653 labeled samples and 4284 unlabeled samples. Total: 4937
-Use 653 samples. Get 653 labels. Ratio: 1.0
- 52.94% | time:   2.1s (  0.5m) | step:    153 | train acc: 0.637 | train loss: 0.640 |test acc: 0.679 (0.645, 0.713) | test eop gap: 0.2325
- 52.94% | time:   0.2s (  0.5m) | step:    153 | train acc: 0.637 | train loss: 0.640 |val acc: 0.652 (0.653, 0.650) | val eop gap: 0.2444
-begin calculating influence
-calculating influence -- done
-dataset construction done. 
-Shape of X torch.Size([4937, 8]). 
-Shape of Y torch.Size([4937])
-685 labeled samples and 4252 unlabeled samples. Total: 4937
-Use 685 samples. Get 685 labels. Ratio: 1.0
-Epoch 8
- 56.75% | time:   2.2s (  0.6m) | step:    164 | train acc: 0.621 | train loss: 0.620 |test acc: 0.678 (0.645, 0.711) | test eop gap: 0.2412
- 56.75% | time:   0.2s (  0.6m) | step:    164 | train acc: 0.621 | train loss: 0.620 |val acc: 0.660 (0.669, 0.650) | val eop gap: 0.2822
-begin calculating influence
-calculating influence -- done
-dataset construction done. 
-Shape of X torch.Size([4937, 8]). 
-Shape of Y torch.Size([4937])
-717 labeled samples and 4220 unlabeled samples. Total: 4937
-Use 717 samples. Get 717 labels. Ratio: 1.0
- 59.86% | time:   2.0s (  0.6m) | step:    173 | train acc: 0.660 | train loss: 0.619 |test acc: 0.680 (0.645, 0.715) | test eop gap: 0.2310
- 59.86% | time:   0.2s (  0.6m) | step:    173 | train acc: 0.660 | train loss: 0.619 |val acc: 0.660 (0.677, 0.642) | val eop gap: 0.3010
-begin calculating influence
-calculating influence -- done
-dataset construction done. 
-Shape of X torch.Size([4937, 8]). 
-Shape of Y torch.Size([4937])
-749 labeled samples and 4188 unlabeled samples. Total: 4937
-Use 749 samples. Get 749 labels. Ratio: 1.0
-Epoch 9
- 63.32% | time:   1.9s (  0.6m) | step:    183 | train acc: 0.672 | train loss: 0.622 |test acc: 0.681 (0.649, 0.713) | test eop gap: 0.2474
- 63.32% | time:   0.2s (  0.6m) | step:    183 | train acc: 0.672 | train loss: 0.622 |val acc: 0.644 (0.645, 0.642) | val eop gap: 0.2404
-begin calculating influence
-calculating influence -- done
-dataset construction done. 
-Shape of X torch.Size([4937, 8]). 
-Shape of Y torch.Size([4937])
-781 labeled samples and 4156 unlabeled samples. Total: 4937
-Use 781 samples. Get 781 labels. Ratio: 1.0
- 66.44% | time:   1.4s (  0.6m) | step:    192 | train acc: 0.656 | train loss: 0.582 |test acc: 0.682 (0.649, 0.715) | test eop gap: 0.2490
- 66.44% | time:   0.2s (  0.7m) | step:    192 | train acc: 0.656 | train loss: 0.582 |val acc: 0.636 (0.653, 0.618) | val eop gap: 0.2970
-begin calculating influence
-calculating influence -- done
-dataset construction done. 
-Shape of X torch.Size([4937, 8]). 
-Shape of Y torch.Size([4937])
-813 labeled samples and 4124 unlabeled samples. Total: 4937
-Use 813 samples. Get 813 labels. Ratio: 1.0
-Epoch 10
- 69.90% | time:   1.8s (  0.7m) | step:    202 | train acc: 0.648 | train loss: 0.611 |test acc: 0.679 (0.647, 0.711) | test eop gap: 0.2364
- 69.90% | time:   0.2s (  0.7m) | step:    202 | train acc: 0.648 | train loss: 0.611 |val acc: 0.656 (0.661, 0.650) | val eop gap: 0.2293
-begin calculating influence
-calculating influence -- done
-dataset construction done. 
-Shape of X torch.Size([4937, 8]). 
-Shape of Y torch.Size([4937])
-845 labeled samples and 4092 unlabeled samples. Total: 4937
-Use 845 samples. Get 845 labels. Ratio: 1.0
- 73.01% | time:   1.7s (  0.7m) | step:    211 | train acc: 0.727 | train loss: 0.559 |test acc: 0.682 (0.653, 0.711) | test eop gap: 0.2521
- 73.01% | time:   0.2s (  0.7m) | step:    211 | train acc: 0.727 | train loss: 0.559 |val acc: 0.644 (0.645, 0.642) | val eop gap: 0.2367
-begin calculating influence
-calculating influence -- done
-dataset construction done. 
-Shape of X torch.Size([4937, 8]). 
-Shape of Y torch.Size([4937])
-877 labeled samples and 4060 unlabeled samples. Total: 4937
-Use 877 samples. Get 877 labels. Ratio: 1.0
+3035 labeled samples and 2926 unlabeled samples. Total: 5961
 Epoch 11
- 76.82% | time:   1.8s (  0.7m) | step:    222 | train acc: 0.691 | train loss: 0.574 |test acc: 0.685 (0.653, 0.717) | test eop gap: 0.2404
- 76.82% | time:   0.2s (  0.7m) | step:    222 | train acc: 0.691 | train loss: 0.574 |val acc: 0.648 (0.653, 0.642) | val eop gap: 0.2404
+predicted_label 1: 0.32287452; predicted_label 0: 0.6771255
+ 57.66% | time:   1.9s (  0.2m) | step:    222 | train acc: 0.656 | train loss: 0.637 |test acc: 0.696 (0.669, 0.723) | test eop gap: 0.2538
+predicted_label 1: 0.31983808; predicted_label 0: 0.68016195
+ 57.66% | time:   0.0s (  0.2m) | step:    222 | train acc: 0.656 | train loss: 0.637 |val acc: 0.611 (0.613, 0.610) | val eop gap: 0.3305
+Sampling by influence function!
 begin calculating influence
 calculating influence -- done
+Use 2011 samples. Get 2011 labels. Ratio: 1.0
 dataset construction done. 
 Shape of X torch.Size([4937, 8]). 
 Shape of Y torch.Size([4937])
-909 labeled samples and 4028 unlabeled samples. Total: 4937
-Use 909 samples. Get 909 labels. Ratio: 1.0
- 79.93% | time:   1.5s (  0.8m) | step:    231 | train acc: 0.688 | train loss: 0.563 |test acc: 0.684 (0.653, 0.715) | test eop gap: 0.2427
- 79.93% | time:   0.1s (  0.8m) | step:    231 | train acc: 0.688 | train loss: 0.563 |val acc: 0.652 (0.661, 0.642) | val eop gap: 0.2216
+4059 labeled samples and 2926 unlabeled samples. Total: 6985
+args.train_with_org = True!
 begin calculating influence
 calculating influence -- done
+[ADD ORG DATA] Use 2011 samples. Get 2567 labels. Ratio: 0.7834047526295286
 dataset construction done. 
 Shape of X torch.Size([4937, 8]). 
 Shape of Y torch.Size([4937])
-941 labeled samples and 3996 unlabeled samples. Total: 4937
-Use 941 samples. Get 941 labels. Ratio: 1.0
+4059 labeled samples and 2926 unlabeled samples. Total: 6985
+predicted_label 1: 0.3825911; predicted_label 0: 0.61740893
+ 60.00% | time:   0.9s (  0.2m) | step:    231 | train acc: 0.562 | train loss: 0.652 |test acc: 0.691 (0.661, 0.721) | test eop gap: 0.2750
+predicted_label 1: 0.39271256; predicted_label 0: 0.60728747
+ 60.00% | time:   0.1s (  0.2m) | step:    231 | train acc: 0.562 | train loss: 0.652 |val acc: 0.636 (0.629, 0.642) | val eop gap: 0.2401
+Sampling by influence function!
+begin calculating influence
+calculating influence -- done
+Use 2011 samples. Get 2011 labels. Ratio: 1.0
+dataset construction done. 
+Shape of X torch.Size([4937, 8]). 
+Shape of Y torch.Size([4937])
+5083 labeled samples and 2926 unlabeled samples. Total: 8009
+args.train_with_org = True!
+begin calculating influence
+calculating influence -- done
+[ADD ORG DATA] Use 2011 samples. Get 2661 labels. Ratio: 0.7557309282224728
+dataset construction done. 
+Shape of X torch.Size([4937, 8]). 
+Shape of Y torch.Size([4937])
+5083 labeled samples and 2926 unlabeled samples. Total: 8009
 Epoch 12
- 83.39% | time:   1.6s (  0.8m) | step:    241 | train acc: 0.684 | train loss: 0.598 |test acc: 0.687 (0.655, 0.719) | test eop gap: 0.2341
- 83.39% | time:   0.2s (  0.8m) | step:    241 | train acc: 0.684 | train loss: 0.598 |val acc: 0.640 (0.653, 0.626) | val eop gap: 0.2367
+predicted_label 1: 0.3117409; predicted_label 0: 0.6882591
+ 62.60% | time:   0.8s (  0.2m) | step:    241 | train acc: 0.750 | train loss: 0.591 |test acc: 0.687 (0.661, 0.713) | test eop gap: 0.2429
+predicted_label 1: 0.30769232; predicted_label 0: 0.6923077
+ 62.60% | time:   0.0s (  0.2m) | step:    241 | train acc: 0.750 | train loss: 0.591 |val acc: 0.615 (0.605, 0.626) | val eop gap: 0.2813
+Sampling by influence function!
 begin calculating influence
 calculating influence -- done
+Use 2011 samples. Get 2011 labels. Ratio: 1.0
 dataset construction done. 
 Shape of X torch.Size([4937, 8]). 
 Shape of Y torch.Size([4937])
-973 labeled samples and 3964 unlabeled samples. Total: 4937
-Use 973 samples. Get 973 labels. Ratio: 1.0
- 86.51% | time:   1.4s (  0.8m) | step:    250 | train acc: 0.652 | train loss: 0.645 |test acc: 0.688 (0.659, 0.717) | test eop gap: 0.2537
- 86.51% | time:   0.2s (  0.8m) | step:    250 | train acc: 0.652 | train loss: 0.645 |val acc: 0.640 (0.661, 0.618) | val eop gap: 0.2593
+6107 labeled samples and 2926 unlabeled samples. Total: 9033
+args.train_with_org = True!
 begin calculating influence
 calculating influence -- done
+[ADD ORG DATA] Use 2011 samples. Get 2690 labels. Ratio: 0.7475836431226766
 dataset construction done. 
 Shape of X torch.Size([4937, 8]). 
 Shape of Y torch.Size([4937])
-1005 labeled samples and 3932 unlabeled samples. Total: 4937
-Use 1005 samples. Get 1005 labels. Ratio: 1.0
+6107 labeled samples and 2926 unlabeled samples. Total: 9033
+predicted_label 1: 0.4797571; predicted_label 0: 0.5202429
+ 64.94% | time:   1.0s (  0.2m) | step:    250 | train acc: 0.500 | train loss: 0.740 |test acc: 0.681 (0.651, 0.711) | test eop gap: 0.2459
+predicted_label 1: 0.48987857; predicted_label 0: 0.51012146
+ 64.94% | time:   0.0s (  0.2m) | step:    250 | train acc: 0.500 | train loss: 0.740 |val acc: 0.652 (0.661, 0.642) | val eop gap: 0.2481
+Sampling by influence function!
+begin calculating influence
+calculating influence -- done
+Use 2011 samples. Get 2011 labels. Ratio: 1.0
+dataset construction done. 
+Shape of X torch.Size([4937, 8]). 
+Shape of Y torch.Size([4937])
+7131 labeled samples and 2926 unlabeled samples. Total: 10057
+args.train_with_org = True!
+begin calculating influence
+calculating influence -- done
+[ADD ORG DATA] Use 2011 samples. Get 2719 labels. Ratio: 0.7396101507907319
+dataset construction done. 
+Shape of X torch.Size([4937, 8]). 
+Shape of Y torch.Size([4937])
+7131 labeled samples and 2926 unlabeled samples. Total: 10057
 Epoch 13
- 89.97% | time:   1.6s (  0.9m) | step:    260 | train acc: 0.676 | train loss: 0.606 |test acc: 0.687 (0.659, 0.715) | test eop gap: 0.2341
- 89.97% | time:   0.2s (  0.9m) | step:    260 | train acc: 0.676 | train loss: 0.606 |val acc: 0.632 (0.653, 0.610) | val eop gap: 0.2404
+predicted_label 1: 0.38157895; predicted_label 0: 0.6184211
+ 67.53% | time:   1.1s (  0.3m) | step:    260 | train acc: 0.656 | train loss: 0.610 |test acc: 0.692 (0.663, 0.721) | test eop gap: 0.2750
+predicted_label 1: 0.41295546; predicted_label 0: 0.58704454
+ 67.53% | time:   0.0s (  0.3m) | step:    260 | train acc: 0.656 | train loss: 0.610 |val acc: 0.640 (0.661, 0.618) | val eop gap: 0.3196
+Sampling by influence function!
 begin calculating influence
 calculating influence -- done
+Use 2011 samples. Get 2011 labels. Ratio: 1.0
 dataset construction done. 
 Shape of X torch.Size([4937, 8]). 
 Shape of Y torch.Size([4937])
-1037 labeled samples and 3900 unlabeled samples. Total: 4937
-Use 1037 samples. Get 1037 labels. Ratio: 1.0
- 93.08% | time:   1.5s (  0.9m) | step:    269 | train acc: 0.652 | train loss: 0.616 |test acc: 0.681 (0.651, 0.711) | test eop gap: 0.2270
- 93.08% | time:   0.2s (  0.9m) | step:    269 | train acc: 0.652 | train loss: 0.616 |val acc: 0.640 (0.653, 0.626) | val eop gap: 0.2256
+8155 labeled samples and 2926 unlabeled samples. Total: 11081
+args.train_with_org = True!
 begin calculating influence
 calculating influence -- done
+[ADD ORG DATA] Use 2011 samples. Get 2729 labels. Ratio: 0.7368999633565408
 dataset construction done. 
 Shape of X torch.Size([4937, 8]). 
 Shape of Y torch.Size([4937])
-1069 labeled samples and 3868 unlabeled samples. Total: 4937
-Use 1069 samples. Get 1069 labels. Ratio: 1.0
+8155 labeled samples and 2926 unlabeled samples. Total: 11081
+predicted_label 1: 0.31983808; predicted_label 0: 0.68016195
+ 69.87% | time:   1.1s (  0.3m) | step:    269 | train acc: 0.531 | train loss: 0.699 |test acc: 0.685 (0.663, 0.707) | test eop gap: 0.2923
+predicted_label 1: 0.34008098; predicted_label 0: 0.659919
+ 69.87% | time:   0.0s (  0.3m) | step:    269 | train acc: 0.531 | train loss: 0.699 |val acc: 0.623 (0.629, 0.618) | val eop gap: 0.2550
+Sampling by influence function!
+begin calculating influence
+calculating influence -- done
+Use 2011 samples. Get 2011 labels. Ratio: 1.0
+dataset construction done. 
+Shape of X torch.Size([4937, 8]). 
+Shape of Y torch.Size([4937])
+9179 labeled samples and 2926 unlabeled samples. Total: 12105
+args.train_with_org = True!
+begin calculating influence
+calculating influence -- done
+[ADD ORG DATA] Use 2011 samples. Get 2743 labels. Ratio: 0.7331388990156763
+dataset construction done. 
+Shape of X torch.Size([4937, 8]). 
+Shape of Y torch.Size([4937])
+9179 labeled samples and 2926 unlabeled samples. Total: 12105
 Epoch 14
- 96.54% | time:   1.5s (  0.9m) | step:    279 | train acc: 0.711 | train loss: 0.626 |test acc: 0.689 (0.653, 0.725) | test eop gap: 0.2474
- 96.54% | time:   0.2s (  0.9m) | step:    279 | train acc: 0.711 | train loss: 0.626 |val acc: 0.628 (0.653, 0.602) | val eop gap: 0.2630
+predicted_label 1: 0.40080974; predicted_label 0: 0.5991903
+ 72.47% | time:   1.0s (  0.3m) | step:    279 | train acc: 0.781 | train loss: 0.565 |test acc: 0.691 (0.667, 0.715) | test eop gap: 0.2443
+predicted_label 1: 0.43724698; predicted_label 0: 0.562753
+ 72.47% | time:   0.0s (  0.3m) | step:    279 | train acc: 0.781 | train loss: 0.565 |val acc: 0.632 (0.653, 0.610) | val eop gap: 0.2819
+Sampling by influence function!
 begin calculating influence
 calculating influence -- done
+Use 2011 samples. Get 2011 labels. Ratio: 1.0
 dataset construction done. 
 Shape of X torch.Size([4937, 8]). 
 Shape of Y torch.Size([4937])
-1101 labeled samples and 3836 unlabeled samples. Total: 4937
-Use 1101 samples. Get 1101 labels. Ratio: 1.0
- 99.65% | time:   1.5s (  0.9m) | step:    288 | train acc: 0.684 | train loss: 0.564 |test acc: 0.698 (0.665, 0.731) | test eop gap: 0.2514
- 99.65% | time:   0.3s (  0.9m) | step:    288 | train acc: 0.684 | train loss: 0.564 |val acc: 0.628 (0.629, 0.626) | val eop gap: 0.2213
+10203 labeled samples and 2926 unlabeled samples. Total: 13129
+args.train_with_org = True!
 begin calculating influence
 calculating influence -- done
+[ADD ORG DATA] Use 2011 samples. Get 2748 labels. Ratio: 0.7318049490538574
 dataset construction done. 
 Shape of X torch.Size([4937, 8]). 
 Shape of Y torch.Size([4937])
-1133 labeled samples and 3804 unlabeled samples. Total: 4937
-Use 1133 samples. Get 1133 labels. Ratio: 1.0
+10203 labeled samples and 2926 unlabeled samples. Total: 13129
+predicted_label 1: 0.37753037; predicted_label 0: 0.62246966
+ 74.81% | time:   1.2s (  0.3m) | step:    288 | train acc: 0.594 | train loss: 0.655 |test acc: 0.696 (0.673, 0.719) | test eop gap: 0.2655
+predicted_label 1: 0.40080974; predicted_label 0: 0.5991903
+ 74.81% | time:   0.0s (  0.3m) | step:    288 | train acc: 0.594 | train loss: 0.655 |val acc: 0.619 (0.637, 0.602) | val eop gap: 0.2930
+Sampling by influence function!
+begin calculating influence
+calculating influence -- done
+Use 2011 samples. Get 2011 labels. Ratio: 1.0
+dataset construction done. 
+Shape of X torch.Size([4937, 8]). 
+Shape of Y torch.Size([4937])
+11227 labeled samples and 2926 unlabeled samples. Total: 14153
+args.train_with_org = True!
+begin calculating influence
+calculating influence -- done
+[ADD ORG DATA] Use 2011 samples. Get 2753 labels. Ratio: 0.7304758445332364
+dataset construction done. 
+Shape of X torch.Size([4937, 8]). 
+Shape of Y torch.Size([4937])
+11227 labeled samples and 2926 unlabeled samples. Total: 14153
+Epoch 15
+predicted_label 1: 0.4180162; predicted_label 0: 0.5819838
+ 77.66% | time:   1.3s (  0.3m) | step:    299 | train acc: 0.781 | train loss: 0.487 |test acc: 0.692 (0.663, 0.721) | test eop gap: 0.2608
+predicted_label 1: 0.44129556; predicted_label 0: 0.5587045
+ 77.66% | time:   0.2s (  0.3m) | step:    299 | train acc: 0.781 | train loss: 0.487 |val acc: 0.644 (0.645, 0.642) | val eop gap: 0.2441
+Sampling by influence function!
+begin calculating influence
+calculating influence -- done
+Use 2011 samples. Get 2011 labels. Ratio: 1.0
+dataset construction done. 
+Shape of X torch.Size([4937, 8]). 
+Shape of Y torch.Size([4937])
+12251 labeled samples and 2926 unlabeled samples. Total: 15177
+args.train_with_org = True!
+begin calculating influence
+calculating influence -- done
+[ADD ORG DATA] Use 2011 samples. Get 2756 labels. Ratio: 0.7296806966618288
+dataset construction done. 
+Shape of X torch.Size([4937, 8]). 
+Shape of Y torch.Size([4937])
+12251 labeled samples and 2926 unlabeled samples. Total: 15177
+predicted_label 1: 0.36538464; predicted_label 0: 0.6346154
+ 80.00% | time:   1.4s (  0.4m) | step:    308 | train acc: 0.750 | train loss: 0.553 |test acc: 0.692 (0.667, 0.717) | test eop gap: 0.2718
+predicted_label 1: 0.4089069; predicted_label 0: 0.5910931
+ 80.00% | time:   0.0s (  0.4m) | step:    308 | train acc: 0.750 | train loss: 0.553 |val acc: 0.644 (0.661, 0.626) | val eop gap: 0.3196
+Sampling by influence function!
+begin calculating influence
+calculating influence -- done
+Use 2011 samples. Get 2011 labels. Ratio: 1.0
+dataset construction done. 
+Shape of X torch.Size([4937, 8]). 
+Shape of Y torch.Size([4937])
+13275 labeled samples and 2926 unlabeled samples. Total: 16201
+args.train_with_org = True!
+begin calculating influence
+calculating influence -- done
+[ADD ORG DATA] Use 2011 samples. Get 2759 labels. Ratio: 0.7288872779992751
+dataset construction done. 
+Shape of X torch.Size([4937, 8]). 
+Shape of Y torch.Size([4937])
+13275 labeled samples and 2926 unlabeled samples. Total: 16201
+Epoch 16
+predicted_label 1: 0.395749; predicted_label 0: 0.604251
+ 82.60% | time:   1.8s (  0.4m) | step:    318 | train acc: 0.656 | train loss: 0.576 |test acc: 0.694 (0.663, 0.725) | test eop gap: 0.2875
+predicted_label 1: 0.41700405; predicted_label 0: 0.58299595
+ 82.60% | time:   0.0s (  0.4m) | step:    318 | train acc: 0.656 | train loss: 0.576 |val acc: 0.644 (0.661, 0.626) | val eop gap: 0.3007
+Sampling by influence function!
+begin calculating influence
+calculating influence -- done
+Use 2011 samples. Get 2011 labels. Ratio: 1.0
+dataset construction done. 
+Shape of X torch.Size([4937, 8]). 
+Shape of Y torch.Size([4937])
+14299 labeled samples and 2926 unlabeled samples. Total: 17225
+args.train_with_org = True!
+begin calculating influence
+calculating influence -- done
+[ADD ORG DATA] Use 2011 samples. Get 2760 labels. Ratio: 0.7286231884057971
+dataset construction done. 
+Shape of X torch.Size([4937, 8]). 
+Shape of Y torch.Size([4937])
+14299 labeled samples and 2926 unlabeled samples. Total: 17225
+predicted_label 1: 0.39170042; predicted_label 0: 0.6082996
+ 84.94% | time:   1.2s (  0.4m) | step:    327 | train acc: 0.656 | train loss: 0.564 |test acc: 0.688 (0.655, 0.721) | test eop gap: 0.2773
+predicted_label 1: 0.4089069; predicted_label 0: 0.5910931
+ 84.94% | time:   0.0s (  0.4m) | step:    327 | train acc: 0.656 | train loss: 0.564 |val acc: 0.652 (0.661, 0.642) | val eop gap: 0.3007
+Sampling by influence function!
+begin calculating influence
+calculating influence -- done
+Use 2011 samples. Get 2011 labels. Ratio: 1.0
+dataset construction done. 
+Shape of X torch.Size([4937, 8]). 
+Shape of Y torch.Size([4937])
+15323 labeled samples and 2926 unlabeled samples. Total: 18249
+args.train_with_org = True!
+begin calculating influence
+calculating influence -- done
+[ADD ORG DATA] Use 2011 samples. Get 2762 labels. Ratio: 0.7280955829109341
+dataset construction done. 
+Shape of X torch.Size([4937, 8]). 
+Shape of Y torch.Size([4937])
+15323 labeled samples and 2926 unlabeled samples. Total: 18249
+Epoch 17
+predicted_label 1: 0.38765183; predicted_label 0: 0.6123482
+ 87.53% | time:   1.1s (  0.4m) | step:    337 | train acc: 0.688 | train loss: 0.519 |test acc: 0.698 (0.669, 0.727) | test eop gap: 0.2702
+predicted_label 1: 0.41295546; predicted_label 0: 0.58704454
+ 87.53% | time:   0.0s (  0.4m) | step:    337 | train acc: 0.688 | train loss: 0.519 |val acc: 0.640 (0.661, 0.618) | val eop gap: 0.3196
+Sampling by influence function!
+begin calculating influence
+calculating influence -- done
+Use 2011 samples. Get 2011 labels. Ratio: 1.0
+dataset construction done. 
+Shape of X torch.Size([4937, 8]). 
+Shape of Y torch.Size([4937])
+16347 labeled samples and 2926 unlabeled samples. Total: 19273
+args.train_with_org = True!
+begin calculating influence
+calculating influence -- done
+[ADD ORG DATA] Use 2011 samples. Get 2764 labels. Ratio: 0.7275687409551375
+dataset construction done. 
+Shape of X torch.Size([4937, 8]). 
+Shape of Y torch.Size([4937])
+16347 labeled samples and 2926 unlabeled samples. Total: 19273
+predicted_label 1: 0.31477734; predicted_label 0: 0.6852227
+ 89.87% | time:   1.2s (  0.5m) | step:    346 | train acc: 0.719 | train loss: 0.552 |test acc: 0.692 (0.657, 0.727) | test eop gap: 0.2585
+predicted_label 1: 0.3157895; predicted_label 0: 0.68421054
+ 89.87% | time:   0.0s (  0.5m) | step:    346 | train acc: 0.719 | train loss: 0.552 |val acc: 0.599 (0.597, 0.602) | val eop gap: 0.2321
+Sampling by influence function!
+begin calculating influence
+calculating influence -- done
+Use 2011 samples. Get 2011 labels. Ratio: 1.0
+dataset construction done. 
+Shape of X torch.Size([4937, 8]). 
+Shape of Y torch.Size([4937])
+17371 labeled samples and 2926 unlabeled samples. Total: 20297
+args.train_with_org = True!
+begin calculating influence
+calculating influence -- done
+[ADD ORG DATA] Use 2011 samples. Get 2765 labels. Ratio: 0.7273056057866184
+dataset construction done. 
+Shape of X torch.Size([4937, 8]). 
+Shape of Y torch.Size([4937])
+17371 labeled samples and 2926 unlabeled samples. Total: 20297
+Epoch 18
+predicted_label 1: 0.3977733; predicted_label 0: 0.60222673
+ 92.73% | time:   0.9s (  0.5m) | step:    357 | train acc: 0.625 | train loss: 0.650 |test acc: 0.700 (0.682, 0.719) | test eop gap: 0.2655
+predicted_label 1: 0.43724698; predicted_label 0: 0.562753
+ 92.73% | time:   0.0s (  0.5m) | step:    357 | train acc: 0.625 | train loss: 0.650 |val acc: 0.632 (0.661, 0.602) | val eop gap: 0.3159
+Sampling by influence function!
+begin calculating influence
+calculating influence -- done
+Use 2011 samples. Get 2011 labels. Ratio: 1.0
+dataset construction done. 
+Shape of X torch.Size([4937, 8]). 
+Shape of Y torch.Size([4937])
+18395 labeled samples and 2926 unlabeled samples. Total: 21321
+args.train_with_org = True!
+begin calculating influence
+calculating influence -- done
+[ADD ORG DATA] Use 2011 samples. Get 2765 labels. Ratio: 0.7273056057866184
+dataset construction done. 
+Shape of X torch.Size([4937, 8]). 
+Shape of Y torch.Size([4937])
+18395 labeled samples and 2926 unlabeled samples. Total: 21321
+predicted_label 1: 0.36336035; predicted_label 0: 0.6366397
+ 95.06% | time:   1.1s (  0.5m) | step:    366 | train acc: 0.688 | train loss: 0.580 |test acc: 0.694 (0.671, 0.717) | test eop gap: 0.2907
+predicted_label 1: 0.39271256; predicted_label 0: 0.60728747
+ 95.06% | time:   0.0s (  0.5m) | step:    366 | train acc: 0.688 | train loss: 0.580 |val acc: 0.644 (0.653, 0.634) | val eop gap: 0.2893
+Sampling by influence function!
+begin calculating influence
+calculating influence -- done
+Use 2011 samples. Get 2011 labels. Ratio: 1.0
+dataset construction done. 
+Shape of X torch.Size([4937, 8]). 
+Shape of Y torch.Size([4937])
+19419 labeled samples and 2926 unlabeled samples. Total: 22345
+args.train_with_org = True!
+begin calculating influence
+calculating influence -- done
+[ADD ORG DATA] Use 2011 samples. Get 2765 labels. Ratio: 0.7273056057866184
+dataset construction done. 
+Shape of X torch.Size([4937, 8]). 
+Shape of Y torch.Size([4937])
+19419 labeled samples and 2926 unlabeled samples. Total: 22345
+Epoch 19
+predicted_label 1: 0.3360324; predicted_label 0: 0.6639676
+ 97.66% | time:   1.0s (  0.5m) | step:    376 | train acc: 0.531 | train loss: 0.788 |test acc: 0.701 (0.678, 0.725) | test eop gap: 0.2797
+predicted_label 1: 0.32388663; predicted_label 0: 0.67611337
+ 97.66% | time:   0.0s (  0.5m) | step:    376 | train acc: 0.531 | train loss: 0.788 |val acc: 0.615 (0.629, 0.602) | val eop gap: 0.3456
+Sampling by influence function!
+begin calculating influence
+calculating influence -- done
+Use 2011 samples. Get 2011 labels. Ratio: 1.0
+dataset construction done. 
+Shape of X torch.Size([4937, 8]). 
+Shape of Y torch.Size([4937])
+20443 labeled samples and 2926 unlabeled samples. Total: 23369
+args.train_with_org = True!
+begin calculating influence
+calculating influence -- done
+[ADD ORG DATA] Use 2011 samples. Get 2765 labels. Ratio: 0.7273056057866184
+dataset construction done. 
+Shape of X torch.Size([4937, 8]). 
+Shape of Y torch.Size([4937])
+20443 labeled samples and 2926 unlabeled samples. Total: 23369
+predicted_label 1: 0.39271256; predicted_label 0: 0.60728747
+100.00% | time:   1.1s (  0.5m) | step:    385 | train acc: 0.668 | train loss: 0.634 |test acc: 0.691 (0.661, 0.721) | test eop gap: 0.2569
+predicted_label 1: 0.3846154; predicted_label 0: 0.61538464
+100.00% | time:   0.0s (  0.5m) | step:    385 | train acc: 0.668 | train loss: 0.634 |val acc: 0.619 (0.637, 0.602) | val eop gap: 0.2967
+Sampling by influence function!
+begin calculating influence
+calculating influence -- done
+Use 2011 samples. Get 2011 labels. Ratio: 1.0
+dataset construction done. 
+Shape of X torch.Size([4937, 8]). 
+Shape of Y torch.Size([4937])
+21467 labeled samples and 2926 unlabeled samples. Total: 24393
+args.train_with_org = True!
+begin calculating influence
+calculating influence -- done
+[ADD ORG DATA] Use 2011 samples. Get 2766 labels. Ratio: 0.7270426608821403
+dataset construction done. 
+Shape of X torch.Size([4937, 8]). 
+Shape of Y torch.Size([4937])
+21467 labeled samples and 2926 unlabeled samples. Total: 24393

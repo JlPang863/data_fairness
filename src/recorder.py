@@ -82,6 +82,7 @@ def record_test(rec, t, T, t_prev, t_start, train_metric, test_metric, init=Fals
   t_incr, t_tot = t_now - t_prev, t_now - t_start
   
   if val_metric:
+    #print this information
     print_stats(t, T, t_incr, t_tot, train_metric, val_metric, init, is_val=True, metric = metric, warm = warm)
   else:
     print_stats(t, T, t_incr, t_tot, train_metric, test_metric, init, is_val=False, metric = metric, warm = warm)

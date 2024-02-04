@@ -10,15 +10,34 @@ import random
 from typing import Any, Tuple
 import PIL
 import os
-from .utils import preprocess_compas, race_encode
+from .utils import preprocess_compas, race_encode, preprocess_adult, preprocess_jigsaw
 import sklearn.preprocessing as preprocessing
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+import sklearn.preprocessing as preprocessing
+import tensorflow as tf
+import tensorflow_datasets as tfds
+from torch.utils.data import Dataset, DataLoader, Subset
+import pandas as pd
+from transformers import BertTokenizer
+from collections import Counter
 
 def preprocess_func_compas_torch(example, args, noisy_attribute = None, num_groups = 2):
   """ preprocess the data
   """
 
   feature, group, label = example[0].numpy(), example[2].numpy().astype(np.uint8), example[1].numpy().astype(np.uint8)
-  group[group >= num_groups] = num_groups - 1
+  
+  # group[group >= num_groups] = num_groups - 1
+
+  #set group
+  for i in range(len(group)):
+    if group[i] >=1:
+      group[i] = 1
+    else:
+      group[i] = 0
+  # import pdb
+  # pdb.set_trace()
 
   # use str to avoid error in Jax tree
   # args.feature_key, args.label_key, args.group_key = f'{args.feature_key}', f'{args.label_key}', f'{args.group_key}' 
@@ -41,7 +60,6 @@ def preprocess_func_compas_torch(example, args, noisy_attribute = None, num_grou
     # print(np.mean((noisy_attribute==group)*1.0))
   # global_var.set_value('args', args)
   return data
-
 
 
 def preprocess_func_imgnet_torch(example, args, noisy_attribute = None, new_labels = {}):
@@ -126,6 +144,86 @@ def preprocess_func_celeba_torch(example, args, noisy_attribute = None, new_labe
   # global_var.set_value('args', args)
   return data
 
+def preprocess_func_adult_torch(example, args, noisy_attribute = None, num_groups = 2):
+  """ preprocess the data
+  """
+
+  feature, group, label = example[0].numpy(), example[2].numpy().astype(np.uint8), example[1].numpy().astype(np.uint8)
+
+
+  if args.group_key == 'race':
+    # #match 0 or 1 binary variable
+    #  race attributes
+
+    for i in range(len(group)):
+      if group[i] > 3:
+        group[i] = 1
+      else:
+        group[i] = 0
+  elif args.group_key == 'age':
+    for i in range(len(group)):
+      if group[i] >= 30:
+        group[i] = 1
+      else:
+        group[i] = 0
+
+
+  # print('group\'s information before transform: ' + str(group))
+
+
+
+  # use str to avoid error in Jax tree
+  # args.feature_key, args.label_key, args.group_key = f'{args.feature_key}', f'{args.label_key}', f'{args.group_key}' 
+  
+  if noisy_attribute is None:
+    data = {
+      'feature': feature,
+      'label': label,
+      'group': group,
+      'index': example[3].numpy()
+    }
+  else:
+    noisy_attribute = noisy_attribute[:,0]
+    data = {
+      'feature': feature,
+      'label': label,
+      'group': noisy_attribute,
+      'index': example[3].numpy()
+    }
+    # print(np.mean((noisy_attribute==group)*1.0))
+  # global_var.set_value('args', args)
+  return data
+
+
+def preprocess_func_jigsaw_torch(example, args, noisy_attribute = None, num_groups = 2):
+  """ preprocess the data
+  """
+
+  feature, group, label = example[0].numpy(), example[2].numpy().astype(np.uint8), example[1].numpy().astype(np.uint8)
+  group[group >= num_groups] = num_groups - 1
+
+  # use str to avoid error in Jax tree
+  # args.feature_key, args.label_key, args.group_key = f'{args.feature_key}', f'{args.label_key}', f'{args.group_key}' 
+  
+  if noisy_attribute is None:
+    data = {
+      'feature': feature,
+      'label': label,
+      'group': group,
+      'index': example[3].numpy()
+    }
+  else:
+    noisy_attribute = noisy_attribute[:,0]
+    data = {
+      'feature': feature,
+      'label': label,
+      'group': noisy_attribute,
+      'index': example[3].numpy()
+    }
+    # print(np.mean((noisy_attribute==group)*1.0))
+  # global_var.set_value('args', args)
+  return data
+
 def gen_preprocess_func_torch2jax(dataset):
   if dataset == 'celeba':
     return preprocess_func_celeba_torch
@@ -135,10 +233,12 @@ def gen_preprocess_func_torch2jax(dataset):
     return preprocess_func_imgnet_torch
   elif dataset == 'scut':
     return preprocess_func_scut_torch
+  elif dataset == 'adult':
+     return preprocess_func_adult_torch
+  elif dataset == 'jigsaw':
+     return preprocess_func_jigsaw_torch
   else:
     return None
-
-
 
 
 
@@ -175,12 +275,8 @@ class my_celeba(torchvision.datasets.CelebA):
       return X, target, index
 
 
-
-
 class CompasDataset(torch.utils.data.Dataset):
   
-
-
   def __init__(self, data_file, args, split = 'train'):
       FEATURES_CLASSIFICATION = ["age_cat", "sex", "priors_count", "c_charge_degree", 'decile_score', 'length_of_stay'] #features to be used for classification
       CONT_VARIABLES = ["priors_count", 'decile_score', 'length_of_stay'] # continuous features, will need to be handled separately from categorical features, categorical features will be encoded using one-hot
@@ -256,7 +352,6 @@ class CompasDataset(torch.utils.data.Dataset):
       return feature, label, group, index
 
 
-
 class my_scut(torch.utils.data.Dataset):
 
     def __init__(self, root, transform):
@@ -311,6 +406,117 @@ class my_imagenet(torchvision.datasets.ImageNet):
 
         return sample, target, index
 
+class AdultDataset(torch.utils.data.Dataset):
+    def __init__(self, df, args, split = 'train'):
+        self.features = df.drop(columns=["income"]).values
+        self.labels = df["income"].values
+        if args.group_key == 'sex':
+          self.groups = df["sex"].values
+        elif args.group_key == 'race':
+          self.groups = df['race'].values
+        elif args.group_key == 'age':
+           self.groups = df['age'].values
+        else:
+           raise NameError('unknow group key!')
+        idx = list(range(len(self.labels)))
+
+        # import pdb
+        # pdb.set_trace()
+        random.Random(args.train_seed).shuffle(idx)
+        num = int(len(self.labels) * 0.8)
+
+
+        # use 80% adult data for train, 20% for test
+        if split == 'train':
+          idx = idx[:num].copy()
+        else:
+          idx = idx[num:].copy()
+        idx = np.asarray(idx)
+        self.features = self.features[idx]
+        self.labels = self.labels[idx]
+        self.groups = self.groups[idx]
+
+
+        print(f'dataset construction done. \n Shape of X {self.features.shape}. \nShape of Y {self.labels.shape}')
+
+    def __len__(self):
+        return len(self.labels)
+
+    def __getitem__(self, idx):
+        return torch.tensor(self.features[idx], dtype=torch.float), torch.tensor(self.labels[idx], dtype=torch.long), torch.tensor(self.groups[idx], dtype=torch.long), idx
+
+class JigsawDataset(torch.utils.data.Dataset):
+    def __init__(self, data_dict):
+        self.features = data_dict["feature"]
+        self.labels  = data_dict['label']
+        self.groups = data_dict['group']
+
+    def __len__(self):
+        return len(self.labels)
+
+    def __getitem__(self, idx):
+        return torch.tensor(self.features[idx], dtype=torch.float), torch.tensor(self.labels[idx], dtype=torch.long), torch.tensor(self.groups[idx], dtype=torch.long), idx
+
+
+import numpy as np
+from torch.utils.data.sampler import WeightedRandomSampler
+
+class InverseProportionalSampler(WeightedRandomSampler):
+    def __init__(self, labels, replacement=True):
+        unique_labels, counts = np.unique(labels, return_counts=True)
+      
+        proportions = counts / len(labels)
+        
+        label_to_weight = {label: 1.0/proportion for label, proportion in zip(unique_labels, proportions)}
+        
+        label_to_weight = {
+            0: 1,
+            1: 6
+        }
+        # 根据标签分配权重
+        weights = np.array([label_to_weight[label] for label in labels])
+        # import pdb
+        # pdb.set_trace()
+        # print('weights: ' + str(weights))
+        # weights = np.array(random.randint())
+        super(InverseProportionalSampler, self).__init__(weights, len(labels), replacement)
+
+class InverseProportionalSampler_Adult(WeightedRandomSampler):
+    def __init__(self, labels, replacement=True):
+        unique_labels, counts = np.unique(labels, return_counts=True)
+      
+        proportions = counts / len(labels)
+        
+        label_to_weight = {label: 1.0/proportion for label, proportion in zip(unique_labels, proportions)}
+        
+        # label_to_weight = { #default setting
+        #     0: 1,
+        #     1: 3
+        # }
+
+        label_to_weight = {
+            0: 1,
+            1: 3
+        }
+        # 根据标签分配权重
+        weights = np.array([label_to_weight[label] for label in labels])
+        # import pdb
+        # pdb.set_trace()
+        # print('weights: ' + str(weights))
+        # weights = np.array(random.randint())
+        super(InverseProportionalSampler_Adult, self).__init__(weights, len(labels), replacement)
+
+
+def get_labels_for_subset(dataset, indices):
+    labels = []
+    for idx in indices:
+        _, label, _ = dataset[idx]  # 获取标签
+        labels.append(label)
+    return labels
+
+
+
+
 def load_celeba_dataset_torch(args, shuffle_files=False, split='train', batch_size=128, ratio = 0.1, sampled_idx = [], return_part2 = False, fair_train=False, aux_dataset = None):
 
 
@@ -335,6 +541,7 @@ def load_celeba_dataset_torch(args, shuffle_files=False, split='train', batch_si
     transform = test_transform
 
   ds = my_celeba(root = args.data_dir, split = split, target_type = 'attr', transform = transform, download = True)
+
   if split == 'train':
     args.datasize = len(ds)
     
@@ -398,6 +605,23 @@ def load_celeba_dataset_torch(args, shuffle_files=False, split='train', batch_si
 
   ds_1 = torch.utils.data.Subset(ds, part1)
 
+  # import pdb
+  # pdb.set_trace()
+
+  # image, group, label = ds[args.feature_key].numpy(), ds[args.attr_key][:,args.group_key].numpy().astype(np.uint8), ds[args.attr_key][:,args.label_key].numpy().astype(np.uint8)
+
+  # # for label balance
+  # labels_1 = ds[args.attr_key][:,args.label_key].numpy().astype(np.uint8)
+  # labels_2 = ds[args.attr_key][:,args.label_key].numpy().astype(np.uint8)
+  # # labels_1 = get_labels_for_subset(ds, part1)
+  # # labels_2 = get_labels_for_subset(ds, part2)
+
+  # sampler_1 = InverseProportionalSampler(labels_1)
+  # sampler_2 = InverseProportionalSampler(labels_2)
+  
+  # dataloader_1 = DataLoader(labeled_dataset, batch_size=batch_size,  num_workers=0, drop_last=False, sampler = sampler_1)
+  # dataloader_2 = DataLoader(unlabeled_dataset, batch_size=batch_size, num_workers=0, drop_last=False,  sampler = sampler_2)
+
 
   if fair_train:
     dataloader_1 = torch.utils.data.DataLoader(ds_1,
@@ -412,21 +636,24 @@ def load_celeba_dataset_torch(args, shuffle_files=False, split='train', batch_si
                                             drop_last=False)
   else:
     dataloader_1 = torch.utils.data.DataLoader(ds_1,
-                                              batch_size=batch_size if split == 'train' else 512, # val loader: 512
+                                              batch_size=batch_size if split == 'train' else 256, # val loader: 512
                                               shuffle=shuffle_files,
                                               num_workers=1,
                                               drop_last=True)
+                                              # sampler= sampler_1)
     dataloader_2 = torch.utils.data.DataLoader(ds_2,
                                             batch_size=batch_size if split == 'test' else 32, # unlabeled loader: 32
                                             shuffle=shuffle_files,
                                             num_workers=1,
                                             drop_last=False)
+                                            # sampler = sampler_2)
     if len(sampled_idx) > 0:
       dataloader_new = torch.utils.data.DataLoader(ds_new,
                                               batch_size=min(len(ds_new), batch_size),
                                               shuffle=shuffle_files,
                                               num_workers=1,
-                                              drop_last=True)
+                                              drop_last=True
+                                                )
 
 
 
@@ -439,22 +666,22 @@ def load_celeba_dataset_torch(args, shuffle_files=False, split='train', batch_si
       return [dataloader_1, dataloader_2], part1
 
 
-
-
 def load_compas_dataset_torch(args, shuffle_files=False, split='train', batch_size=128, ratio = 0.1, sampled_idx = None, return_part2 = False, fair_train=False):
-
-  
 
   # get compas data
   df = preprocess_compas()
   race_encode(df)
   ds = CompasDataset(df.copy(), args, split=split)
 
+  # import pdb
+  # pdb.set_trace()
+
   args.input_shape = (1, ds.feature.shape[1])
   if split == 'train':
     args.datasize = len(ds)
 
-
+  #print(f'ds_type:{type(ds)}')
+        
   # data split
   # train --> train_labeled (1) + train_unlabeled (2), ratio is for train_labeled
   # test --> val (1) + test (2), ratio is for val
@@ -465,11 +692,14 @@ def load_compas_dataset_torch(args, shuffle_files=False, split='train', batch_si
   part1 = idx[:num]
   part2 = idx[num:]
 
+  #print('part1 before add sampled_idx: ' +str(part1))
+  # print('sampled_idx: ' +str(sampled_idx))
+  
   if sampled_idx is not None:
     part1 += sampled_idx
     part2 = list(set(part2) - set(sampled_idx))
   print(f'{len(part1)} labeled samples and {len(part2)} unlabeled samples. Total: {len(part1) + len(part2)}')
-
+  #print('part1 after add sampled_idx: ' +str(part1))
 
   ds_1 = torch.utils.data.Subset(ds, part1)
   if len(part2) > 0:
@@ -477,29 +707,30 @@ def load_compas_dataset_torch(args, shuffle_files=False, split='train', batch_si
   else:
     ds_2 = torch.utils.data.Subset(ds, part1) # just a placeholder
 
-  
+  # import pdb
+  # pdb.set_trace()
 
   if fair_train:
     dataloader_1 = torch.utils.data.DataLoader(ds_1,
                                               batch_size=batch_size if split == 'train' else 256, # val loader: 256
                                               shuffle=shuffle_files,
-                                              num_workers=1,
+                                              num_workers=0,
                                               drop_last=True)
     dataloader_2 = torch.utils.data.DataLoader(ds_2,
                                             batch_size=batch_size,
                                             shuffle=shuffle_files,
-                                            num_workers=1,
+                                            num_workers=0,
                                             drop_last=False)
   else:
     dataloader_1 = torch.utils.data.DataLoader(ds_1,
                                               batch_size=batch_size if split == 'train' else 512, # val loader: 512
                                               shuffle=shuffle_files,
-                                              num_workers=1,
+                                              num_workers=0,
                                               drop_last=False)
     dataloader_2 = torch.utils.data.DataLoader(ds_2,
                                             batch_size=batch_size if split == 'test' else 32, # unlabeled loader: 32
                                             shuffle=shuffle_files,
-                                            num_workers=1,
+                                            num_workers=0,
                                             drop_last=False)
 
   if return_part2:
@@ -507,34 +738,218 @@ def load_compas_dataset_torch(args, shuffle_files=False, split='train', batch_si
   else:
     return [dataloader_1, dataloader_2], part1
 
-def load_jigsaw_dataset(args, mode='train', ratio=0.1):
-    path = args.data_dir  # 'data/'
-    if mode == 'train':
-      with open(os.path.join(path, 'Jigsaw/Jigsaw_train.npy'), 'rb') as f:
-        X, Y, A = np.load(f), np.load(f), np.load(f)
-        # shuffle training data
-        from sklearn import utils
-        X, Y, A = utils.shuffle(X, Y, A)
-    else:
-      with open(os.path.join(path, 'Jigsaw/Jigsaw_test.npy'), 'rb') as f:
-        X, Y, A = np.load(f), np.load(f), np.load(f)
+# only use Jigsaw_train.npy 
+# def load_jigsaw_dataset_torch(args, shuffle_files=False, split='train', batch_size=128, ratio=0.1, sampled_idx=None, return_part2=False):
+#   path = '/data2/'
+#   with open(os.path.join(path, 'Jigsaw/Jigsaw_train.npy'), 'rb') as f:
+#     X, Y, A = np.load(f), np.load(f), np.load(f)
 
-    index = np.arange(X.shape[0])
-    labeled_index, unlabeled_index = np.split(index, [ratio * X.shape[0]])
+#   from sklearn import utils
+
+#   X, Y, A = utils.shuffle(X, Y, A, random_state=args.train_seed)
+
+#   # Set input shape for model
+#   args.input_shape = (1, X.shape[1])
+#   args.datasize = X.shape[0]
+
+#   # Splitting the data into 90% train and 10% test
+#   train_split_point = int(0.9 * X.shape[0])
+
+#   # If the desired split is for training
+#   if split == 'train':
+#     X, Y, A = X[:train_split_point], Y[:train_split_point], A[:train_split_point]
+#   # If the desired split is for testing
+#   else:
+#     X, Y, A = X[train_split_point:], Y[train_split_point:], A[train_split_point:]
+#     X = X.reshape(-1, X.shape[-1])
+
+#     # import pdb
+#     # pdb.set_trace()
+
+#   # Splitting the data for labeled and unlabeled samples
+#   index = np.arange(X.shape[0])
+#   random.Random(args.train_seed).shuffle(index)
+#   split_point = int(ratio * X.shape[0]) 
+#   part1, part2 = index[:split_point], index[split_point:]
+
+#   if sampled_idx is not None:
+#     part1 = part1.tolist()
+#     part1 += sampled_idx
+#     part2 = list(set(part2) - set(sampled_idx))
+
+#   print(f'{len(part1)} labeled samples and {len(part2)} unlabeled samples. Total: {len(part1) + len(part2)}')
+
+#   encode_data = lambda X, Y, A, I: {"feature":X, "label":Y, 'group':A, 'index':I}
+
+#   labeled_dataset_index = encode_data(X[part1], Y[part1], A[part1], part1)
+#   if len(part2) > 0: 
+#     unlabeled_dataset_index = encode_data(X[part2], Y[part2], A[part2], part2)
+#   else:
+#     unlabeled_dataset_index = encode_data(X[part1], Y[part1], A[part1], part1)
+
+#   labeled_dataset = JigsawDataset(labeled_dataset_index)
+#   unlabeled_dataset = JigsawDataset(unlabeled_dataset_index)
+
+#   # Create PyTorch Dataloaders
+#   dataloader_1 = DataLoader(labeled_dataset, batch_size=batch_size, shuffle=shuffle_files, num_workers=0, drop_last=False)
+#   dataloader_2 = DataLoader(unlabeled_dataset, batch_size=batch_size, shuffle=shuffle_files, num_workers=0, drop_last=False)
+
+#   if return_part2:
+#     return [dataloader_1, dataloader_2], part1, part2
+#   else:
+#     return [dataloader_1, dataloader_2], part1
+
+
+
+
+def load_jigsaw_dataset_torch(args, shuffle_files=False, split='train', batch_size=128, ratio=0.1, sampled_idx=None, return_part2=False):
+  path = '/data1/jialu/'
+  if split == 'train':
+    with open(os.path.join(path, 'Jigsaw_train.npy'), 'rb') as f:
+      X, Y, A = np.load(f), np.load(f), np.load(f)
+      # # shuffle training data
+      from sklearn import utils
+      # X, Y, A = utils.shuffle(X, Y, A)
+      X, Y, A = utils.shuffle(X, Y, A, random_state=args.train_seed)
+
+  else:
+    with open(os.path.join(path, 'Jigsaw_test.npy'), 'rb') as f:
+      X, Y, A = np.load(f), np.load(f), np.load(f)
+
+      # import pdb
+      # pdb.set_trace()
+
+  args.input_shape = (1, X.shape[1])
+  # import pdb
+  # pdb.set_trace()
+  args.datasize = X.shape[0]
+  # Splitting the data
+  index = np.arange(X.shape[0])
+  random.Random(args.train_seed).shuffle(index)
+
+  split_point = int(ratio * X.shape[0]) 
+  #print('split_point: ' + str(split_point))
+
+  part1, part2 = index[:split_point], index[split_point:]
+
+
+  #print('part1: ' +str(type(part1)))
+  #print('sampled_idx: ' + str(sampled_idx))
+
+  if sampled_idx is not None:
+      # import pdb
+      # pdb.set_trace()
+      part1 = part1.tolist()
+      part1 +=  sampled_idx
+      part2 = list(set(part2) - set(sampled_idx))
+
+  print(f'{len(part1)} labeled samples and {len(part2)} unlabeled samples. Total: {len(part1) + len(part2)}')
+
+  encode_data = lambda X, Y, A, I: {"feature":X, "label":Y, 'group':A, 'index':I}
+
+  #print('X type: ' + str(type(X)))
+  #print('part1 type: ' + str(type(part1)))
+
+  labeled_dataset_index = encode_data(X[part1], Y[part1], A[part1], part1)
+  if len(part2) > 0: 
+    unlabeled_dataset_index = encode_data(X[part2], Y[part2], A[part2], part2)
+  else:
+    unlabeled_dataset_index = encode_data(X[part1], Y[part1], A[part1], part1)
+
+  labeled_dataset = JigsawDataset(labeled_dataset_index)
+  unlabeled_dataset = JigsawDataset(unlabeled_dataset_index)
+  # Create PyTorch Dataloaders
+  # import pdb
+  # pdb.set_trace()
+
+  labels_1 = labeled_dataset.labels.tolist()
+  labels_2 = unlabeled_dataset.labels.tolist()
+  # Create a random subset sampler for training
+
+  # for label balance
+  if split == 'train':
+    sampler_1 = InverseProportionalSampler(labels_1)
+    sampler_2 = InverseProportionalSampler(labels_2)
+
+    dataloader_1 = DataLoader(labeled_dataset, batch_size=batch_size,  num_workers=0, drop_last=False, sampler = sampler_1)
+    dataloader_2 = DataLoader(unlabeled_dataset, batch_size=batch_size, num_workers=0, drop_last=False,  sampler = sampler_2)
+  else:
+    # dataloader_1 = DataLoader(labeled_dataset, batch_size=batch_size, shuffle=shuffle_files,  num_workers=0, drop_last=False)
+    # dataloader_2 = DataLoader(unlabeled_dataset, batch_size=batch_size, shuffle=shuffle_files, num_workers=0, drop_last=False)
+    sampler_1 = InverseProportionalSampler(labels_1)
+    sampler_2 = InverseProportionalSampler(labels_2)
+
+    dataloader_1 = DataLoader(labeled_dataset, batch_size=batch_size,  num_workers=0, drop_last=False, sampler = sampler_1)
+    dataloader_2 = DataLoader(unlabeled_dataset, batch_size=batch_size, num_workers=0, drop_last=False,  sampler = sampler_2)
+
+  # import pdb
+  # pdb.set_trace()
+  if return_part2:
+      return [dataloader_1, dataloader_2], part1, part2
+  else:
+      return [dataloader_1, dataloader_2], part1
+
+
+def load_adult_dataset_torch(args, shuffle_files=False, split='train', batch_size=128, ratio=0.1, sampled_idx=None, return_part2=False):
+    # Get adult data
+    df = preprocess_adult()
     
-    encode_data = lambda X, Y, A, I: {"feature":X, "label":Y, 'group':A, 'index':I}
+    ds = AdultDataset(df,args, split)
 
-    labeled_data = encode_data(X[labeled_index], Y[labeled_index], A[labeled_index], labeled_index)
-    unlabeled_data = encode_data(X[unlabeled_index], Y[unlabeled_index], A[unlabeled_index], unlabeled_index)
+    args.input_shape = (1, ds.features.shape[1])
+    if split == 'train':
+        args.datasize = len(ds)
 
-    return labeled_data, unlabeled_data
+    # Data split
+    idx = list(range(len(ds)))
+    random.Random(args.train_seed).shuffle(idx)
+    num = int(len(ds) * ratio)
+    part1 = idx[:num]
+    part2 = idx[num:]
+
+    if sampled_idx is not None:
+        part1 += sampled_idx
+        part2 = list(set(part2) - set(sampled_idx))
+    print(f'{len(part1)} labeled samples and {len(part2)} unlabeled samples. Total: {len(part1) + len(part2)}')
+
+    ds_1 = Subset(ds, part1)
+    ds_2 = Subset(ds, part2)
+
+    # import pdb
+    # pdb.set_trace()
+    # Create a random subset sampler for training
+    labels_ds_1 = [ds.labels[i] for i in part1]
+    labels_ds_2 = [ds.labels[i] for i in part2]
+
+    # for label balance
+
+      # for label balance
+    if split == 'train':
+      sampler_1 = InverseProportionalSampler_Adult(labels_ds_1)
+      sampler_2 = InverseProportionalSampler_Adult(labels_ds_2)
+      # for balance batch's labels
+      dataloader_1 = DataLoader(ds_1, batch_size=batch_size,  num_workers=0, drop_last=False, sampler = sampler_1)
+      dataloader_2 = DataLoader(ds_2, batch_size=batch_size, num_workers=0, drop_last=False,  sampler = sampler_2)
+    else:
+      dataloader_1 = DataLoader(ds_1, batch_size=batch_size, shuffle=shuffle_files,  num_workers=0, drop_last=False)
+      dataloader_2 = DataLoader(ds_2, batch_size=batch_size, shuffle=shuffle_files, num_workers=0, drop_last=False)
+      # sampler_1 = InverseProportionalSampler_Adult(labels_ds_1)
+      # sampler_2 = InverseProportionalSampler_Adult(labels_ds_2)
+      # # for balance batch's labels
+      # dataloader_1 = DataLoader(ds_1, batch_size=batch_size,  num_workers=0, drop_last=False, sampler = sampler_1)
+      # dataloader_2 = DataLoader(ds_2, batch_size=batch_size, num_workers=0, drop_last=False,  sampler = sampler_2)
+
+
+
+    if return_part2:
+        return [dataloader_1, dataloader_2], part1, part2
+    else:
+        return [dataloader_1, dataloader_2], part1
 
 def load_data(args, dataset, mode = 'train', sampled_idx = [], aux_dataset = None):
   
   if dataset == 'celeba':
     if mode == 'train':
-      
-      
       if len(sampled_idx) > 0:
         [train_loader_labeled, train_loader_unlabeled, train_loader_new], part_1 = load_celeba_dataset_torch(args, shuffle_files=True, split='train', batch_size=args.train_batch_size, ratio = args.label_ratio, sampled_idx=sampled_idx, aux_dataset = aux_dataset)
         idx_with_labels = set(part_1)
@@ -557,7 +972,27 @@ def load_data(args, dataset, mode = 'train', sampled_idx = [], aux_dataset = Non
     elif mode == 'val':
       [val_loader, test_loader], _ = load_compas_dataset_torch(args, shuffle_files=True, split='test', batch_size=args.test_batch_size, ratio = args.val_ratio)
       return val_loader, test_loader
-    else:
-      raise NotImplementedError('mode should be either train or val')
+    
+  #need to revise: 'adult'
+  elif dataset == 'adult':
+    if mode == 'train': # TODO
+      [train_loader_labeled, train_loader_unlabeled], part_1 = load_adult_dataset_torch(args, shuffle_files=True, split='train', batch_size=args.train_batch_size, ratio = args.label_ratio, sampled_idx=sampled_idx)
+      idx_with_labels = set(part_1)
+      return train_loader_labeled, train_loader_unlabeled, idx_with_labels
+    elif mode == 'val':
+      [val_loader, test_loader], _ = load_adult_dataset_torch(args, shuffle_files=True, split='test', batch_size=args.test_batch_size, ratio = args.val_ratio)
+      return val_loader, test_loader
+
+  #Todo: need to revise: jigsaw
+  elif dataset == 'jigsaw':
+    if mode == 'train': # TODO
+      [train_loader_labeled, train_loader_unlabeled], part_1 = load_jigsaw_dataset_torch(args, shuffle_files=True, split='train', batch_size=args.train_batch_size, ratio = args.label_ratio, sampled_idx=sampled_idx)
+      idx_with_labels = set(part_1)
+      return train_loader_labeled, train_loader_unlabeled, idx_with_labels
+    elif mode == 'val':
+      [val_loader, test_loader], _ = load_jigsaw_dataset_torch(args, shuffle_files=True, split='test', batch_size=args.test_batch_size, ratio = args.val_ratio)
+      return val_loader, test_loader
+  else:
+    raise NameError('Unamed dataset!')
 
 

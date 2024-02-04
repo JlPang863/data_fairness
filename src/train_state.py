@@ -85,10 +85,13 @@ def create_train_state(model, args, params=None, return_opt = False):
     # default optimizer
     tx = optax.sgd(learning_rate=default_lr, momentum=args.momentum, nesterov=args.nesterov)
 
+
   if params is None:
     if 'resnet' in args.model:
       params, batch_stats = initialized(rng, args.input_shape, model)
     else:
+      # import pdb
+      # pdb.set_trace()
       params = initialized_vit(rng, args.input_shape, model)  
       batch_stats = None
       
@@ -107,13 +110,18 @@ def create_train_state(model, args, params=None, return_opt = False):
 
 
 
-@jax.jit
+# @jax.jit
 def train_plain(state, batch): 
   """
   plain training
   """
-  # args = global_var.get_value('args')
+  # jax.lax.print('starting train_plain!!!')
+  args = global_var.get_value('args')
+
+
+  # print('get loss function!!')
   loss_fn = get_loss_fn(state, batch, detaild_loss = False)
+  # jax.lax.print('get loss_fn!!')
   grad_fn = jax.value_and_grad(loss_fn, has_aux=True)
   aux, grads = grad_fn(state.params)
   new_model_state, logits = aux[1]
@@ -124,22 +132,22 @@ def train_plain(state, batch):
     new_state = state.apply_gradients(grads=grads)
   return new_state, metrics
 
-# @jax.jit
-# def train_fix_lmd(state, batch, lmd): 
-#   """
-#   fixed-lambda training
-#   """
-#   args = global_var.get_value('args')
-#   loss_fn = get_loss_lmd_fix(args, state, batch)
-#   grad_fn = jax.value_and_grad(loss_fn, has_aux=True)
-#   aux, grads = grad_fn(state.params, lmd)
-#   new_model_state, logits, _ = aux[1]
-#   metrics = compute_metrics(logits=logits, labels=batch['label'], groups = batch['group'])
-#   if state.batch_stats:
-#     new_state = state.apply_gradients(grads=grads, batch_stats=new_model_state['batch_stats'])
-#   else:
-#     new_state = state.apply_gradients(grads=grads)
-#   return new_state, metrics, lmd
+@jax.jit
+def train_fix_lmd(state, batch, lmd): 
+  """
+  fixed-lambda training
+  """
+  args = global_var.get_value('args')
+  loss_fn = get_loss_lmd_fix(args, state, batch)
+  grad_fn = jax.value_and_grad(loss_fn, has_aux=True)
+  aux, grads = grad_fn(state.params, lmd)
+  new_model_state, logits, _ = aux[1]
+  metrics = compute_metrics(logits=logits, labels=batch['label'], groups = batch['group'])
+  if state.batch_stats:
+    new_state = state.apply_gradients(grads=grads, batch_stats=new_model_state['batch_stats'])
+  else:
+    new_state = state.apply_gradients(grads=grads)
+  return new_state, metrics, lmd
 
 
 @jax.jit
@@ -221,6 +229,7 @@ def get_train_step(method):
   Method: plain, fix_lmd, dynamic_lmd, admm 
   """
   if method == 'plain':
+    print('get train_plain')
     return train_plain
   elif method == 'fix_lmd':
     raise NameError('Undefined')
@@ -297,6 +306,8 @@ def infl_step_per_sample(state, batch):
 
   
   grads_per_sample_tree, aux = jax.jacrev(loss_fn_per_sample, argnums=0, has_aux=True)(state.params)
+  # hessian = jax.hessian(loss_fn_per_sample, argnums=0, has_aux=True)(state.params)
+
 
   grad_flat_tree = jax.tree_util.tree_leaves(grads_per_sample_tree)
 
@@ -318,7 +329,10 @@ def infl_step_per_sample(state, batch):
   else:
     grads_per_sample = jnp.concatenate([x.reshape(batch['feature'].shape[0],-1) for x in sel_layers], axis=-1)
 
+
   return grads_per_sample, aux[1] # grad and logits
+
+
 
 @jax.jit
 def infl_step_fair(state, batch):

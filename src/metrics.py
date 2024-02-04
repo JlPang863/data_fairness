@@ -228,8 +228,10 @@ def compute_metrics(logits, labels, groups = None):
 def compute_metrics_fair(logits, labels, groups = None):
   loss = cross_entropy_loss(logits=logits, labels=labels)
   accuracy = jnp.mean(jnp.argmax(logits, -1) == labels)
-
-
+  accuracy_predicted_label1 = jnp.mean(jnp.argmax(logits, -1) == 1)
+  accuracy_predicted_label2 = jnp.mean(jnp.argmax(logits, -1) == 0)
+  print('predicted_label 1: ' + str(accuracy_predicted_label1) + '; predicted_label 0: ' + str(accuracy_predicted_label2))
+  
   ar0 = jnp.sum( (jnp.argmax(logits, -1) == 1) * (groups == 0) * 1.0) / jnp.sum( (groups == 0) * 1.0)
   ar1 = jnp.sum( (jnp.argmax(logits, -1) == 1) * (groups == 1) * 1.0) / jnp.sum( (groups == 1) * 1.0)
 

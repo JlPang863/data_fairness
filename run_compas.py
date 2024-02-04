@@ -1,4 +1,4 @@
-from src import train, train_general, global_var
+from src import train, fair_train, train_compas, global_var
 from collections import OrderedDict
 import argparse
 
@@ -17,33 +17,41 @@ parser.add_argument('--warm_epoch', type=int, default=0)
 parser.add_argument('--sel_layers', type=int, default=4)
 parser.add_argument('--strategy', type=int, default=1)
 parser.add_argument('--conf', type=str, default='no_conf', help='no_conf, peer, entropy')
+parser.add_argument('--aux_data', type=str, default=None, help="imagenet")
+
 
 parser.add_argument('--label_ratio', type=float, default=0.01)
 parser.add_argument('--val_ratio', type=float, default=0.1)
+# parser.add_argument('--label_budget', type=int, default=1024)
+parser.add_argument('--runs', type=int, default=0)
+parser.add_argument('--epoch', type=int, default=50)
+
+#new add arguments for testing
+parser.add_argument('--new_prob', type=float, default=0.9) 
+parser.add_argument('--ratio_org', type=float, default=0.5) 
 
 # Example: CUDA_VISIBLE_DEVICES=0 python3 run_celeba.py --method plain  --warm_epoch 0  --metric dp --label_ratio 0.05 --val_ratio 0.1 --strategy 2 
 
-
+# arguments
+# args = SimpleNamespace()
+args = parser.parse_args()
 
 # setup
 ROOT = '.'
 EXP = 'exps'
-RUN = 0
+RUN = args.runs
 META_MODEL_SEED, META_TRAIN_SEED, SEED_INCR = 42, 4242, 424242
 EP_STEPS = 10  # 200
 DATA_DIR = '/data2/data'
 EXPS_DIR = ROOT + '/exps'
 
-# arguments
-# args = SimpleNamespace()
-args = parser.parse_args()
+
 # data
 args.data_dir = DATA_DIR
 args.dataset = 'compas'
 
 # model
 args.model_seed = META_MODEL_SEED + RUN * SEED_INCR
-
 
 # optimizer
 args.lr = 0.01
@@ -64,9 +72,16 @@ args.scheduler = None
 
 
 # training
-args.num_epochs = 10 + args.warm_epoch
+# default setting for training
+args.num_epochs = args.epoch +  args.warm_epoch
+
+# default setting for analyzing the impact of label budget
+# args.num_epochs = 50 +  args.warm_epoch
+
+
 args.EP_STEPS = EP_STEPS
-args.train_seed = META_TRAIN_SEED + RUN * SEED_INCR
+# args.train_seed = META_TRAIN_SEED + RUN * SEED_INCR
+args.train_seed = META_TRAIN_SEED
 args.train_batch_size = 256
 args.test_batch_size = 4096
 # checkpoints
@@ -78,7 +93,8 @@ args.save_steps =  EP_STEPS
 # args.datasize = 202599
 args.num_classes = 2
 args.balance_batch = False
-args.new_data_each_round = 32 # 1024
+# args.new_data_each_round = 32 # 1024 
+args.new_data_each_round = 128 # 1024 
 
 
 args.train_conf = False
@@ -87,6 +103,10 @@ args.remove_posOrg = False
 
 
 args.save_dir = EXPS_DIR + f'/{EXP}/{args.method}/run_{RUN}_warm{args.warm_epoch}_metric_{args.metric}'
+
+
+
+
 if __name__ == "__main__":
 
 
@@ -94,6 +114,6 @@ if __name__ == "__main__":
         args.sel_layers = -args.sel_layers
     global_var.init()
     global_var.set_value('args', args)
-    # train(args)
-    train_general(args)
+    #fair_train(args)
+    train_compas(args)
 

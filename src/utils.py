@@ -11,7 +11,8 @@ from datetime import datetime
 # from .models import get_apply_fn_test, get_model
 # from .train_state import get_train_state
 import warnings
-
+from sklearn.preprocessing import LabelEncoder
+import re
 
 
 ########################################################################################################################
@@ -167,3 +168,48 @@ def race_encode_compas(s):
 # Other, Native American    --> Other       --> 4
     race_dict = {'African-American':0,'Caucasian':1, 'Hispanic':2}
     return race_dict.get(s, 3)
+
+
+
+def preprocess_adult():
+    
+    url = "https://archive.ics.uci.edu/ml/machine-learning-databases/adult/adult.data"
+    column_names = ['age', 'workclass', 'fnlwgt', 'education', 'education-num', 'marital-status',
+                    'occupation', 'relationship', 'race', 'sex', 'capital-gain', 'capital-loss',
+                    'hours-per-week', 'native-country', 'income']
+    #print('load data from url!')
+    df = pd.read_csv(url, names=column_names, sep=r'\s*,\s*', engine='python')
+    df = df.dropna()
+
+    #print('adult\'s information: len ' + str(len(df)))
+    # Encode categorical columns
+    label_encoders = {}
+    for col in df.select_dtypes(include=['object']).columns:
+        le = LabelEncoder()
+        df[col] = le.fit_transform(df[col])
+        label_encoders[col] = le
+
+    return df
+
+
+
+def preprocess_jigsaw(df):
+    """
+    Preprocesses the Jigsaw dataset by:
+    1. Removing URLs
+    2. Lowercasing all text
+    3. Removing non-alphanumeric characters
+    4. Optionally, you can add more preprocessing steps as needed.
+    """
+    # Remove URLs
+    df['comment_text'] = df['comment_text'].apply(lambda x: re.sub(r'http\S+', '', x))
+    
+    # Convert to lowercase
+    df['comment_text'] = df['comment_text'].str.lower()
+    
+    # Remove non-alphanumeric characters
+    df['comment_text'] = df['comment_text'].apply(lambda x: re.sub(r'[^a-zA-Z0-9\s]', '', x))
+    
+    return df
+
+
