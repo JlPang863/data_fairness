@@ -33,12 +33,15 @@ Here is the main code for executing our methods on different datasets:
   ```
 
 ### Github Update
-This is the basic github update method
- '''
+This is the basic github update method:
+
+ ```
  $ git add .
+
  $ git commit -m 'comment here'
+
  $ git push -u origin main
- '''
+ ```
 
 <!-- ## Update
 02/04/2024 update for ICML subsmission 
