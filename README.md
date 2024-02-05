@@ -32,6 +32,14 @@ Here is the main code for executing our methods on different datasets:
   $ CUDA_VISIBLE_DEVICES=0 python3 run_compas.py --runs 0 --epoch 50 --metric dp --label_ratio 0.2  --val_ratio 0.2 --strategy 2 --warm_epoch 50
   ```
 
+### Basic github update method
+
+ '''
+ $ git add .
+ $ git commit -m 'comment here'
+ $ git push -u origin main
+ '''
+
 <!-- ## Update
 02/04/2024 update for ICML subsmission 
 
