@@ -960,7 +960,7 @@ def train(args):
 
 
 
-    rec = save_checkpoint(args.save_dir, t+args.datasize*epoch_i//args.train_batch_size, state, rec, save=False)
+    rec = save_checkpoint(args.save_dir, t+args.datasize*epoch_i//args.train_batch_size, state, rec, save=False)#在 save_checkpoint 函数中设置 save=True 参数，以确保实际保存模型的文件
 
   # wrap it up
   # save_recorder(args.save_dir, rec)
@@ -1088,7 +1088,7 @@ def fair_train(args):
 
           print(f'lmd is {lmd}')
 
-    rec = save_checkpoint(args.save_dir, t+args.datasize*epoch_i//args.train_batch_size, state, rec, save=False)
+    rec = save_checkpoint(args.save_dir, t+args.datasize*epoch_i//args.train_batch_size, state, rec, save=False) #在 save_checkpoint 函数中设置 save=True 参数，以确保实际保存模型的文件
 
   # wrap it up
   file_name = f'/s{args.strategy}_{args.metric}_{args.label_ratio}_new{args.new_data_each_round}_100round_case1_remove_unfair_trainConf{args.train_conf}_posloss{args.remove_pos}_poslossOrg{args.remove_posOrg}_{args.sel_round}.pkl'
@@ -2209,6 +2209,7 @@ def train_celeba(args):
               else:
                 print('args.train_with_org = True!')
                 sampled_idx_tmp, sel_org_idx_with_labels = sample_by_infl(args, state, val_loader, train_loader_unlabeled_org, num = args.new_data_each_round, force_org = args.train_with_org)
+              
               idx_with_labels_org.update(sel_org_idx_with_labels)
               sampled_idx_org += sampled_idx_tmp
               used_idx_org.update(sampled_idx)

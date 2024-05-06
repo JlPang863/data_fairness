@@ -110,7 +110,7 @@ def create_train_state(model, args, params=None, return_opt = False):
 
 
 
-# @jax.jit
+@jax.jit
 def train_plain(state, batch): 
   """
   plain training
