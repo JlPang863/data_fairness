@@ -119,10 +119,10 @@ if __name__ == "__main__":
     global_var.set_value('args', args)
     #fair_train(args)
     
-    # train_compas(args)
+    train_compas(args)
     
     ###using fairness constraint to train
-    args.train_with_validation =True
+    args.train_with_validation =False
     if args.train_with_validation:
         args.method='dynamic_lmd'
         args.warm_step=0

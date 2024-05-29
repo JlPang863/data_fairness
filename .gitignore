@@ -9,6 +9,11 @@ celeba/exps/exps/*
 fair_learn/exps/exps/*
 *.pyc
 
+data/
+zero_order_influence/
+backup/
+exps/
+scores/
 exps/exps/*
 data/celeba/*
 
