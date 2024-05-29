@@ -10,7 +10,8 @@ fair_learn/exps/exps/*
 *.pyc
 
 data/
-zero_order_influence/
+zero_order_influence/*
+figures/
 backup/
 exps/
 scores/

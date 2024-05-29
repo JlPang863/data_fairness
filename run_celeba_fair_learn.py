@@ -31,6 +31,7 @@ parser.add_argument('--label_key', type=str, default='Smiling', help="5_o_Clock_
 
 parser.add_argument('--label_ratio', type=float, default=0.01)
 parser.add_argument('--val_ratio', type=float, default=0.1)
+parser.add_argument('--save_model', default=False, action="store_true") # save the model
 
 # Example: LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4 python3 run_celeba.py --method dynamic_lmd  --lmd 0.0 --mu 1.0  --warm_step 0 --metric dp --conf entropy
 # setup

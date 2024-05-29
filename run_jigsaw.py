@@ -30,6 +30,7 @@ parser.add_argument('--epoch', type=int, default=10)
 parser.add_argument('--new_prob', type=float, default=0.5) 
 parser.add_argument('--ratio_org', type=float, default=0.5) 
 
+parser.add_argument('--save_model', default=False, action="store_true") # save the model
 
 # Example: CUDA_VISIBLE_DEVICES=0 python3 run_celeba.py --method plain  --warm_epoch 0  --metric dp --label_ratio 0.05 --val_ratio 0.1 --strategy 2 
 
@@ -61,15 +62,7 @@ args.lr = 0.0001
 args.momentum = 0.9
 args.weight_decay = 0.0005
 args.nesterov = True
-# SGD
-# args.opt = OrderedDict(
-#     name="sgd",
-#     config=OrderedDict(
-#         learning_rate = args.lr,
-#         momentum = args.momentum,
-#         nesterov = args.nesterov
-#     )
-# )
+
 args.opt = OrderedDict(
     name="adam",
     config=OrderedDict(
@@ -118,11 +111,7 @@ args.save_dir = EXPS_DIR + f'/{EXP}/{args.method}/run_{RUN}_warm{args.warm_epoch
 
 if __name__ == "__main__":
 
-
-    # if 'mlp' in args.model:
-    #     args.sel_layers = -args.sel_layers
     global_var.init()
     global_var.set_value('args', args)
-    #train(args)
     train_jigsaw(args)
 

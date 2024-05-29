@@ -78,70 +78,12 @@ def lissa(matrix_fn: Callable[[Any], Any],
 
 def extract_top_n_layers_params(params, n):
     top_n_params = {}
-    layer_names = list(params.keys())  # 获取层的名称列表
+    layer_names = list(params.keys()) 
     for layer_name in layer_names[:n]:
         top_n_params[layer_name] = params[layer_name]
     return top_n_params
 
 
-
-# def compute_hessian(state, batch):
-#   # flat, unflatten = ravel_pytree(state.params)
-#   # this model function will take the flat parameters as inputs
-#   # model_fn = lambda flat_params, x: state.apply_fn({'params': unflatten(flat_params)}, x, train=False)
-
-#   # loss_fn_per_sample = get_loss_fn(state, batch, per_sample=True) 
-
-#   # per_sample_fn = lambda flat_params, x, y, z: vmap(lambda logits, attributes: logits[0] * (attributes - z.mean()))(model_fn(flat_params, x), z)
-#   # grad_fn = lambda x, y, z: jacrev(per_sample_fn)(flat, x, y, z)
-#   # tree_multiply = lambda x, y: tree_map(jnp.matmul, x, y)
-
-#   # H = jax.hessian(per_sample_fn)(flat, Ds['feature'], Ds['label'], Ds['group'])
-#   args = global_var.get_value('args')
-#   loss_fn = get_loss_fn(state, batch, per_sample=False)
-#   selected_params = extract_top_n_layers_params(state.params, 4)
-
-#   # import pdb
-#   # pdb.set_trace()
-#   # grads_per_sample_tree, aux = jax.jacrev(loss_fn_per_sample, argnums=0, has_aux=True)(state.params)
-#   hessian_tree = jax.hessian(loss_fn, argnums=0, has_aux=True)(selected_params)
-
-#   # hessian_flat_tree = jax.tree_util.tree_leaves(hessian_tree)
-
-
-
-#   # if args.sel_layers > 0:
-#   #     selected_hessian = hessian_flat_tree[:args.sel_layers]
-#   # else:
-#   #     selected_hessian = hessian_flat_tree[args.sel_layers:]
-
-#   # if batch['label'] is None:
-#   #   grads_per_sample = jnp.concatenate([x.reshape(sel_layers[-1].shape[0], sel_layers[-1].shape[1], -1) for x in sel_layers], axis=-1) # last layer
-#   # else:
-#   #   grads_per_sample = jnp.concatenate([x.reshape(batch['feature'].shape[0],-1) for x in sel_layers], axis=-1)
-      
-
-#   # 假设 batch 已经定义
-#   # if batch['label'] is None:
-#   #     # 对于某种特定情况的处理
-#   #     hessian = jnp.concatenate([x.reshape(selected_hessian[-1].shape[0], selected_hessian[-1].shape[1], -1) for x in selected_hessian], axis=-1)
-#   # else:
-#   #     # 对于常规情况的处理
-
-#   #     hessian = jnp.concatenate([x.reshape(batch['feature'].shape[0],-1) for x in selected_hessian], axis=-1)
-
-
-
-#   # #grad_avg 
-#   # hessian_x = jnp.concatenate([x.reshape(-1) for x in selected_hessian], axis=-1)
-
-
-#   # #grad_each_sample
-#   # hessian_new = jnp.concatenate([x.reshape(selected_hessian[-1].shape[0], selected_hessian[-1].shape[1], -1) for x in selected_hessian], axis=-1)
-
-
-
-#   return hessian_tree
 
 def compute_hessian(state, train_loader_labeled, val_data):
 
@@ -178,8 +120,6 @@ def compute_hessian(state, train_loader_labeled, val_data):
 
     # grads, grads_org = np.asarray(infl_step(state, batch_labeled))
     # grads, grads_org = infl_step(state, batch_labeled)
-    # import pdb
-    # pdb.set_trace()
     grads_each_sample, logits = infl_step_per_sample(state, batch_labeled)
 
     # I = np.eye(grads_each_sample.shape[-1])
@@ -198,64 +138,6 @@ def compute_hessian(state, train_loader_labeled, val_data):
 
 
   return H_v_tmp, H_v_org_tmp
-
-
-# def compute_hessian(state, train_loader_labeled, val_data):
-#   # for celeba
-#   args = global_var.get_value('args')
-#   preprocess_func_torch2jax = gen_preprocess_func_torch2jax(args.dataset)
-#   num_samples = 0.0
-#   grad_sum = 0.0
-#   # grad_org_sum = 0.0
-#   for example in val_data: # Need to run on the validation dataset to avoid the negative effect of distribution shift, e.g., DP is not robust to distribution shift. For fairness, val data may be iid as test data 
-#     batch = preprocess_func_torch2jax(example, args)
-#     bsz = batch['feature'].shape[0]
-#     grads, grads_org = np.asarray(infl_step(state, batch))
-
-#     # sum & average
-#     grad_sum += grads * bsz
-#     # grad_org_sum += grads_org * bsz
-#     num_samples += bsz
-
-#   grad_avg = (grad_sum/num_samples).reshape(-1,1)
-#   # grad_org_avg = (grad_org_sum/num_samples).reshape(-1,1)
-
-
-#   example_size = 5
-#   H_v_tmp = grad_avg
-
-#   train_loader_labeled, train_loader_unlabeled, idx_with_labels = load_data(args, args.dataset, mode = 'train', aux_dataset=args.aux_data)
-#   # H_v_org_tmp = grad_avg
-#   for example in train_loader_labeled:
-#     if example_size == 0:
-#       break
-    
-#     batch_labeled = preprocess_func_torch2jax(example, args)
-#     # grads_each_sample = np.asarray(infl_step_per_sample(state, batch_unlabeled))
-
-#     # grads, grads_org = np.asarray(infl_step(state, batch_labeled))
-#     # grads, grads_org = infl_step(state, batch_labeled)
-#     import pdb
-#     pdb.set_trace()
-#     grads_each_sample, logits = infl_step_per_sample(state, batch_labeled)
-
-#     # I = np.eye(grads_each_sample.shape[-1])
-#     #compute the gradient of labeled dataset
-#     for idx in range(grads_each_sample.shape[0]):
-#       grad_sample = grads_each_sample[idx].reshape(-1,1)
-
-#       # outer_product = np.outer(grad_sample, grad_sample)
-#       # dot_product = np.dot(grad_sample, H_v_tmp)
-
-#       # H_v_tmp_test = grad_avg + np.matmul(I - np.matmul(grad_sample,grad_sample), H_v_tmp)
-#       H_v_tmp = grad_avg + (H_v_tmp - (np.dot(grad_sample.T, H_v_tmp) * grad_sample))
-#       # H_v_org_tmp = grad_org_avg + (H_v_org_tmp - np.dot(grad_sample.T,H_v_org_tmp) * grad_sample)
-
-#     example_size -= 1
-
-
-
-#   return H_v_tmp, H_v_tmp
 
 def compute_bald_score(args, predictions):
     """
@@ -298,64 +180,42 @@ def sample_strategy_7_misclassified_examples(args, model, state, train_loader, n
         dict: Empty dictionary (as placeholders for new labels).
     """
     misclassified_indices = []
-    misclassified_indices_0 = []  # 用于存储标签为 0 的误分类样本的索引
-    misclassified_indices_1 = []  # 用于存储标签为 1 的误分类样本的索引
+    misclassified_indices_0 = []  # misclassified example's label 0
+    misclassified_indices_1 = []  # misclassified example's label 1
     for example in train_loader:
       # Get predictions
 
       preprocess_func_torch2jax = gen_preprocess_func_torch2jax(args.dataset)
       example = preprocess_func_torch2jax(example, args)
-      # image, group, label = example['feature'], example['group'], example['label']
-      # batch = {'feature': jnp.array(image), 'label': jnp.array(label), 'group': jnp.array(group)}
-      # image, group, label = example['feature'], example['group'], example['label']
-      
+
       features = example['feature']
       labels = example['label']
-      # 如果还需要其他数据，可以相应地从 example 中提取
-
-      # # 转换为适合模型的格式（如果需要）
       features = jnp.array(features)
       labels = jnp.array(labels)
-
-      # import pdb
-      # pdb.set_trace()  
 
       #prediction
       output = state.apply_fn({'params': state.params}, features)
       logits = output if not isinstance(output, tuple) else output[0]
       y_pred = logits.argmax(axis=1)
       
-    #   # Identify misclassified samples
+    #  Identify misclassified samples
       misclassified = np.where(y_pred != labels)[0]
-    #   misclassified_indices.extend(misclassified)
 
-    #   if len(misclassified_indices) >= num:
-    #       break
-    #   # import pdb
-    #   # pdb.set_trace()
-
-    # return misclassified_indices[:num], {}
       for idx in misclassified:
         if labels[idx] == 0 and len(misclassified_indices_0) < num//2:
             misclassified_indices_0.append(idx)
         elif labels[idx] == 1 and len(misclassified_indices_1) < num//2:
             misclassified_indices_1.append(idx)
 
-      # 检查是否已收集足够的样本
+      # check the number of misclassified examples
       if len(misclassified_indices_0) >= num//2 and len(misclassified_indices_1) >= num//2:
           break
 
-      # 合并两个类别的索引
       balanced_misclassified_indices = misclassified_indices_0 + misclassified_indices_1
-      # 可以选择随机洗牌以增加随机性
 
-      # import pdb
-      # pdb.set_trace()
       random.shuffle(balanced_misclassified_indices)
 
       return balanced_misclassified_indices, {}
-
-
 
 
 
@@ -408,10 +268,6 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num, force_org = False
     # grad_org_each_sample = np.asarray(grad_org_each_sample)
     logits = np.asarray(logits)
 
-
-
-
-
     '''
     calculate the influence of prediction/fairness component
     '''
@@ -462,8 +318,10 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num, force_org = False
     # Strategy 6: baseline 1 - BALD
     elif args.strategy == 6:
       label_expected = np.argmax(logits, 1).reshape(-1)
+      
+    ##skip strategy 7 JTT baseline here since JTT does not depends on influence scores
 
-    # Strategy: baseline 2 -- Influence selection for active learning (ISAL), select unlabeled samples according to influence scores
+    # Strategy 8: Influence selection for active learning (ISAL), select unlabeled samples according to influence scores
     elif args.strategy == 8:
       # use model predicted label as pseuod-labels
       label_expected = np.argmax(logits, 1).reshape(-1)
@@ -495,10 +353,7 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num, force_org = False
       score_tmp[infl_fair_true > 0] = 0.0 # remove_unfair, use true label
 
       score += score_tmp.tolist()
-      
 
-      # import pdb
-      # pdb.set_trace()
       expected_label += label_expected.tolist()
       true_label += batch['label'].tolist()
 
@@ -511,21 +366,7 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num, force_org = False
       true_label += batch['label'].tolist()
 
     elif args.strategy == 8:
-      # strategy 8: only use the prediction influence, not use fairness influence
 
-      '''
-      Hessian approximation calculation
-      # '''
-      # H_v, H_v_org = compute_hessian(state, train_loader_labeled, grad_avg, grad_org_avg)
-
-
-      # # H_inv = lissa(lambda v: vmap(jnp.matmul)(H, v), grad_avg, recursion_depth=100)
-      # print("finish hessian approximation!")
-      # import pdb
-      # pdb.set_trace()
-      '''
-      end here
-      '''
       infl = - np.matmul(grads_each_sample, args.H_v) # new_loss - cur_los  # 
       infl_org = - np.matmul(grads_each_sample, args.H_v_org) # new_loss - cur_los  # 
 
@@ -554,7 +395,7 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num, force_org = False
     sel_idx = sel_idx[:num]
     sel_true_false_with_labels = sel_idx
 
-  # Strategy 2--6
+  # Strategy 2--8
   else:
     sel_idx = np.argsort(score)[:num]
     max_score = score[sel_idx[-1]]
@@ -562,37 +403,9 @@ def sample_by_infl(args, state, val_data, unlabeled_data, num, force_org = False
       sel_idx = np.arange(len(score))[np.asarray(score) < 0.0]
     score_before_check = np.asarray(score_before_check)
     sel_true_false_with_labels = score_before_check < min(max_score, 0.0)
-    # import pdb
-    # pdb.set_trace()
+
     # score_org = np.asarray(score_org)
     # sel_true_false_with_labels = score_org <= max_score
-
-
-
-
-  # if args.strategy == 1:
-  #   sel_idx = list(range(len(score)))
-  #   random.Random(args.infl_random_seed).shuffle(sel_idx)
-  #   sel_idx = sel_idx[:num]
-
-  # # Strategy 2 (idea 1): find the label with least absolute influence, then find the sample with largest abs infl
-  # elif args.strategy == 2:
-  #   sel_idx = np.argsort(score)[-num:]
-
-  # # Strategy 3 (idea 2): find the label with minimal influence values (most negative), then find the sample with most negative infl 
-  # elif args.strategy == 3:
-  #   sel_idx = np.argsort(score)[:num]
-
-  # # strategy 4: use true label, find large abs infl ones
-  # elif args.strategy == 4:
-  #   sel_idx = np.argsort(score)[-num:]
-  #   # sel_idx = np.argsort(score)[:num] # reversed, for controlled test
-
-  
-  # # strategy 5: use true label, find most negative infl ones
-  # elif args.strategy in [5, 6]:
-  #   sel_idx = np.argsort(score)[:num]
-  #   # sel_idx = np.argsort(score)[-num:] # reversed, for controlled test
 
   if args.strategy > 1:
     # check labels
@@ -690,20 +503,20 @@ def sample_by_infl_without_true_label(args, state, val_data, unlabeled_data, num
     # Strategy 6: baseline 1 - BALD
     elif args.strategy == 6:
       label_expected = np.argmax(logits, 1).reshape(-1)
+    
+    ##skip strategy 7 JTT baseline here since JTT does not depends on influence scores
 
-    # Strategy: baseline 2 -- Influence selection for active learning (ISAL), select unlabeled samples according to influence scores
+    # Strategy 8: Influence selection for active learning (ISAL), select unlabeled samples according to influence scores
     elif args.strategy == 8:
       # use model predicted label as pseuod-labels
       label_expected = np.argmax(logits, 1).reshape(-1)
-
-
-
+      
     ########################################################
     ################# sample selection #####################
     ########################################################
+    
     if args.strategy > 1 and args.strategy < 6:
       score_tmp = (infl_fair[range(infl_fair.shape[0]), label_expected]).reshape(-1)
-      # score_org += score_tmp.tolist()
 
 
       if args.remove_pos:
@@ -726,9 +539,6 @@ def sample_by_infl_without_true_label(args, state, val_data, unlabeled_data, num
 
     elif args.strategy == 6:
 
-      # import pdb
-      # pdb.set_trace()
-
       score_tmp = -1 * compute_bald_score(args, softmax(logits))
       score += score_tmp.tolist()
       expected_label += label_expected.tolist()
@@ -736,21 +546,9 @@ def sample_by_infl_without_true_label(args, state, val_data, unlabeled_data, num
     elif args.strategy == 8:
       # strategy 8: only use the prediction influence, not use fairness influence
       # print('Strategy 8: strating Hessian calculation!! ')
-      '''
-      Hessian approximation calculation
-      '''
-      # H_v, H_v_org = compute_hessian(state, train_loader_labeled, grad_avg, grad_org_avg)
 
-
-      # H_inv = lissa(lambda v: vmap(jnp.matmul)(H, v), grad_avg, recursion_depth=100)
-
-      '''
-      end here
-      '''
       infl = - np.matmul(grads_each_sample, args.H_v) # new_loss - cur_los  # 
-      infl_org = - np.matmul(grads_each_sample, args.H_v_org) # new_loss - cur_los  # 
-
-
+      infl_org = - np.matmul(grads_each_sample, args.H_v_org) # new_loss - cur_los  #
 
       score_tmp = (infl[range(infl.shape[0]), label_expected].reshape(-1))
       score += score_tmp.tolist()
@@ -774,7 +572,7 @@ def sample_by_infl_without_true_label(args, state, val_data, unlabeled_data, num
     sel_idx = sel_idx[:num]
     # sel_true_false_with_labels = sel_idx
 
-  # Strategy 2--5
+  # Strategy 2--8
   else:
     sel_idx = np.argsort(score)[:num]
     max_score = score[sel_idx[-1]]
@@ -783,22 +581,11 @@ def sample_by_infl_without_true_label(args, state, val_data, unlabeled_data, num
     # score_before_check = np.asarray(score_before_check)
     # sel_true_false_with_labels = score_before_check < min(max_score, 0.0)
   
-
-  # if args.strategy > 1:
-  #   # check labels
-  #   true_label = np.asarray(true_label)
-  #   expected_label = np.asarray(expected_label)
-  #   expect_acc = np.mean(1.0 * (true_label == expected_label))
-  #   print(f'[Strategy {args.strategy}] Acc of expected label: {expect_acc}')  
-    # print(f'[Strategy {args.strategy}] Expected label {expected_label}')  
-    # print(f'[Strategy {args.strategy}] True label {true_label}')  
-
   sel_org_id = np.asarray(idx)[sel_idx].tolist()  # samples that are used in training
   sel_org_id_and_pseudo_label = np.asarray(idx_ans_pseudo_label)[sel_idx].tolist()  # samples that are used in training
 
 
   # sel_org_idx_with_labels = np.asarray(idx)[sel_true_false_with_labels].tolist() # samples that have labels
-  # pdb.set_trace()
   print('calculating influence -- done')
   new_labels = {}
   for pair_i in sel_org_id_and_pseudo_label:
@@ -848,8 +635,7 @@ def train(args):
     model, model_linear = tmp_model
   else:
     model = tmp_model
-  # model, model_linear = get_model(args)
-  # args.hidden_size = model_linear.hidden_size
+
   state = create_train_state(model, args)
 
 
@@ -961,14 +747,15 @@ def train(args):
 
 
 
-    rec = save_checkpoint(args.save_dir, t+args.datasize*epoch_i//args.train_batch_size, state, rec, save=False)#在 save_checkpoint 函数中设置 save=True 参数，以确保实际保存模型的文件
+    rec = save_checkpoint(args.save_dir, t+args.datasize*epoch_i//args.train_batch_size, state, rec, save=args.save_model)#save_checkpoint: save=True means save model
 
   # wrap it up
   # save_recorder(args.save_dir, rec)
   save_name = f'./results/s{args.strategy}_{args.metric}_{args.label_ratio}_new{args.new_data_each_round}_100round.npy'
   np.save(save_name, idx_rec)
 
-  # return test_metric
+
+
 
 def fair_train(args):
   # setup
@@ -1089,863 +876,14 @@ def fair_train(args):
 
           print(f'lmd is {lmd}')
 
-    rec = save_checkpoint(args.save_dir, t+args.datasize*epoch_i//args.train_batch_size, state, rec, save=False) #在 save_checkpoint 函数中设置 save=True 参数，以确保实际保存模型的文件
+    rec = save_checkpoint(args.save_dir, t+args.datasize*epoch_i//args.train_batch_size, state, rec, save=args.save_model) 
 
   # wrap it up
   file_name = f'/s{args.strategy}_{args.metric}_{args.label_ratio}_new{args.new_data_each_round}_100round_case1_remove_unfair_trainConf{args.train_conf}_posloss{args.remove_pos}_poslossOrg{args.remove_posOrg}_{args.sel_round}.pkl'
   save_recorder(args.save_dir, rec, file_name=file_name)
 
-###################################################################################
-# original code before adding baseline JTT
 
-# def train_celeba(args):
-#   # setup
-#   set_global_seed(args.train_seed)
-#   # make_dirs(args)
-#   new_labels = {}
-#   train_loader_labeled, train_loader_unlabeled, idx_with_labels = load_data(args, args.dataset, mode = 'train', aux_dataset=args.aux_data)
-#   _, train_loader_unlabeled_org, idx_with_labels_org = load_data(args, args.dataset, mode = 'train', aux_dataset=None)
-#   args.train_with_org = True
-#   train_loader_new = None
-#   train_loader_new_org = None
 
-#   val_loader, test_loader = load_data(args, args.dataset, mode = 'val')
-
-
-#   preprocess_func_torch2jax = gen_preprocess_func_torch2jax(args.dataset)
-
-#   if args.aux_data is None:
-#     preprocess_func_torch2jax_aux = gen_preprocess_func_torch2jax(args.dataset)
-#   else:
-#     preprocess_func_torch2jax_aux = gen_preprocess_func_torch2jax(args.aux_data)
-
-
-#   # setup
-#   model = get_model(args)
-#   # tmp_model = get_model(args)
-#   # if len(tmp_model) == 2:
-#   #   model, model_linear = tmp_model
-#   # else:
-#   #   model = tmp_model
-#   state = create_train_state(model, args)
-
-
-#   # get model size
-#   flat_tree = jax.tree_util.tree_leaves(state.params)
-#   num_layers = len(flat_tree)
-#   print(f'Numer of layers {num_layers}')
-
-#   rec = init_recorder()
-
-  
-
-#   # info
-#   time_start = time.time()
-#   time_now = time_start
-#   print('train net...')
-
-#   # begin training
-#   init_val_acc = 0.0
-#   lmd = args.lmd
-#   train_step = get_train_step(args.method)
-#   # epoch_pre = 0
-#   sampled_idx = []
-#   sampled_idx_org = []
-#   idx_rec = []
-#   used_idx = idx_with_labels.copy()
-#   used_idx_org = idx_with_labels_org.copy()
-#   print(f'train with {args.datasize} samples (with replacement) in one epoch')
-
-#   for epoch_i in range(args.num_epochs):
-    # args.curr_epoch = epoch_i
-#     if train_loader_new is not None:
-#       new_iter = iter(train_loader_new)
-#     if train_loader_new_org is not None:
-#       new_iter_org = iter(train_loader_new_org)
-
-
-#     t = 0
-#     num_sample_cur = 0
-#     print(f'Epoch {epoch_i}')
-#     # if epoch_i < args.warm_epoch: 
-#     #   print(f'warmup epoch = {epoch_i+1}/{args.warm_epoch}')
-#     # if epoch_i == args.warm_epoch:
-#     #   state_reg = create_train_state(model, args, params=state.params) # use the full model
-    
-
-#     ## data_loader with batch size
-#     while t * args.train_batch_size < args.datasize:
-      
-#       #####################################################################
-#       for example in train_loader_labeled:
-#         new_data = 0
-#         if train_loader_new is not None:
-#           if 0 <= args.new_prob and args.new_prob <= 1 and len(train_loader_new) >= 2: # args.new_prob should be large, e.g., 0.9.   len(train_loader_new) >= len(train_loader_labeled) / 3 means the new data should be sufficient > 25 % of total
-#             if args.train_with_org:
-#               new_data = np.random.choice(range(3), p = [1.0 - args.new_prob, args.new_prob * (1.0 - args.ratio_org), args.new_prob * args.ratio_org])
-#             else:
-#               new_data = np.random.choice(range(2), p = [1.0 - args.new_prob, args.new_prob])
-#           else:
-#             new_prob = (len(train_loader_new) + 1) / (len(train_loader_new) + len(train_loader_labeled))
-#             if args.train_with_org:
-#               new_data = np.random.choice(range(3), p = [1.0 - new_prob, new_prob * (1.0 - args.ratio_org), new_prob * args.ratio_org])
-#             else:
-#               new_data = np.random.choice(range(2), p = [1.0 - new_prob, new_prob])
-
-
-#           if new_data == 1:
-#             try:
-#                 # Samples the batch
-#                 example = next(new_iter)
-#             except StopIteration:
-#                 # restart the generator if the previous generator is exhausted.
-#                 new_iter = iter(train_loader_new)
-#                 example = next(new_iter)
-#           elif new_data == 2:
-#             try:
-#                 # Samples the batch
-#                 example = next(new_iter_org)
-#             except StopIteration:
-#                 # restart the generator if the previous generator is exhausted.
-#                 new_iter_org = iter(train_loader_new_org)
-#                 example = next(new_iter_org)
-
-
-#         bsz = example[0].shape[0]
-
-#         num_sample_cur += bsz
-
-
-#         ###proprocess t-th batch data: example
-#         if new_data in [0, 2]:
-#           #print(f'using the {args.dataset} as example')
-#           example = preprocess_func_torch2jax(example, args)
-          
-#         else: #new_data =1
-#           #print(f'using the {args.aux_data} as example')
-#           example = preprocess_func_torch2jax_aux(example, args, new_labels = new_labels)
-
-
-
-
-#         t += 1
-#         if t * args.train_batch_size > args.datasize:
-#           break
-#         #####################################################################
-
-
-#         # load data
-#         if args.balance_batch:
-#           image, group, label = example['feature'], example['group'], example['label']
-#           num_a, num_b = jnp.sum((group == 0) * 1.0), jnp.sum((group == 1) * 1.0)
-#           min_num = min(num_a, num_b).astype(int)
-#           total_idx = jnp.arange(len(group))
-#           if min_num > 0:
-#             group_a = total_idx[group == 0]
-#             group_b = total_idx[group == 1]
-#             group_a = group_a.repeat(args.train_batch_size//2//len(group_a)+1)[:args.train_batch_size//2]
-#             group_b = group_b.repeat(args.train_batch_size//2//len(group_b)+1)[:args.train_batch_size//2]
-
-#             sel_idx = jnp.concatenate((group_a,group_b))
-#             batch = {'feature': jnp.array(image[sel_idx]), 'label': jnp.array(label[sel_idx]), 'group': jnp.array(group[sel_idx])}
-#           else:
-#             print(f'current batch only contains one group')
-#             continue
-
-#         else:
-#           batch = example
-
-#         # train
-#         if args.method == 'plain':
-#           # state, train_metric = train_step(state, batch)
-#           try:
-#             state, train_metric = train_step(state, batch)
-#           except:
-#             # import pdb
-#             # pdb.set_trace()
-#             print(batch)
-#         # elif args.method in ['fix_lmd','dynamic_lmd']:
-#         #   state, train_metric, lmd = train_step(state, batch, lmd = lmd, T=None)
-#         else:
-#           raise NameError('Undefined optimization mechanism')
-
-#         rec = record_train_stats(rec, t-1, train_metric, 0)
-      
-#         if t % args.log_steps == 0 or (t+1) * args.train_batch_size > args.datasize:
-#           # test
-#           # epoch_pre = epoch_i
-          
-#           test_metric = test(args, state, test_loader)
-#           rec, time_now = record_test(rec, t+args.datasize*epoch_i//args.train_batch_size, args.datasize*args.num_epochs//args.train_batch_size, time_now, time_start, train_metric, test_metric, metric = args.metric, warm = epoch_i < args.warm_epoch)
-
-#           val_metric = test(args, state, val_loader)
-#           _, time_now = record_test(rec, t+args.datasize*epoch_i//args.train_batch_size, args.datasize*args.num_epochs//args.train_batch_size, time_now, time_start, train_metric, test_metric, val_metric=val_metric, metric = args.metric, warm = epoch_i < args.warm_epoch)
-
-#           if epoch_i >= args.warm_epoch:
-#             if init_val_acc == 0.0:
-#               init_val_acc = val_metric['accuracy']
-              
-            # '''
-            # Hessian approximation calculation for strategy 8
-            # '''
-            # print('start hessian approximation!')
-            # args.H_v, args.H_v_org = compute_hessian(state, train_loader_labeled, val_loader)           
-
-#             # infl 
-#             args.infl_random_seed = t+args.datasize*epoch_i//args.train_batch_size + args.train_seed
-
-#             if args.aux_data == 'imagenet':
-#               print('##########If: Using the aux_data: imagenet!')
-#               sampled_idx_tmp, new_labels_tmp = sample_by_infl_without_true_label(args, state, val_loader, train_loader_unlabeled, num = args.new_data_each_round)
-#               new_labels.update(new_labels_tmp)
-#               print(f'length of new labels {len(new_labels)}')
-#               sampled_idx += sampled_idx_tmp
-#               # used_idx.update(sampled_idx)
-#               print(f'Use {len(used_idx)}+{len(new_labels)} = {len(used_idx) + len(new_labels)} samples.')
-
-#             elif (epoch_i >= args.num_epochs - 2 and val_metric['accuracy'] >= init_val_acc - args.tol): # last two epochs
-#               print('#############Elif: Using the aux_data: imagenet!')
-#               sampled_idx_tmp, new_labels_tmp = sample_by_infl_without_true_label(args, state, val_loader, train_loader_unlabeled, num = args.new_data_each_round)
-#               new_labels.update(new_labels_tmp)
-#               print(f'length of new labels {len(new_labels)}')
-#               sampled_idx += sampled_idx_tmp
-#               used_idx.update(sampled_idx)
-#               print(f'Use {len(used_idx) - len(new_labels)}+{len(new_labels)} = {len(used_idx)} samples.')
-              
-
-#             else:
-#               print('Sampling by influence function!')
-#               sampled_idx_tmp, sel_org_idx_with_labels = sample_by_infl(args, state, val_loader, train_loader_unlabeled, num = args.new_data_each_round)
-#               idx_with_labels.update(sel_org_idx_with_labels)
-#               sampled_idx += sampled_idx_tmp
-#               used_idx.update(sampled_idx)
-#               print(f'Use {len(used_idx)} samples. Get {len(idx_with_labels)} labels. Ratio: {len(used_idx)/len(idx_with_labels)}')
-#               idx_rec.append((epoch_i, args.infl_random_seed, used_idx, idx_with_labels))
-
-#             _, train_loader_unlabeled, train_loader_new, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx, aux_dataset=args.aux_data)
-            
-#             # if args.dataset == 'celeba':
-#             #   _, train_loader_unlabeled, train_loader_new, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx, aux_dataset=args.aux_data)
-#             # elif args.dataset == 'compas':
-#             #   train_loader_unlabeled, train_loader_new, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx, aux_dataset=args.aux_data)
-#             # else:
-#             #   raise NameError('Undefine dataset')
-
-#             new_iter = iter(train_loader_new)
-
-
-#             if args.train_with_org:
-#               print('args.train_with_org = True!')
-#               sampled_idx_tmp, sel_org_idx_with_labels = sample_by_infl(args, state, val_loader, train_loader_unlabeled_org, num = args.new_data_each_round, force_org = args.train_with_org)
-#               idx_with_labels_org.update(sel_org_idx_with_labels)
-#               sampled_idx_org += sampled_idx_tmp
-#               used_idx_org.update(sampled_idx)
-#               print(f'[ADD ORG DATA] Use {len(used_idx_org)} samples. Get {len(idx_with_labels_org)} labels. Ratio: {len(used_idx_org)/len(idx_with_labels_org)}')
-#               _, train_loader_unlabeled_org, train_loader_new_org, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx_org, aux_dataset=None)
-              
-#               # if args.dataset == 'celeba':
-#               #   _, train_loader_unlabeled_org, train_loader_new_org, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx, aux_dataset=args.aux_data)
-#               # elif args.dataset == 'compas':
-#               #   train_loader_unlabeled_org, train_loader_new_org, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx, aux_dataset=args.aux_data)
-#               # else:
-#               #   raise NameError('Undefine dataset')
-              
-#               new_iter_org = iter(train_loader_new_org)
-#               # idx_rec.append((epoch_i, args.infl_random_seed, used_idx_org, idx_with_labels_org))
-
-              
-              
-#             # save_name = f'./results/s{args.strategy}_{args.metric}_{args.label_ratio}_new{args.new_data_each_round}_100round.npy'
-#             # np.save(save_name, idx_rec)
-
-          
-#           # print(f'lmd is {lmd}')
-
-
-
-#     rec = save_checkpoint(args.save_dir, t+args.datasize*epoch_i//args.train_batch_size, state, rec, save=False)
-
-#   # wrap it up
-#   # save_recorder(args.save_dir, rec)
-#   # save_name = f'./results/s{args.strategy}_{args.metric}_{args.label_ratio}_new{args.new_data_each_round}_100round.npy'
-#   # np.save(save_name, idx_rec)
-# def train_compas(args):
-#   # setup
-#   set_global_seed(args.train_seed)
-#   # make_dirs(args)
-#   new_labels = {}
-#   train_loader_labeled, train_loader_unlabeled, idx_with_labels = load_data(args, args.dataset, mode = 'train', aux_dataset=args.aux_data)
-#   _, train_loader_unlabeled_org, idx_with_labels_org = load_data(args, args.dataset, mode = 'train', aux_dataset=None)
-#   args.train_with_org = True
-#   train_loader_new = None
-#   train_loader_new_org = None
-
-#   val_loader, test_loader = load_data(args, args.dataset, mode = 'val')
-
-
-#   preprocess_func_torch2jax = gen_preprocess_func_torch2jax(args.dataset)
-
-#   if args.aux_data is None:
-#     preprocess_func_torch2jax_aux = gen_preprocess_func_torch2jax(args.dataset)
-#   else:
-#     preprocess_func_torch2jax_aux = gen_preprocess_func_torch2jax(args.aux_data)
-
-
-#   # setup
-#   model = get_model(args)
-#   # tmp_model = get_model(args)
-#   # if len(tmp_model) == 2:
-#   #   model, model_linear = tmp_model
-#   # else:
-#   #   model = tmp_model
-#   state = create_train_state(model, args)
-
-
-#   # get model size
-#   flat_tree = jax.tree_util.tree_leaves(state.params)
-#   num_layers = len(flat_tree)
-#   print(f'Numer of layers {num_layers}')
-
-#   rec = init_recorder()
-
-  
-
-#   # info
-#   time_start = time.time()
-#   time_now = time_start
-#   print('train net...')
-
-#   # begin training
-#   init_val_acc = 0.0
-#   lmd = args.lmd
-#   train_step = get_train_step(args.method)
-#   # epoch_pre = 0
-#   sampled_idx = []
-#   sampled_idx_org = []
-#   idx_rec = []
-#   used_idx = idx_with_labels.copy()
-#   used_idx_org = idx_with_labels_org.copy()
-#   print(f'train with {args.datasize} samples (with replacement) in one epoch')
-
-#   for epoch_i in range(args.num_epochs):
-    # args.curr_epoch = epoch_i
-#     if train_loader_new is not None:
-#       new_iter = iter(train_loader_new)
-#     if train_loader_new_org is not None:
-#       new_iter_org = iter(train_loader_new_org)
-
-
-#     t = 0
-#     num_sample_cur = 0
-#     print(f'Epoch {epoch_i}')
-#     # if epoch_i < args.warm_epoch: 
-#     #   print(f'warmup epoch = {epoch_i+1}/{args.warm_epoch}')
-#     # if epoch_i == args.warm_epoch:
-#     #   state_reg = create_train_state(model, args, params=state.params) # use the full model
-    
-#     # import pdb
-#     # pdb.set_trace()
-#     ## data_loader with batch size
-#     while t * args.train_batch_size < args.datasize:
-      
-#       #####################################################################
-#       for example in train_loader_labeled:
-#         new_data = 0
-#         if train_loader_new is not None:
-#           if 0 <= args.new_prob and args.new_prob <= 1 and len(train_loader_new) >= 2: # args.new_prob should be large, e.g., 0.9.   len(train_loader_new) >= len(train_loader_labeled) / 3 means the new data should be sufficient > 25 % of total
-#             if args.train_with_org:
-#               new_data = np.random.choice(range(3), p = [1.0 - args.new_prob, args.new_prob * (1.0 - args.ratio_org), args.new_prob * args.ratio_org])
-#             else:
-#               new_data = np.random.choice(range(2), p = [1.0 - args.new_prob, args.new_prob])
-#           else:
-#             new_prob = (len(train_loader_new) + 1) / (len(train_loader_new) + len(train_loader_labeled))
-#             if args.train_with_org:
-#               new_data = np.random.choice(range(3), p = [1.0 - new_prob, new_prob * (1.0 - args.ratio_org), new_prob * args.ratio_org])
-#             else:
-#               new_data = np.random.choice(range(2), p = [1.0 - new_prob, new_prob])
-
-
-#           if new_data == 1:
-#             try:
-#                 # Samples the batch
-#                 example = next(new_iter)
-#             except StopIteration:
-#                 # restart the generator if the previous generator is exhausted.
-#                 new_iter = iter(train_loader_new)
-#                 example = next(new_iter)
-#           elif new_data == 2:
-#             try:
-#                 # Samples the batch
-#                 example = next(new_iter_org)
-#             except StopIteration:
-#                 # restart the generator if the previous generator is exhausted.
-#                 new_iter_org = iter(train_loader_new_org)
-#                 example = next(new_iter_org)
-
-
-#         bsz = example[0].shape[0]
-
-#         num_sample_cur += bsz
-
-#         ###proprocess t-th batch data: example
-#         # if new_data in [0, 2]:
-#         #   print(f'using the {args.dataset} as example')
-#         #   example = preprocess_func_torch2jax(example, args)
-          
-#         # else: #new_data =1
-#         #   print(f'using the {args.aux_data} as example')
-#         #   example = preprocess_func_torch2jax_aux(example, args, new_labels = new_labels)
-        
-#         #print('length of example: ' +str(len(example)))
-#         example = preprocess_func_torch2jax(example, args)
-
-#         t += 1
-#         if t * args.train_batch_size > args.datasize:
-#           break
-#         #####################################################################
-
-
-#         # load data
-#         if args.balance_batch:
-#           image, group, label = example['feature'], example['group'], example['label']
-#           num_a, num_b = jnp.sum((group == 0) * 1.0), jnp.sum((group == 1) * 1.0)
-#           min_num = min(num_a, num_b).astype(int)
-#           total_idx = jnp.arange(len(group))
-#           if min_num > 0:
-#             group_a = total_idx[group == 0]
-#             group_b = total_idx[group == 1]
-#             group_a = group_a.repeat(args.train_batch_size//2//len(group_a)+1)[:args.train_batch_size//2]
-#             group_b = group_b.repeat(args.train_batch_size//2//len(group_b)+1)[:args.train_batch_size//2]
-
-#             sel_idx = jnp.concatenate((group_a,group_b))
-#             batch = {'feature': jnp.array(image[sel_idx]), 'label': jnp.array(label[sel_idx]), 'group': jnp.array(group[sel_idx])}
-#           else:
-#             print(f'current batch only contains one group')
-#             continue
-
-#         else:
-#           batch = example
-
-#         # train
-#         if args.method == 'plain':
-#           # state, train_metric = train_step(state, batch)
-#           try:
-#             state, train_metric = train_step(state, batch)
-#           except:
-#             # import pdb
-#             # pdb.set_trace()
-#             print(batch)
-#         # elif args.method in ['fix_lmd','dynamic_lmd']:
-#         #   state, train_metric, lmd = train_step(state, batch, lmd = lmd, T=None)
-#         else:
-#           raise NameError('Undefined optimization mechanism')
-
-#         rec = record_train_stats(rec, t-1, train_metric, 0)
-
-
-#         # # test the test metric for each batch
-#         # test_metric = test(args, state, test_loader)
-#         # rec, time_now = record_test(rec, t+args.datasize*epoch_i//args.train_batch_size, args.datasize*args.num_epochs//args.train_batch_size, time_now, time_start, train_metric, test_metric, metric = args.metric, warm = epoch_i < args.warm_epoch)
-
-#         # import pdb
-#         # pdb.set_trace()
-#         if t % args.log_steps == 0 or (t+1) * args.train_batch_size > args.datasize:
-#           # test
-#           # epoch_pre = epoch_i
-          
-#           test_metric = test(args, state, test_loader)
-#           rec, time_now = record_test(rec, t+args.datasize*epoch_i//args.train_batch_size, args.datasize*args.num_epochs//args.train_batch_size, time_now, time_start, train_metric, test_metric, metric = args.metric, warm = epoch_i < args.warm_epoch)
-
-#           val_metric = test(args, state, val_loader)
-#           _, time_now = record_test(rec, t+args.datasize*epoch_i//args.train_batch_size, args.datasize*args.num_epochs//args.train_batch_size, time_now, time_start, train_metric, test_metric, val_metric=val_metric, metric = args.metric, warm = epoch_i < args.warm_epoch)
-
-#           if epoch_i >= args.warm_epoch:
-#             if init_val_acc == 0.0:
-#               init_val_acc = val_metric['accuracy']
-              
-              #             '''
-              # Hessian approximation calculation for strategy 8
-              # '''
-              # print('start hessian approximation!')
-              # args.H_v, args.H_v_org = compute_hessian(state, train_loader_labeled, val_loader)
-
-#             # infl 
-#             args.infl_random_seed = t+args.datasize*epoch_i//args.train_batch_size + args.train_seed
-
-#             if args.aux_data == 'imagenet':
-#               print('##########If: Using the aux_data: imagenet!')
-#               sampled_idx_tmp, new_labels_tmp = sample_by_infl_without_true_label(args, state, val_loader, train_loader_unlabeled, num = args.new_data_each_round)
-#               new_labels.update(new_labels_tmp)
-#               print(f'length of new labels {len(new_labels)}')
-#               sampled_idx += sampled_idx_tmp
-#               # used_idx.update(sampled_idx)
-#               print(f'Use {len(used_idx)}+{len(new_labels)} = {len(used_idx) + len(new_labels)} samples.')
-
-#             elif (epoch_i >= args.num_epochs - 2 and val_metric['accuracy'] >= init_val_acc - args.tol): # last two epochs
-#               print('#############Elif: Using the aux_data: imagenet!')
-#               sampled_idx_tmp, new_labels_tmp = sample_by_infl_without_true_label(args, state, val_loader, train_loader_unlabeled, num = args.new_data_each_round)
-#               new_labels.update(new_labels_tmp)
-#               print(f'length of new labels {len(new_labels)}')
-#               sampled_idx += sampled_idx_tmp
-#               used_idx.update(sampled_idx)
-#               print(f'Use {len(used_idx) - len(new_labels)}+{len(new_labels)} = {len(used_idx)} samples.')
-              
-
-#             else:
-#               print('Sampling by influence function!')
-#               sampled_idx_tmp, sel_org_idx_with_labels = sample_by_infl(args, state, val_loader, train_loader_unlabeled, num = args.new_data_each_round)
-#               idx_with_labels.update(sel_org_idx_with_labels)
-#               sampled_idx += sampled_idx_tmp
-#               used_idx.update(sampled_idx)
-#               print(f'Use {len(used_idx)} samples. Get {len(idx_with_labels)} labels. Ratio: {len(used_idx)/len(idx_with_labels)}')
-#               idx_rec.append((epoch_i, args.infl_random_seed, used_idx, idx_with_labels))
-
-            
-#             train_loader_unlabeled, train_loader_new, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx, aux_dataset=args.aux_data)
-
-#             # if args.dataset == 'celeba':
-#             #   _, train_loader_unlabeled, train_loader_new, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx, aux_dataset=args.aux_data)
-#             # elif args.dataset == 'compas':
-#             #   train_loader_unlabeled, train_loader_new, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx, aux_dataset=args.aux_data)
-#             # else:
-#             #   raise NameError('Undefine dataset')
-
-#             new_iter = iter(train_loader_new)
-
-
-#             if args.train_with_org:
-#               print('args.train_with_org = True!')
-#               sampled_idx_tmp, sel_org_idx_with_labels = sample_by_infl(args, state, val_loader, train_loader_unlabeled_org, num = args.new_data_each_round, force_org = args.train_with_org)
-#               idx_with_labels_org.update(sel_org_idx_with_labels)
-#               sampled_idx_org += sampled_idx_tmp
-#               used_idx_org.update(sampled_idx)
-#               print(f'[ADD ORG DATA] Use {len(used_idx_org)} samples. Get {len(idx_with_labels_org)} labels. Ratio: {len(used_idx_org)/len(idx_with_labels_org)}')
-#               #_, train_loader_unlabeled_org, train_loader_new_org, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx_org, aux_dataset=None)
-              
-#               train_loader_unlabeled_org, train_loader_new_org, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx, aux_dataset=args.aux_data)
-
-#               # if args.dataset == 'celeba':
-#               #   _, train_loader_unlabeled_org, train_loader_new_org, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx, aux_dataset=args.aux_data)
-#               # elif args.dataset == 'compas':
-#               #   train_loader_unlabeled_org, train_loader_new_org, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx, aux_dataset=args.aux_data)
-#               # else:
-#               #   raise NameError('Undefine dataset')
-              
-#               new_iter_org = iter(train_loader_new_org)
-#               # idx_rec.append((epoch_i, args.infl_random_seed, used_idx_org, idx_with_labels_org))
-
-              
-              
-#             # save_name = f'./results/s{args.strategy}_{args.metric}_{args.label_ratio}_new{args.new_data_each_round}_100round.npy'
-#             # np.save(save_name, idx_rec)
-
-          
-#           # print(f'lmd is {lmd}')
-
-
-
-#     rec = save_checkpoint(args.save_dir, t+args.datasize*epoch_i//args.train_batch_size, state, rec, save=False)
-
-#   # wrap it up
-#   # save_recorder(args.save_dir, rec)
-#   # save_name = f'./results/s{args.strategy}_{args.metric}_{args.label_ratio}_new{args.new_data_each_round}_100round.npy'
-#   # np.save(save_name, idx_rec)
-# def train_jigsaw(args):
-#   # setup
-#   set_global_seed(args.train_seed)
-#   # make_dirs(args)
-#   new_labels = {}
-#   train_loader_labeled, train_loader_unlabeled, idx_with_labels = load_data(args, args.dataset, mode = 'train', aux_dataset=args.aux_data)
-#   _, train_loader_unlabeled_org, idx_with_labels_org = load_data(args, args.dataset, mode = 'train', aux_dataset=None)
-#   args.train_with_org = True
-#   train_loader_new = None
-#   train_loader_new_org = None
-
-#   val_loader, test_loader = load_data(args, args.dataset, mode = 'val')
-
-
-#   preprocess_func_torch2jax = gen_preprocess_func_torch2jax(args.dataset)
-
-#   if args.aux_data is None:
-#     preprocess_func_torch2jax_aux = gen_preprocess_func_torch2jax(args.dataset)
-#   else:
-#     preprocess_func_torch2jax_aux = gen_preprocess_func_torch2jax(args.aux_data)
-
-
-#   # setup
-#   model = get_model(args)
-#   # tmp_model = get_model(args)
-#   # if len(tmp_model) == 2:
-#   #   model, model_linear = tmp_model
-#   # else:
-#   #   model = tmp_model
-#   state = create_train_state(model, args)
-
-
-#   # get model size
-#   flat_tree = jax.tree_util.tree_leaves(state.params)
-#   num_layers = len(flat_tree)
-#   print(f'Numer of layers {num_layers}')
-
-#   rec = init_recorder()
-
-  
-
-#   # info
-#   time_start = time.time()
-#   time_now = time_start
-#   print('train net...')
-
-#   # begin training
-#   init_val_acc = 0.0
-#   lmd = args.lmd
-#   train_step = get_train_step(args.method)
-#   # epoch_pre = 0
-#   sampled_idx = []
-#   sampled_idx_org = []
-#   idx_rec = []
-#   used_idx = idx_with_labels.copy()
-#   used_idx_org = idx_with_labels_org.copy()
-#   print(f'train with {args.datasize} samples (with replacement) in one epoch')
-
-#   for epoch_i in range(args.num_epochs):
-      # args.curr_epoch = epoch_i
-#     if train_loader_new is not None:
-#       new_iter = iter(train_loader_new)
-#     if train_loader_new_org is not None:
-#       new_iter_org = iter(train_loader_new_org)
-
-
-#     t = 0
-#     num_sample_cur = 0
-#     print(f'Epoch {epoch_i}')
-#     # if epoch_i < args.warm_epoch: 
-#     #   print(f'warmup epoch = {epoch_i+1}/{args.warm_epoch}')
-#     # if epoch_i == args.warm_epoch:
-#     #   state_reg = create_train_state(model, args, params=state.params) # use the full model
-    
-
-#     ## data_loader with batch size
-#     while t * args.train_batch_size < args.datasize:
-      
-#       #####################################################################
-#       # import pdb
-#       # pdb.set_trace()
-#       for example in train_loader_labeled:
-
-#         # import pdb
-#         # pdb.set_trace()
-#         new_data = 0
-#         if train_loader_new is not None:
-#           if 0 <= args.new_prob and args.new_prob <= 1 and len(train_loader_new) >= 2: # args.new_prob should be large, e.g., 0.9.   len(train_loader_new) >= len(train_loader_labeled) / 3 means the new data should be sufficient > 25 % of total
-#             if args.train_with_org:
-#               new_data = np.random.choice(range(3), p = [1.0 - args.new_prob, args.new_prob * (1.0 - args.ratio_org), args.new_prob * args.ratio_org])
-#             else:
-#               new_data = np.random.choice(range(2), p = [1.0 - args.new_prob, args.new_prob])
-#           else:
-#             new_prob = (len(train_loader_new) + 1) / (len(train_loader_new) + len(train_loader_labeled))
-#             if args.train_with_org:
-#               new_data = np.random.choice(range(3), p = [1.0 - new_prob, new_prob * (1.0 - args.ratio_org), new_prob * args.ratio_org])
-#             else:
-#               new_data = np.random.choice(range(2), p = [1.0 - new_prob, new_prob])
-
-
-#           if new_data == 1:
-#             try:
-#                 # Samples the batch
-#                 example = next(new_iter)
-#             except StopIteration:
-#                 # restart the generator if the previous generator is exhausted.
-#                 new_iter = iter(train_loader_new)
-#                 example = next(new_iter)
-#           elif new_data == 2:
-#             try:
-#                 # Samples the batch
-#                 example = next(new_iter_org)
-#             except StopIteration:
-#                 # restart the generator if the previous generator is exhausted.
-#                 new_iter_org = iter(train_loader_new_org)
-#                 example = next(new_iter_org)
-
-
-#         bsz = example[0].shape[0]
-
-#         num_sample_cur += bsz
-
-#         ###proprocess t-th batch data: example
-#         # if new_data in [0, 2]:
-#         #   print(f'using the {args.dataset} as example')
-#         #   example = preprocess_func_torch2jax(example, args)
-          
-#         # else: #new_data =1
-#         #   print(f'using the {args.aux_data} as example')
-#         #   example = preprocess_func_torch2jax_aux(example, args, new_labels = new_labels)
-        
-#         example = preprocess_func_torch2jax(example, args)
-
-#         t += 1
-#         if t * args.train_batch_size > args.datasize:
-#           break
-#         #####################################################################
-
-
-#         # load data
-#         if args.balance_batch:
-#           image, group, label = example['feature'], example['group'], example['label']
-#           num_a, num_b = jnp.sum((group == 0) * 1.0), jnp.sum((group == 1) * 1.0)
-#           min_num = min(num_a, num_b).astype(int)
-#           total_idx = jnp.arange(len(group))
-#           if min_num > 0:
-#             group_a = total_idx[group == 0]
-#             group_b = total_idx[group == 1]
-#             group_a = group_a.repeat(args.train_batch_size//2//len(group_a)+1)[:args.train_batch_size//2]
-#             group_b = group_b.repeat(args.train_batch_size//2//len(group_b)+1)[:args.train_batch_size//2]
-
-#             sel_idx = jnp.concatenate((group_a,group_b))
-#             batch = {'feature': jnp.array(image[sel_idx]), 'label': jnp.array(label[sel_idx]), 'group': jnp.array(group[sel_idx])}
-#           else:
-#             print(f'current batch only contains one group')
-#             continue
-
-#         else:
-#           batch = example
-
-
-#         # import pdb
-#         # pdb.set_trace()
-
-#         # train
-#         if args.method == 'plain':
-#           # state, train_metric = train_step(state, batch)
-#           # try:
-#           #print('trying to do train step!!!')
-#           state, train_metric = train_step(state, batch)
-#           # except:
-#           #   # import pdb
-#           #   # pdb.set_trace()
-#           #   print(batch)
-#         elif args.method in ['fix_lmd','dynamic_lmd']:
-#           state, train_metric, lmd = train_step(state, batch, lmd = lmd, T=None)
-#         else:
-#           raise NameError('Undefined optimization mechanism')
-
-#         # import pdb
-#         # pdb.set_trace()
-
-#         rec = record_train_stats(rec, t-1, train_metric, 0)
-      
-#         # # test the test metric for each batch
-#         # test_metric = test(args, state, test_loader)
-#         # rec, time_now = record_test(rec, t+args.datasize*epoch_i//args.train_batch_size, args.datasize*args.num_epochs//args.train_batch_size, time_now, time_start, train_metric, test_metric, metric = args.metric, warm = epoch_i < args.warm_epoch)
-#         # print('############batch 1: ' + str(sum(example['label'])) + '; ##### batch 0: ' + str(len(example['label']) - sum(example['label'])))
-#         # # import pdb
-#         # # pdb.set_trace()
-#         if t % args.log_steps == 0 or (t+1) * args.train_batch_size > args.datasize:
-#           # test
-#           # epoch_pre = epoch_i
-          
-#           test_metric = test(args, state, test_loader)
-#           rec, time_now = record_test(rec, t+args.datasize*epoch_i//args.train_batch_size, args.datasize*args.num_epochs//args.train_batch_size, time_now, time_start, train_metric, test_metric, metric = args.metric, warm = epoch_i < args.warm_epoch)
-
-#           val_metric = test(args, state, val_loader)
-#           _, time_now = record_test(rec, t+args.datasize*epoch_i//args.train_batch_size, args.datasize*args.num_epochs//args.train_batch_size, time_now, time_start, train_metric, test_metric, val_metric=val_metric, metric = args.metric, warm = epoch_i < args.warm_epoch)
-
-#           if epoch_i >= args.warm_epoch:
-#             if init_val_acc == 0.0:
-#               init_val_acc = val_metric['accuracy']
-              
-              #             '''
-              # Hessian approximation calculation for strategy 8
-              # '''
-              # print('start hessian approximation!')
-              # args.H_v, args.H_v_org = compute_hessian(state, train_loader_labeled, val_loader)
-
-#             # infl 
-#             args.infl_random_seed = t+args.datasize*epoch_i//args.train_batch_size + args.train_seed
-
-#             if args.aux_data == 'imagenet':
-#               print('##########If: Using the aux_data: imagenet!')
-#               sampled_idx_tmp, new_labels_tmp = sample_by_infl_without_true_label(args, state, val_loader, train_loader_unlabeled, num = args.new_data_each_round)
-#               new_labels.update(new_labels_tmp)
-#               print(f'length of new labels {len(new_labels)}')
-#               sampled_idx += sampled_idx_tmp
-#               # used_idx.update(sampled_idx)
-#               print(f'Use {len(used_idx)}+{len(new_labels)} = {len(used_idx) + len(new_labels)} samples.')
-
-#             elif (epoch_i >= args.num_epochs - 2 and val_metric['accuracy'] >= init_val_acc - args.tol): # last two epochs
-#               print('#############Elif: Using the aux_data: imagenet!')
-#               sampled_idx_tmp, new_labels_tmp = sample_by_infl_without_true_label(args, state, val_loader, train_loader_unlabeled, num = args.new_data_each_round)
-#               new_labels.update(new_labels_tmp)
-#               print(f'length of new labels {len(new_labels)}')
-#               sampled_idx += sampled_idx_tmp
-#               used_idx.update(sampled_idx)
-#               print(f'Use {len(used_idx) - len(new_labels)}+{len(new_labels)} = {len(used_idx)} samples.')
-
-
-
-
-#             else:
-#               print('Sampling by influence function!')
-#               sampled_idx_tmp, sel_org_idx_with_labels = sample_by_infl(args, state, val_loader, train_loader_unlabeled, num = args.new_data_each_round)
-#               idx_with_labels.update(sel_org_idx_with_labels)
-#               sampled_idx += sampled_idx_tmp
-#               used_idx.update(sampled_idx)
-#               print(f'Use {len(used_idx)} samples. Get {len(idx_with_labels)} labels. Ratio: {len(used_idx)/len(idx_with_labels)}')
-#               idx_rec.append((epoch_i, args.infl_random_seed, used_idx, idx_with_labels))
-
-            
-#             train_loader_unlabeled, train_loader_new, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx, aux_dataset=args.aux_data)
-
-#             # if args.dataset == 'celeba':
-#             #   _, train_loader_unlabeled, train_loader_new, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx, aux_dataset=args.aux_data)
-#             # elif args.dataset == 'compas':
-#             #   train_loader_unlabeled, train_loader_new, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx, aux_dataset=args.aux_data)
-#             # else:
-#             #   raise NameError('Undefine dataset')
-
-#             new_iter = iter(train_loader_new)
-
-
-#             if args.train_with_org:
-#               print('args.train_with_org = True!')
-#               sampled_idx_tmp, sel_org_idx_with_labels = sample_by_infl(args, state, val_loader, train_loader_unlabeled_org, num = args.new_data_each_round, force_org = args.train_with_org)
-#               idx_with_labels_org.update(sel_org_idx_with_labels)
-#               sampled_idx_org += sampled_idx_tmp
-#               used_idx_org.update(sampled_idx)
-#               print(f'[ADD ORG DATA] Use {len(used_idx_org)} samples. Get {len(idx_with_labels_org)} labels. Ratio: {len(used_idx_org)/len(idx_with_labels_org)}')
-#               #_, train_loader_unlabeled_org, train_loader_new_org, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx_org, aux_dataset=None)
-              
-#               train_loader_unlabeled_org, train_loader_new_org, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx, aux_dataset=args.aux_data)
-
-#               # if args.dataset == 'celeba':
-#               #   _, train_loader_unlabeled_org, train_loader_new_org, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx, aux_dataset=args.aux_data)
-#               # elif args.dataset == 'compas':
-#               #   train_loader_unlabeled_org, train_loader_new_org, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx, aux_dataset=args.aux_data)
-#               # else:
-#               #   raise NameError('Undefine dataset')
-              
-#               new_iter_org = iter(train_loader_new_org)
-#               # idx_rec.append((epoch_i, args.infl_random_seed, used_idx_org, idx_with_labels_org))
-
-              
-              
-#             # save_name = f'./results/s{args.strategy}_{args.metric}_{args.label_ratio}_new{args.new_data_each_round}_100round.npy'
-#             # np.save(save_name, idx_rec)
-
-          
-#           # print(f'lmd is {lmd}')
-
-
-
-#     rec = save_checkpoint(args.save_dir, t+args.datasize*epoch_i//args.train_batch_size, state, rec, save=False)
-
-#   # wrap it up
-#   # save_recorder(args.save_dir, rec)
-#   # save_name = f'./results/s{args.strategy}_{args.metric}_{args.label_ratio}_new{args.new_data_each_round}_100round.npy'
-#   # np.save(save_name, idx_rec)
-
-###################################################################################
-# #strategy 7
 def train_celeba(args):
   # setup
   set_global_seed(args.train_seed)
@@ -1970,11 +908,6 @@ def train_celeba(args):
 
   # setup
   model = get_model(args)
-  # tmp_model = get_model(args)
-  # if len(tmp_model) == 2:
-  #   model, model_linear = tmp_model
-  # else:
-  #   model = tmp_model
   state = create_train_state(model, args)
 
 
@@ -2017,15 +950,7 @@ def train_celeba(args):
     num_sample_cur = 0
     print(f'Epoch {epoch_i}')
 
-
-    #Base JTT
     train_step = get_train_step(args.method)  
-
-    # if epoch_i < args.warm_epoch: 
-    #   print(f'warmup epoch = {epoch_i+1}/{args.warm_epoch}')
-    # if epoch_i == args.warm_epoch:
-    #   state_reg = create_train_state(model, args, params=state.params) # use the full model
-    
 
     ## data_loader with batch size
     while t * args.train_batch_size < args.datasize:
@@ -2079,9 +1004,6 @@ def train_celeba(args):
           #print(f'using the {args.aux_data} as example')
           example = preprocess_func_torch2jax_aux(example, args, new_labels = new_labels)
 
-
-
-
         t += 1
         if t * args.train_batch_size > args.datasize:
           break
@@ -2115,8 +1037,7 @@ def train_celeba(args):
           try:
             state, train_metric = train_step(state, batch)
           except:
-            # import pdb
-            # pdb.set_trace()
+
             print(batch)
         # elif args.method in ['fix_lmd','dynamic_lmd']:
         #   state, train_metric, lmd = train_step(state, batch, lmd = lmd, T=None)
@@ -2126,8 +1047,7 @@ def train_celeba(args):
         rec = record_train_stats(rec, t-1, train_metric, 0)
       
         if t % args.log_steps == 0 or (t+1) * args.train_batch_size > args.datasize:
-          # test
-          # epoch_pre = epoch_i
+
           
           test_metric = test(args, state, test_loader)
           rec, time_now = record_test(rec, t+args.datasize*epoch_i//args.train_batch_size, args.datasize*args.num_epochs//args.train_batch_size, time_now, time_start, train_metric, test_metric, metric = args.metric, warm = epoch_i < args.warm_epoch)
@@ -2191,12 +1111,6 @@ def train_celeba(args):
               
             _, train_loader_unlabeled, train_loader_new, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx, aux_dataset=args.aux_data)
             
-            # if args.dataset == 'celeba':
-            #   _, train_loader_unlabeled, train_loader_new, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx, aux_dataset=args.aux_data)
-            # elif args.dataset == 'compas':
-            #   train_loader_unlabeled, train_loader_new, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx, aux_dataset=args.aux_data)
-            # else:
-            #   raise NameError('Undefine dataset')
 
             new_iter = iter(train_loader_new)
 
@@ -2216,33 +1130,13 @@ def train_celeba(args):
               used_idx_org.update(sampled_idx)
               print(f'[ADD ORG DATA] Use {len(used_idx_org)} samples. Get {len(idx_with_labels_org)} labels. Ratio: {len(used_idx_org)/len(idx_with_labels_org)}')
               _, train_loader_unlabeled_org, train_loader_new_org, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx_org, aux_dataset=None)
-              
-              # if args.dataset == 'celeba':
-              #   _, train_loader_unlabeled_org, train_loader_new_org, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx, aux_dataset=args.aux_data)
-              # elif args.dataset == 'compas':
-              #   train_loader_unlabeled_org, train_loader_new_org, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx, aux_dataset=args.aux_data)
-              # else:
-              #   raise NameError('Undefine dataset')
+            
               
               new_iter_org = iter(train_loader_new_org)
-              # idx_rec.append((epoch_i, args.infl_random_seed, used_idx_org, idx_with_labels_org))
-
-              
-              
-            # save_name = f'./results/s{args.strategy}_{args.metric}_{args.label_ratio}_new{args.new_data_each_round}_100round.npy'
-            # np.save(save_name, idx_rec)
-
-          
-          # print(f'lmd is {lmd}')
 
 
+    rec = save_checkpoint(args.save_dir, t+args.datasize*epoch_i//args.train_batch_size, state, rec, save=args.save_model)
 
-    rec = save_checkpoint(args.save_dir, t+args.datasize*epoch_i//args.train_batch_size, state, rec, save=False)
-
-  # wrap it up
-  # save_recorder(args.save_dir, rec)
-  # save_name = f'./results/s{args.strategy}_{args.metric}_{args.label_ratio}_new{args.new_data_each_round}_100round.npy'
-  # np.save(save_name, idx_rec)
 
 def train_compas(args):
   # setup
@@ -2270,11 +1164,6 @@ def train_compas(args):
 
 
   model = get_model(args)
-  # tmp_model = get_model(args)
-  # if len(tmp_model) == 2:
-  #   model, model_linear = tmp_model
-  # else:
-  #   model = tmp_model
   state = create_train_state(model, args)
 
 
@@ -2315,19 +1204,9 @@ def train_compas(args):
     t = 0
     num_sample_cur = 0
     print(f'Epoch {epoch_i}')
-
-    #JTT
-    # print(f'Restart train-step!')
-    train_step = get_train_step(args.method)
-  
-    # if epoch_i < args.warm_epoch: 
-    #   print(f'warmup epoch = {epoch_i+1}/{args.warm_epoch}')
-    # if epoch_i == args.warm_epoch:
-    #   state_reg = create_train_state(model, args, params=state.params) # use the full model
     
-    # import pdb
-    # pdb.set_trace()
-    ## data_loader with batch size
+    train_step = get_train_step(args.method)
+
   
     while t * args.train_batch_size < args.datasize:
       
@@ -2370,16 +1249,6 @@ def train_compas(args):
 
         num_sample_cur += bsz
 
-        ###proprocess t-th batch data: example
-        # if new_data in [0, 2]:
-        #   print(f'using the {args.dataset} as example')
-        #   example = preprocess_func_torch2jax(example, args)
-          
-        # else: #new_data =1
-        #   print(f'using the {args.aux_data} as example')
-        #   example = preprocess_func_torch2jax_aux(example, args, new_labels = new_labels)
-        
-        #print('length of example: ' +str(len(example)))
         example = preprocess_func_torch2jax(example, args)
 
         t += 1
@@ -2409,24 +1278,14 @@ def train_compas(args):
         else:
           batch = example
 
-
-        # print(f'args.method: {args.method}')
         # train
         if args.method == 'plain':
-          # print('get train_step!!!')
-          # state, train_metric = train_step(state, batch)
           try:
-            # print('get train_step!!!')
-            # import pdb
-            # pdb.set_trace()
+
             state, train_metric = train_step(state, batch)
             # print(f'train_metric: {train_metric}')
           except:
-            # import pdb
-            # pdb.set_trace()
             print(batch)
-        # elif args.method in ['fix_lmd','dynamic_lmd']:
-        #   state, train_metric, lmd = train_step(state, batch, lmd = lmd, T=None)
         else:
           raise NameError('Undefined optimization mechanism')
 
@@ -2437,11 +1296,7 @@ def train_compas(args):
         # test_metric = test(args, state, test_loader)
         # rec, time_now = record_test(rec, t+args.datasize*epoch_i//args.train_batch_size, args.datasize*args.num_epochs//args.train_batch_size, time_now, time_start, train_metric, test_metric, metric = args.metric, warm = epoch_i < args.warm_epoch)
 
-        # import pdb
-        # pdb.set_trace()
         if t % args.log_steps == 0 or (t+1) * args.train_batch_size > args.datasize:
-          # test
-          # epoch_pre = epoch_i
           
           test_metric = test(args, state, test_loader)
           rec, time_now = record_test(rec, t+args.datasize*epoch_i//args.train_batch_size, args.datasize*args.num_epochs//args.train_batch_size, time_now, time_start, train_metric, test_metric, metric = args.metric, warm = epoch_i < args.warm_epoch)
@@ -2456,21 +1311,13 @@ def train_compas(args):
             '''
             Hessian approximation calculation for strategy 8
             '''
-            print('start hessian approximation!')
-            args.H_v, args.H_v_org = compute_hessian(state, train_loader_labeled, val_loader)
+            if args.strategy == 8:
+              print('start hessian approximation!')
+              args.H_v, args.H_v_org = compute_hessian(state, train_loader_labeled, val_loader)
             
 
             # infl 
             args.infl_random_seed = t+args.datasize*epoch_i//args.train_batch_size + args.train_seed
-
-            # if args.aux_data == 'imagenet':
-            #   print('##########If: Using the aux_data: imagenet!')
-            #   sampled_idx_tmp, new_labels_tmp = sample_by_infl_without_true_label(args, state, val_loader, train_loader_unlabeled, num = args.new_data_each_round)
-            #   new_labels.update(new_labels_tmp)
-            #   print(f'length of new labels {len(new_labels)}')
-            #   sampled_idx += sampled_idx_tmp
-            #   # used_idx.update(sampled_idx)
-            #   print(f'Use {len(used_idx)}+{len(new_labels)} = {len(used_idx) + len(new_labels)} samples.')
 
             if (epoch_i >= args.num_epochs - 2 and val_metric['accuracy'] >= init_val_acc - args.tol): # last two epochs
               if args.strategy == 7:
@@ -2505,13 +1352,6 @@ def train_compas(args):
             
             train_loader_unlabeled, train_loader_new, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx, aux_dataset=args.aux_data)
 
-            # if args.dataset == 'celeba':
-            #   _, train_loader_unlabeled, train_loader_new, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx, aux_dataset=args.aux_data)
-            # elif args.dataset == 'compas':
-            #   train_loader_unlabeled, train_loader_new, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx, aux_dataset=args.aux_data)
-            # else:
-            #   raise NameError('Undefine dataset')
-
             new_iter = iter(train_loader_new)
 
 
@@ -2529,28 +1369,10 @@ def train_compas(args):
               #_, train_loader_unlabeled_org, train_loader_new_org, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx_org, aux_dataset=None)
               
               train_loader_unlabeled_org, train_loader_new_org, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx, aux_dataset=args.aux_data)
-
-              # if args.dataset == 'celeba':
-              #   _, train_loader_unlabeled_org, train_loader_new_org, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx, aux_dataset=args.aux_data)
-              # elif args.dataset == 'compas':
-              #   train_loader_unlabeled_org, train_loader_new_org, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx, aux_dataset=args.aux_data)
-              # else:
-              #   raise NameError('Undefine dataset')
               
               new_iter_org = iter(train_loader_new_org)
-            # idx_rec.append((epoch_i, args.infl_random_seed, used_idx_org, idx_with_labels_org))
 
-              
-              
-            # save_name = f'./results/s{args.strategy}_{args.metric}_{args.label_ratio}_new{args.new_data_each_round}_100round.npy'
-            # np.save(save_name, idx_rec)
-
-          
-          # print(f'lmd is {lmd}')
-
-
-
-    rec = save_checkpoint(args.save_dir, t+args.datasize*epoch_i//args.train_batch_size, state, rec, save=True) ##^^^^^^^^^
+    rec = save_checkpoint(args.save_dir, t+args.datasize*epoch_i//args.train_batch_size, state, rec, save=args.save_model)
 
   # wrap it up
   # save_recorder(args.save_dir, rec)
@@ -2571,8 +1393,6 @@ def train_adult(args):
 
   val_loader, test_loader = load_data(args, args.dataset, mode = 'val')
 
-  # import pdb
-  # pdb.set_trace()
 
   preprocess_func_torch2jax = gen_preprocess_func_torch2jax(args.dataset)
 
@@ -2584,11 +1404,6 @@ def train_adult(args):
 
   # setup
   model = get_model(args)
-  # tmp_model = get_model(args)
-  # if len(tmp_model) == 2:
-  #   model, model_linear = tmp_model
-  # else:
-  #   model = tmp_model
   state = create_train_state(model, args)
 
 
@@ -2610,7 +1425,6 @@ def train_adult(args):
   init_val_acc = 0.0
   lmd = args.lmd
   train_step = get_train_step(args.method)
-  # epoch_pre = 0
   sampled_idx = []
   sampled_idx_org = []
   idx_rec = []
@@ -2631,14 +1445,8 @@ def train_adult(args):
     num_sample_cur = 0
     print(f'Epoch {epoch_i}')
 
-    #JTT
-    train_step = get_train_step(args.method)
 
-    # if epoch_i < args.warm_epoch: 
-    #   print(f'warmup epoch = {epoch_i+1}/{args.warm_epoch}')
-    # if epoch_i == args.warm_epoch:
-    #   state_reg = create_train_state(model, args, params=state.params) # use the full model
-    
+    train_step = get_train_step(args.method)
 
     ## data_loader with batch size
     while t * args.train_batch_size < args.datasize:
@@ -2731,8 +1539,6 @@ def train_adult(args):
           # # try:
           state, train_metric = train_step(state, batch)
           # except:
-          # import pdb
-          # pdb.set_trace()
           #   print(batch)
         # elif args.method in ['fix_lmd','dynamic_lmd']:
         #   state, train_metric, lmd = train_step(state, batch, lmd = lmd, T=None)
@@ -2740,17 +1546,11 @@ def train_adult(args):
           raise NameError('Undefined optimization mechanism')
 
         rec = record_train_stats(rec, t-1, train_metric, 0)
-      
-        # test the test metric for each batch
-        # test_metric = test(args, state, test_loader)
-        # rec, time_now = record_test(rec, t+args.datasize*epoch_i//args.train_batch_size, args.datasize*args.num_epochs//args.train_batch_size, time_now, time_start, train_metric, test_metric, metric = args.metric, warm = epoch_i < args.warm_epoch)
-        
+    
         
         # print('####### batch:: label 1: ' + str(sum(example['label'])) + '; ##### label 0: ' + str(len(example['label']) - sum(example['label'])))
 
         if t % args.log_steps == 0 or (t+1) * args.train_batch_size > args.datasize:
-          # test
-          # epoch_pre = epoch_i
           
           test_metric = test(args, state, test_loader)
           rec, time_now = record_test(rec, t+args.datasize*epoch_i//args.train_batch_size, args.datasize*args.num_epochs//args.train_batch_size, time_now, time_start, train_metric, test_metric, metric = args.metric, warm = epoch_i < args.warm_epoch)
@@ -2767,8 +1567,9 @@ def train_adult(args):
             '''
             Hessian approximation calculation for strategy 8
             '''
-            print('start hessian approximation!')
-            args.H_v, args.H_v_org = compute_hessian(state, train_loader_labeled, val_loader)   
+            if args.strategy == 8:
+              print('start hessian approximation!')
+              args.H_v, args.H_v_org = compute_hessian(state, train_loader_labeled, val_loader) 
 
             # infl 
             args.infl_random_seed = t+args.datasize*epoch_i//args.train_batch_size + args.train_seed
@@ -2815,13 +1616,6 @@ def train_adult(args):
             
             train_loader_unlabeled, train_loader_new, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx, aux_dataset=args.aux_data)
 
-            # if args.dataset == 'celeba':
-            #   _, train_loader_unlabeled, train_loader_new, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx, aux_dataset=args.aux_data)
-            # elif args.dataset == 'compas':
-            #   train_loader_unlabeled, train_loader_new, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx, aux_dataset=args.aux_data)
-            # else:
-            #   raise NameError('Undefine dataset')
-
             new_iter = iter(train_loader_new)
 
 
@@ -2839,28 +1633,13 @@ def train_adult(args):
               #_, train_loader_unlabeled_org, train_loader_new_org, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx_org, aux_dataset=None)
               
               train_loader_unlabeled_org, train_loader_new_org, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx, aux_dataset=args.aux_data)
-
-              # if args.dataset == 'celeba':
-              #   _, train_loader_unlabeled_org, train_loader_new_org, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx, aux_dataset=args.aux_data)
-              # elif args.dataset == 'compas':
-              #   train_loader_unlabeled_org, train_loader_new_org, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx, aux_dataset=args.aux_data)
-              # else:
-              #   raise NameError('Undefine dataset')
-              
+  
               new_iter_org = iter(train_loader_new_org)
-            # idx_rec.append((epoch_i, args.infl_random_seed, used_idx_org, idx_with_labels_org))
-
-              
-              
-            # save_name = f'./results/s{args.strategy}_{args.metric}_{args.label_ratio}_new{args.new_data_each_round}_100round.npy'
-            # np.save(save_name, idx_rec)
-
-          
-          # print(f'lmd is {lmd}')
 
 
 
-    rec = save_checkpoint(args.save_dir, t+args.datasize*epoch_i//args.train_batch_size, state, rec, save=False)
+
+    rec = save_checkpoint(args.save_dir, t+args.datasize*epoch_i//args.train_batch_size, state, rec, save=args.save_model)
 
   # wrap it up
   # save_recorder(args.save_dir, rec)
@@ -2892,11 +1671,6 @@ def train_jigsaw(args):
 
   # setup
   model = get_model(args)
-  # tmp_model = get_model(args)
-  # if len(tmp_model) == 2:
-  #   model, model_linear = tmp_model
-  # else:
-  #   model = tmp_model
   state = create_train_state(model, args)
 
 
@@ -2933,32 +1707,18 @@ def train_jigsaw(args):
     if train_loader_new_org is not None:
       new_iter_org = iter(train_loader_new_org)
 
-
-
-
     t = 0
     num_sample_cur = 0
     print(f'Epoch {epoch_i}')
 
 
-    #JTT
     train_step = get_train_step(args.method)
-    # if epoch_i < args.warm_epoch: 
-    #   print(f'warmup epoch = {epoch_i+1}/{args.warm_epoch}')
-    # if epoch_i == args.warm_epoch:
-    #   state_reg = create_train_state(model, args, params=state.params) # use the full model
-    
+
 
     ## data_loader with batch size
     while t * args.train_batch_size < args.datasize:
       
-      #####################################################################
-      # import pdb
-      # pdb.set_trace()
       for example in train_loader_labeled:
-
-        # import pdb
-        # pdb.set_trace()
         new_data = 0
         if train_loader_new is not None:
           if 0 <= args.new_prob and args.new_prob <= 1 and len(train_loader_new) >= 2: # args.new_prob should be large, e.g., 0.9.   len(train_loader_new) >= len(train_loader_labeled) / 3 means the new data should be sufficient > 25 % of total
@@ -2995,15 +1755,6 @@ def train_jigsaw(args):
         bsz = example[0].shape[0]
 
         num_sample_cur += bsz
-
-        ###proprocess t-th batch data: example
-        # if new_data in [0, 2]:
-        #   print(f'using the {args.dataset} as example')
-        #   example = preprocess_func_torch2jax(example, args)
-          
-        # else: #new_data =1
-        #   print(f'using the {args.aux_data} as example')
-        #   example = preprocess_func_torch2jax_aux(example, args, new_labels = new_labels)
         
         example = preprocess_func_torch2jax(example, args)
 
@@ -3035,9 +1786,6 @@ def train_jigsaw(args):
           batch = example
 
 
-        # import pdb
-        # pdb.set_trace()
-
         # train
         if args.method == 'plain':
           # state, train_metric = train_step(state, batch)
@@ -3045,16 +1793,11 @@ def train_jigsaw(args):
           #print('trying to do train step!!!')
           state, train_metric = train_step(state, batch)
           # except:
-          #   # import pdb
-          #   # pdb.set_trace()
           #   print(batch)
         elif args.method in ['fix_lmd','dynamic_lmd']:
           state, train_metric, lmd = train_step(state, batch, lmd = lmd, T=None)
         else:
           raise NameError('Undefined optimization mechanism')
-
-        # import pdb
-        # pdb.set_trace()
 
         rec = record_train_stats(rec, t-1, train_metric, 0)
       
@@ -3062,11 +1805,8 @@ def train_jigsaw(args):
         # test_metric = test(args, state, test_loader)
         # rec, time_now = record_test(rec, t+args.datasize*epoch_i//args.train_batch_size, args.datasize*args.num_epochs//args.train_batch_size, time_now, time_start, train_metric, test_metric, metric = args.metric, warm = epoch_i < args.warm_epoch)
         # print('############batch 1: ' + str(sum(example['label'])) + '; ##### batch 0: ' + str(len(example['label']) - sum(example['label'])))
-        # # import pdb
-        # # pdb.set_trace()
+
         if t % args.log_steps == 0 or (t+1) * args.train_batch_size > args.datasize:
-          # test
-          # epoch_pre = epoch_i
           
           test_metric = test(args, state, test_loader)
           rec, time_now = record_test(rec, t+args.datasize*epoch_i//args.train_batch_size, args.datasize*args.num_epochs//args.train_batch_size, time_now, time_start, train_metric, test_metric, metric = args.metric, warm = epoch_i < args.warm_epoch)
@@ -3081,8 +1821,9 @@ def train_jigsaw(args):
             '''
             Hessian approximation calculation for strategy 8
             '''
-            print('start hessian approximation!')
-            args.H_v, args.H_v_org = compute_hessian(state, train_loader_labeled, val_loader)            
+            if args.strategy == 8:
+              print('start hessian approximation!')
+              args.H_v, args.H_v_org = compute_hessian(state, train_loader_labeled, val_loader)         
 
             # infl 
             args.infl_random_seed = t+args.datasize*epoch_i//args.train_batch_size + args.train_seed
@@ -3129,16 +1870,7 @@ def train_jigsaw(args):
             
             train_loader_unlabeled, train_loader_new, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx, aux_dataset=args.aux_data)
 
-            # if args.dataset == 'celeba':
-            #   _, train_loader_unlabeled, train_loader_new, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx, aux_dataset=args.aux_data)
-            # elif args.dataset == 'compas':
-            #   train_loader_unlabeled, train_loader_new, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx, aux_dataset=args.aux_data)
-            # else:
-            #   raise NameError('Undefine dataset')
-
             new_iter = iter(train_loader_new)
-
-
             if args.train_with_org:
               if args.strategy == 7:
                 ## my code here##
@@ -3153,28 +1885,10 @@ def train_jigsaw(args):
               #_, train_loader_unlabeled_org, train_loader_new_org, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx_org, aux_dataset=None)
               
               train_loader_unlabeled_org, train_loader_new_org, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx, aux_dataset=args.aux_data)
-
-              # if args.dataset == 'celeba':
-              #   _, train_loader_unlabeled_org, train_loader_new_org, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx, aux_dataset=args.aux_data)
-              # elif args.dataset == 'compas':
-              #   train_loader_unlabeled_org, train_loader_new_org, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx, aux_dataset=args.aux_data)
-              # else:
-              #   raise NameError('Undefine dataset')
               
               new_iter_org = iter(train_loader_new_org)
-            # idx_rec.append((epoch_i, args.infl_random_seed, used_idx_org, idx_with_labels_org))
 
-              
-              
-            # save_name = f'./results/s{args.strategy}_{args.metric}_{args.label_ratio}_new{args.new_data_each_round}_100round.npy'
-            # np.save(save_name, idx_rec)
-
-          
-          # print(f'lmd is {lmd}')
-
-
-
-    rec = save_checkpoint(args.save_dir, t+args.datasize*epoch_i//args.train_batch_size, state, rec, save=True)
+    rec = save_checkpoint(args.save_dir, t+args.datasize*epoch_i//args.train_batch_size, state, rec, save=args.save_model)
 
   # wrap it up
   # save_recorder(args.save_dir, rec)

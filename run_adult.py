@@ -35,15 +35,10 @@ parser.add_argument('--new_prob', type=float, default=0.5)
 parser.add_argument('--ratio_org', type=float, default=0.5) 
 parser.add_argument('--train_with_validation', type=bool, default=False) 
 
+parser.add_argument('--save_model', default=False, action="store_true") # save the model
 
 # Example: CUDA_VISIBLE_DEVICES=0 python3 run_celeba.py --method plain  --warm_epoch 0  --metric dp --label_ratio 0.05 --val_ratio 0.1 --strategy 2 
 
-
-# parser = argparse.ArgumentParser()
-# parser.add_argument('--model_gender', type=str, default='opencv', help="retinaface mtcnn opencv ssd dlib")
-# parser.add_argument('--model_sel', type=int, default=1, help="VGG-Face, Facenet Facenet512,OpenFace, DeepFace, DeepID, ArcFace, Dlib, SFace")
-# parser.add_argument('--e1', type=float, default=0.0)
-# parser.add_argument('--e2', type=float, default=0.0)
 
 # arguments
 # args = SimpleNamespace()

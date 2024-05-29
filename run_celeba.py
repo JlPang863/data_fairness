@@ -40,6 +40,7 @@ parser.add_argument('--label_ratio', type=float, default=0.02)
 parser.add_argument('--val_ratio', type=float, default=0.1)
 
 parser.add_argument('--train_with_validation', type=bool, default=False) 
+parser.add_argument('--save_model', default=False, action="store_true") # save the model
 
 # Example: CUDA_VISIBLE_DEVICES=0 python3 run_celeba.py --method plain  --warm_epoch 0  --metric dp --label_ratio 0.05 --val_ratio 0.1 --strategy 2 
 
