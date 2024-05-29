@@ -1,4 +1,5 @@
 from src import train, fair_train, train_compas, global_var
+from src.fair_train import fair_train_validation
 from collections import OrderedDict
 import argparse
 
@@ -19,6 +20,7 @@ parser.add_argument('--strategy', type=int, default=1)
 parser.add_argument('--conf', type=str, default='no_conf', help='no_conf, peer, entropy')
 parser.add_argument('--aux_data', type=str, default=None, help="imagenet")
 
+parser.add_argument('--exp', type=int, default=1)
 
 parser.add_argument('--label_ratio', type=float, default=0.01)
 parser.add_argument('--val_ratio', type=float, default=0.1)
@@ -29,6 +31,7 @@ parser.add_argument('--epoch', type=int, default=50)
 #new add arguments for testing
 parser.add_argument('--new_prob', type=float, default=0.9) 
 parser.add_argument('--ratio_org', type=float, default=0.5) 
+parser.add_argument('--train_with_validation', type=bool, default=False) 
 
 # Example: CUDA_VISIBLE_DEVICES=0 python3 run_celeba.py --method plain  --warm_epoch 0  --metric dp --label_ratio 0.05 --val_ratio 0.1 --strategy 2 
 
@@ -102,7 +105,7 @@ args.remove_pos = True
 args.remove_posOrg = False
 
 
-args.save_dir = EXPS_DIR + f'/{EXP}/{args.method}/run_{RUN}_warm{args.warm_epoch}_metric_{args.metric}'
+args.save_dir = EXPS_DIR + f'/{EXP}/{args.method}/{args.dataset}/run_{RUN}_metric_{args.metric}'
 
 
 
@@ -115,5 +118,18 @@ if __name__ == "__main__":
     global_var.init()
     global_var.set_value('args', args)
     #fair_train(args)
-    train_compas(args)
+    
+    # train_compas(args)
+    
+    ###using fairness constraint to train
+    args.train_with_validation =True
+    if args.train_with_validation:
+        args.method='dynamic_lmd'
+        args.warm_step=0
+        args.epoch=50
+        args.warm_epoch = 0
+        args.log_steps = 10
+        args.train_batch_size = 16
 
+        args.num_epochs = args.epoch +  args.warm_epoch
+        fair_train_validation(args)

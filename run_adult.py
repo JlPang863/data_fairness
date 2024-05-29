@@ -1,5 +1,7 @@
 from src import train, train_adult, train_jigsaw, global_var
 from collections import OrderedDict
+from src.fair_train import fair_train_validation
+
 import argparse
 
 
@@ -26,10 +28,12 @@ parser.add_argument('--label_ratio', type=float, default=0.05)
 parser.add_argument('--val_ratio', type=float, default=0.1)
 # parser.add_argument('--label_budget', type=int, default=128)
 parser.add_argument('--runs', type=int, default=0)
+parser.add_argument('--exp', type=int, default=1)
 
 #new add arguments for testing
 parser.add_argument('--new_prob', type=float, default=0.5) 
 parser.add_argument('--ratio_org', type=float, default=0.5) 
+parser.add_argument('--train_with_validation', type=bool, default=False) 
 
 
 # Example: CUDA_VISIBLE_DEVICES=0 python3 run_celeba.py --method plain  --warm_epoch 0  --metric dp --label_ratio 0.05 --val_ratio 0.1 --strategy 2 
@@ -69,20 +73,33 @@ args.load_dir = None
 args.ckpt = 0
 
 ## optimizer
-args.lr = 0.00001
+args.lr = 0.00001 #default0.00001
+
 args.momentum = 0.9
 args.weight_decay = 0.0005
 args.nesterov = True
-# SGD
+# SGD default
+# args.opt = OrderedDict(
+#     name="adam",
+#     config=OrderedDict(
+#         learning_rate = args.lr,
+#         # momentum = args.momentum,
+#         # nesterov = args.nesterov
+#     )
+# )
+
+args.scheduler = None
+
+
+#test
 args.opt = OrderedDict(
-    name="adam",
+    name="sgd",
     config=OrderedDict(
-        learning_rate = args.lr,
-        # momentum = args.momentum,
-        # nesterov = args.nesterov
+        learning_rate = 0.01,
+        momentum = 0.9,
+        nesterov = True
     )
 )
-args.scheduler = None
 
 # training
 # default setting for training
@@ -96,6 +113,7 @@ args.num_epochs = args.epoch +  args.warm_epoch
 args.EP_STEPS = EP_STEPS
 # args.train_seed = META_TRAIN_SEED + RUN * SEED_INCR
 args.train_seed = META_TRAIN_SEED
+# args.train_batch_size = 64 # default
 args.train_batch_size = 64
 args.test_batch_size = 1024
 
@@ -121,8 +139,9 @@ args.train_conf = False
 args.remove_pos = True
 args.remove_posOrg = False
 
-args.save_dir = EXPS_DIR + f'/{EXP}/{args.method}/run_{RUN}_warm{args.warm_epoch}_metric_{args.metric}'
+# args.save_dir = EXPS_DIR + f'/{EXP}/{args.method}/run_{RUN}_warm{args.warm_epoch}_metric_{args.metric}'
 
+args.save_dir = EXPS_DIR + f'/{EXP}/{args.method}/{args.dataset}/run_{RUN}_metric_{args.metric}'
 
 if __name__ == "__main__":
 
@@ -132,5 +151,18 @@ if __name__ == "__main__":
     global_var.init()
     global_var.set_value('args', args)
     #train(args)
+    
     train_adult(args)
 
+    ###using fairness constraint to train
+    args.train_with_validation = False
+    if args.train_with_validation:
+        args.method='dynamic_lmd'
+        args.log_steps = 10
+        args.train_batch_size = 32
+        
+        args.warm_step=0
+        args.epoch=10
+        args.warm_epoch = 0
+        args.num_epochs = args.epoch +  args.warm_epoch
+        fair_train_validation(args)
