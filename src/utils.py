@@ -87,13 +87,13 @@ def print_stats(t, T, t_incr, t_tot, train_metric, test_metric, init=False, is_v
   #         f"train acc: {train_metric['accuracy']:.3f}({train_metric['acc'][0]:.3f}, {train_metric['acc'][1]:.3f}) | train ar gap: {abs(train_metric['ar'][0]-train_metric['ar'][1]):.3f} | train loss: {train_metric['loss']:.3f} |{val} acc: {test_metric['accuracy']:.3f} ({test_metric['acc'][0]:.3f}, {test_metric['acc'][1]:.3f}) | {val} ar gap: {abs(test_metric['ar'][0] - test_metric['ar'][1]):.4f}")
   if metric == 'dp':
     print(f'{prog:6.2f}% | time: {t_incr:5.1f}s ({t_tot/60:5.1f}m) | step: {t:6d} |',
-          f"train acc: {train_metric['accuracy']:.3f} | train loss: {train_metric['loss']:.3f} |{val} acc: {test_metric['accuracy']:.3f} ({test_metric['acc'][0]:.3f}, {test_metric['acc'][1]:.3f}) | {val} dp gap: {abs(test_metric['ar'][0] - test_metric['ar'][1]):.4f}")
+          f"train acc: {train_metric['accuracy']:.3f} | train loss: {train_metric['loss']:.3f} | {val} f1_score: {test_metric['f1_score']:.3f} | {val} acc: {test_metric['accuracy']:.3f} ({test_metric['acc'][0]:.3f}, {test_metric['acc'][1]:.3f}) | {val} dp gap: {abs(test_metric['ar'][0] - test_metric['ar'][1]):.4f}")
   elif metric == 'eop':
     print(f'{prog:6.2f}% | time: {t_incr:5.1f}s ({t_tot/60:5.1f}m) | step: {t:6d} |',
-          f"train acc: {train_metric['accuracy']:.3f} | train loss: {train_metric['loss']:.3f} |{val} acc: {test_metric['accuracy']:.3f} ({test_metric['acc'][0]:.3f}, {test_metric['acc'][1]:.3f}) | {val} eop gap: {abs(test_metric['tpr'][0] - test_metric['tpr'][1]):.4f}")
+          f"train acc: {train_metric['accuracy']:.3f} | train loss: {train_metric['loss']:.3f} | {val} f1_score: {test_metric['f1_score']:.3f} | {test_metric['f1_score']:.3f}  {val} acc: {test_metric['accuracy']:.3f} ({test_metric['acc'][0]:.3f}, {test_metric['acc'][1]:.3f}) | {val} eop gap: {abs(test_metric['tpr'][0] - test_metric['tpr'][1]):.4f}")
   elif metric == 'eod':
     print(f'{prog:6.2f}% | time: {t_incr:5.1f}s ({t_tot/60:5.1f}m) | step: {t:6d} |',
-          f"train acc: {train_metric['accuracy']:.3f} | train loss: {train_metric['loss']:.3f} |{val} acc: {test_metric['accuracy']:.3f} ({test_metric['acc'][0]:.3f}, {test_metric['acc'][1]:.3f}) | {val} eod gap: {(abs(test_metric['tpr'][0] - test_metric['tpr'][1]) + abs(test_metric['fpr'][0] - test_metric['fpr'][1]))/2.0:.4f}")
+          f"train acc: {train_metric['accuracy']:.3f} | train loss: {train_metric['loss']:.3f} | {val} f1_score: {test_metric['f1_score']:.3f} | {val} acc: {test_metric['accuracy']:.3f} ({test_metric['acc'][0]:.3f}, {test_metric['acc'][1]:.3f}) | {val} eod gap: {(abs(test_metric['tpr'][0] - test_metric['tpr'][1]) + abs(test_metric['fpr'][0] - test_metric['fpr'][1]))/2.0:.4f}")
 
 def date_from_str(s):
     return datetime.strptime(s, '%Y-%m-%d %H:%M:%S')

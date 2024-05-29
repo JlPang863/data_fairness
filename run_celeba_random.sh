@@ -7,22 +7,22 @@
 
 sel_layers="4"
 # strategy="1 6 8 7 2"
-strategy="2"
-label_key="Attractive"
+strategy="1"
+label_key="Smiling Attractive"
 # label_key="Smiling  Young Big_Nose Attractive" 
 #'Young', 'Big_Nose''Smiling', 'Attractive',
-# metric="dp eop eod"
-metric="dp"
+metric="dp eop eod"
+# metric="dp"
 # type='1024'
 type='default'
 runs="0"
 warm_epoch="2"
 epoch="5"
 # val_ratios='0.02 0.05' #default value 0.1
-val_ratios='0.05' #default value 0.1
+val_ratios='0.1' #default value 0.1
 
 #start point
-gpu_start_index="7"
+gpu_start_index="2"
 gpu_final_index="8"
 num_of_exper_single_gpu=1
 i=$gpu_start_index

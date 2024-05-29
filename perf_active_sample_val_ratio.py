@@ -23,7 +23,7 @@ Dataset option
 dataset_num = 1
 
 ### random seed ###
-runs=2
+runs=0
 
 
 if dataset_num == 1:
@@ -31,10 +31,10 @@ if dataset_num == 1:
 
     dataset = 'adult'
     tol = 0.05
-    avg_cnt = 30
+    avg_cnt = 3 #default 30
     suffix = ''
-    # root = f'./logs/fair_sampling/{dataset}-age-runs2/'
-    root = f'./logs/fair_sampling/{dataset}-sex-runs{runs}/'
+    root = f'./logs/fair_sampling/{dataset}-age-runs{runs}/'
+    # root = f'./logs/fair_sampling/{dataset}-sex-runs{runs}/'
 
     ###########################################################
 elif dataset_num ==2:
@@ -384,23 +384,23 @@ table results
 sel_layers = [4]
 # default strategy: [0, 1, 6, 8, 7, 2, 5]
 # select BALD as the baseline to compare
-strategy = [2]#,
+strategy = [1]#,
 metrics = ['dp', 'eop', 'eod']
 
 if dataset == 'celeba':
     # label_key = ['Smiling', 'Straight_Hair', 'Attractive', 'Pale_Skin', 'Young', 'Big_Nose']
-    label_key = ['Smiling']#  'Young', 'Big_Nose''Smiling', 'Attractive',
-    # label_key = ['Young']
+    # label_key = [ 'Attractive']#  'Young', 'Big_Nose''Smiling', 'Attractive',
+    label_key = ['Attractive']
     # label_key = ['Attractive']
-    val_ratios = [0.02, 0.05, 0.1, 0.15]
+    val_ratios = [0.05] #0.02, 0.05, 0.1
     metrics = ['dp']
 elif dataset == 'compas':
     label_key = ['label']
-    val_ratios = [ 0.2, 0.25] #0.01, 0.05, 0.1, 0.2, 0.25, 0.5
+    val_ratios = [ 0.2] #0.01, 0.05, 0.1, 0.2, 0.25, 0.5
 
 elif dataset == 'adult':
     label_key = ['label']
-    val_ratios = [0.1, 0.2, 0.25] # 0.01, 0.05, 0.1, 0.2, 0.25, 0.5
+    val_ratios = [0.2] # 0.01, 0.05, 0.1, 0.2, 0.25, 0.5
 
 elif dataset == 'jigsaw':
     label_key = ['label']
@@ -426,6 +426,7 @@ for layer in sel_layers:
                         if suffix:
                             file_name += suffix
                         base_pref = get_result_typical(file_name)
+                        # import pdb;pdb.set_trace()
                         result_dict[f'{label}_s0_{metric}_{layer}' + '_'+ label_tag + suffix] = [base_pref]
             
 # get table

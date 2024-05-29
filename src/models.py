@@ -509,7 +509,9 @@ def get_model(args):
     if args.dataset == 'jigsaw':
       model = MLP(features=[256], num_classes=args.num_classes)  # 
     elif args.dataset == 'adult':
-      model = MLP(features=[64], num_classes=args.num_classes)  # 
+      model = MLP(features=[64], num_classes=args.num_classes)  # default
+      # model = MLP(features=[256,64,16], num_classes=args.num_classes)  # new default
+
     else:
       model = MLP(features=[64], num_classes=args.num_classes)
   elif args.model == 'vit':

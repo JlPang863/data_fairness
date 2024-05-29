@@ -8,8 +8,9 @@ import time
 
 from .data import  load_celeba_dataset_torch, preprocess_func_celeba_torch, load_data, gen_preprocess_func_torch2jax
 from .models import get_model
-from .recorder import init_recorder, record_train_stats, save_recorder, record_test, save_checkpoint
+from .recorder import init_recorder, record_train_stats, save_recorder, record_test, save_checkpoint,load_checkpoint
 import pdb
+
 from .hoc_fairlearn import *
 from .train_state import test_step, get_train_step, create_train_state, infl_step, infl_step_fair, infl_step_per_sample, train_plain
 from .metrics import compute_metrics, compute_metrics_fair
@@ -2187,7 +2188,7 @@ def train_celeba(args):
               used_idx.update(sampled_idx)
               print(f'Use {len(used_idx)} samples. Get {len(idx_with_labels)} labels. Ratio: {len(used_idx)/len(idx_with_labels)}')
               idx_rec.append((epoch_i, args.infl_random_seed, used_idx, idx_with_labels))
-
+              
             _, train_loader_unlabeled, train_loader_new, _ = load_data(args, args.dataset, mode = 'train', sampled_idx=sampled_idx, aux_dataset=args.aux_data)
             
             # if args.dataset == 'celeba':
@@ -2266,7 +2267,8 @@ def train_compas(args):
     preprocess_func_torch2jax_aux = gen_preprocess_func_torch2jax(args.aux_data)
 
 
-  # setup
+
+
   model = get_model(args)
   # tmp_model = get_model(args)
   # if len(tmp_model) == 2:
@@ -2548,7 +2550,7 @@ def train_compas(args):
 
 
 
-    rec = save_checkpoint(args.save_dir, t+args.datasize*epoch_i//args.train_batch_size, state, rec, save=False)
+    rec = save_checkpoint(args.save_dir, t+args.datasize*epoch_i//args.train_batch_size, state, rec, save=True) ##^^^^^^^^^
 
   # wrap it up
   # save_recorder(args.save_dir, rec)
@@ -2742,9 +2744,10 @@ def train_adult(args):
         # test the test metric for each batch
         # test_metric = test(args, state, test_loader)
         # rec, time_now = record_test(rec, t+args.datasize*epoch_i//args.train_batch_size, args.datasize*args.num_epochs//args.train_batch_size, time_now, time_start, train_metric, test_metric, metric = args.metric, warm = epoch_i < args.warm_epoch)
-        # print('####### batch 1: ' + str(sum(example['label'])) + '; ##### batch 0: ' + str(len(example['label']) - sum(example['label'])))
-        # import pdb
-        # pdb.set_trace()
+        
+        
+        # print('####### batch:: label 1: ' + str(sum(example['label'])) + '; ##### label 0: ' + str(len(example['label']) - sum(example['label'])))
+
         if t % args.log_steps == 0 or (t+1) * args.train_batch_size > args.datasize:
           # test
           # epoch_pre = epoch_i
@@ -3171,7 +3174,7 @@ def train_jigsaw(args):
 
 
 
-    rec = save_checkpoint(args.save_dir, t+args.datasize*epoch_i//args.train_batch_size, state, rec, save=False)
+    rec = save_checkpoint(args.save_dir, t+args.datasize*epoch_i//args.train_batch_size, state, rec, save=True)
 
   # wrap it up
   # save_recorder(args.save_dir, rec)

@@ -147,8 +147,12 @@ def get_loss_lmd_dynamic_two_loader(state, batch, batch_fair, per_sample = False
     if len(logits) == 2: # logits and embeddings
         logits = logits[0]
         logits_fair = logits_fair[0]
+        
+    if T is None:
+      loss_reg, _ = constraints_fair(logits_fair, batch_fair['group'], batch_fair['label'])
 
-    loss_reg, _ = constraints_fair(logits_fair, batch_fair['group'], batch_fair['label'], T = T)
+    else:
+      loss_reg, _ = constraints_fair(logits_fair, batch_fair['group'], batch_fair['label'], T = T)
     lmd = lmd + mu * loss_reg 
     loss_fair = jnp.sum(mu/2 * loss_reg**2) + jnp.sum(lmd * loss_reg)
     if args.exp == 1:
@@ -161,12 +165,14 @@ def get_loss_lmd_dynamic_two_loader(state, batch, batch_fair, per_sample = False
 
     loss = cross_entropy_loss(logits=logits, labels=batch['label']) + loss_fair
     
-    if args.conf_method == "V": 
-      loss += constraints_confidence(logits_fair)
-    elif args.conf_method == "TV":
-      loss += constraints_confidence(logits) + constraints_confidence(logits_fair)
-    else:
-      raise NameError(f'Undefined conf_method. Should be TV or V. Current {args.conf_method}')
+    # if args.conf !='no_conf':
+      
+    #   if args.conf_method == "V": 
+    #     loss += constraints_confidence(logits_fair)
+    #   elif args.conf_method == "TV":
+    #     loss += constraints_confidence(logits) + constraints_confidence(logits_fair)      
+    #   else:
+    #     raise NameError(f'Undefined conf_method. Should be TV or V. Current {args.conf_method}')
 
     return loss, (new_model_state, logits, logits_fair, lmd)
 

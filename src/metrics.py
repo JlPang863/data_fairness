@@ -232,6 +232,19 @@ def compute_metrics_fair(logits, labels, groups = None):
   accuracy_predicted_label2 = jnp.mean(jnp.argmax(logits, -1) == 0)
   print('predicted_label 1: ' + str(accuracy_predicted_label1) + '; predicted_label 0: ' + str(accuracy_predicted_label2))
   
+  # True Positives (TP)
+  tp = jnp.sum((jnp.argmax(logits, -1) == 1) & (labels == 1))
+  fp = jnp.sum((jnp.argmax(logits, -1) == 1) & (labels == 0))
+  fn = jnp.sum((jnp.argmax(logits, -1) == 0) & (labels == 1))
+  precision = tp / (tp + fp)
+  recall = tp / (tp + fn)
+
+  # F1 Score
+  f1_score = 2 * (precision * recall) / (precision + recall)
+  # Check for NaN in F1 and replace it with 0 if NaN (can happen if precision and recall are both 0)
+  f1_score = jnp.where(jnp.isnan(f1_score), 0, f1_score)
+  
+  
   ar0 = jnp.sum( (jnp.argmax(logits, -1) == 1) * (groups == 0) * 1.0) / jnp.sum( (groups == 0) * 1.0)
   ar1 = jnp.sum( (jnp.argmax(logits, -1) == 1) * (groups == 1) * 1.0) / jnp.sum( (groups == 1) * 1.0)
 
@@ -253,10 +266,12 @@ def compute_metrics_fair(logits, labels, groups = None):
   metrics = {
       'loss': loss,
       'accuracy': accuracy,
+      'f1_score': f1_score,
       'ar': (ar0, ar1),
       'acc': (acc0, acc1),
       'tpr': (tpr0, tpr1),
       'fpr': (fpr0, fpr1),
+      
   }
   return metrics
 

@@ -1,5 +1,7 @@
 from src import train, fair_train, train_celeba, global_var
 from collections import OrderedDict
+from src.fair_train import fair_train_validation
+
 import argparse
 
 
@@ -29,12 +31,15 @@ parser.add_argument('--warm_epoch', type=int, default=0)
 parser.add_argument('--sel_layers', type=int, default=4)
 parser.add_argument('--runs', type=int, default=0)
 parser.add_argument('--epoch', type=int, default=10)
+parser.add_argument('--exp', type=int, default=1)
 
 parser.add_argument('--conf', type=str, default='no_conf', help='no_conf, peer, entropy')
 parser.add_argument('--label_budget', type=int, default=256)
 
 parser.add_argument('--label_ratio', type=float, default=0.02)
 parser.add_argument('--val_ratio', type=float, default=0.1)
+
+parser.add_argument('--train_with_validation', type=bool, default=False) 
 
 # Example: CUDA_VISIBLE_DEVICES=0 python3 run_celeba.py --method plain  --warm_epoch 0  --metric dp --label_ratio 0.05 --val_ratio 0.1 --strategy 2 
 
@@ -86,8 +91,10 @@ args.scheduler = None
 args.num_epochs = args.epoch + args.warm_epoch
 args.EP_STEPS = EP_STEPS
 args.train_seed = META_TRAIN_SEED + RUN * SEED_INCR
-args.train_batch_size = 128 # 256
-args.test_batch_size = 4096
+args.train_batch_size = 256 # 256
+args.test_batch_size = 4096 # default 4096
+# args.test_batch_size = 32
+
 
 
 # # test for hessian 
@@ -121,7 +128,11 @@ args.remove_pos = True
 args.remove_posOrg = False
 
 
-args.save_dir = EXPS_DIR + f'/{EXP}/{args.method}/run_{RUN}_{args.label_key}_warm{args.warm_epoch}_metric_{args.metric}'
+# args.save_dir = EXPS_DIR + f'/{EXP}/{args.method}/run_{RUN}_{args.label_key}_warm{args.warm_epoch}_metric_{args.metric}'
+args.save_dir = EXPS_DIR + f'/{EXP}/{args.method}/{args.dataset}/run_{RUN}_{args.label_key}_metric_{args.metric}'
+
+# args.save_dir = EXPS_DIR + f'/{EXP}/{args.method}/{args.dataset}/random/run_{RUN}_{args.label_key}_metric_{args.metric}'
+
 if __name__ == "__main__":
 
     # data conversion for torch loader
@@ -136,6 +147,18 @@ if __name__ == "__main__":
         args.sel_layers = -args.sel_layers
     global_var.init()
     global_var.set_value('args', args)
-    #fair_train(args)
     train_celeba(args)
 
+
+    ###using fairness constraint to train with the validation set
+    args.train_with_validation = False
+    if args.train_with_validation:
+        args.method='dynamic_lmd'
+        args.warm_step=0
+        args.train_batch_size = 16 # 256
+        args.log_steps = 10
+        args.epoch=2
+        args.warm_epoch = 0
+        args.num_epochs = args.epoch +  args.warm_epoch
+        
+        fair_train_validation(args)

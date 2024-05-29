@@ -162,7 +162,7 @@ def preprocess_func_adult_torch(example, args, noisy_attribute = None, num_group
         group[i] = 0
   elif args.group_key == 'age':
     for i in range(len(group)):
-      if group[i] >= 30:
+      if group[i] >= 35: #default 35
         group[i] = 1
       else:
         group[i] = 0
@@ -484,24 +484,25 @@ class InverseProportionalSampler(WeightedRandomSampler):
 class InverseProportionalSampler_Adult(WeightedRandomSampler):
     def __init__(self, labels, replacement=True):
         unique_labels, counts = np.unique(labels, return_counts=True)
-      
+        # (Pdb) unique_labels, counts
+        # array([0, 1]),array([1967,  637])
         proportions = counts / len(labels)
         
         label_to_weight = {label: 1.0/proportion for label, proportion in zip(unique_labels, proportions)}
-        
-        # label_to_weight = { #default setting
+        # pdb.set_trace()
+
+        # label_to_weight = { #default counting setting
         #     0: 1,
-        #     1: 3
+        #     1: 3.2
         # }
 
         label_to_weight = {
             0: 1,
-            1: 3
+            1: 1,
         }
         # 根据标签分配权重
         weights = np.array([label_to_weight[label] for label in labels])
         # import pdb
-        # pdb.set_trace()
         # print('weights: ' + str(weights))
         # weights = np.array(random.randint())
         super(InverseProportionalSampler_Adult, self).__init__(weights, len(labels), replacement)
@@ -541,7 +542,6 @@ def load_celeba_dataset_torch(args, shuffle_files=False, split='train', batch_si
     transform = test_transform
 
   ds = my_celeba(root = args.data_dir, split = split, target_type = 'attr', transform = transform, download = True)
-
   if split == 'train':
     args.datasize = len(ds)
     
@@ -924,15 +924,19 @@ def load_adult_dataset_torch(args, shuffle_files=False, split='train', batch_siz
     # for label balance
 
       # for label balance
+    sampler_1 = InverseProportionalSampler_Adult(labels_ds_1)
+    sampler_2 = InverseProportionalSampler_Adult(labels_ds_2)
     if split == 'train':
-      sampler_1 = InverseProportionalSampler_Adult(labels_ds_1)
-      sampler_2 = InverseProportionalSampler_Adult(labels_ds_2)
+
       # for balance batch's labels
       dataloader_1 = DataLoader(ds_1, batch_size=batch_size,  num_workers=0, drop_last=False, sampler = sampler_1)
       dataloader_2 = DataLoader(ds_2, batch_size=batch_size, num_workers=0, drop_last=False,  sampler = sampler_2)
     else:
       dataloader_1 = DataLoader(ds_1, batch_size=batch_size, shuffle=shuffle_files,  num_workers=0, drop_last=False)
-      dataloader_2 = DataLoader(ds_2, batch_size=batch_size, shuffle=shuffle_files, num_workers=0, drop_last=False)
+      dataloader_2 = DataLoader(ds_2, batch_size=batch_size, shuffle=shuffle_files,  num_workers=0, drop_last=False)
+
+      
+      
       # sampler_1 = InverseProportionalSampler_Adult(labels_ds_1)
       # sampler_2 = InverseProportionalSampler_Adult(labels_ds_2)
       # # for balance batch's labels
@@ -945,6 +949,9 @@ def load_adult_dataset_torch(args, shuffle_files=False, split='train', batch_siz
         return [dataloader_1, dataloader_2], part1, part2
     else:
         return [dataloader_1, dataloader_2], part1
+
+
+
 
 def load_data(args, dataset, mode = 'train', sampled_idx = [], aux_dataset = None):
   

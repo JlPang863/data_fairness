@@ -2,6 +2,7 @@ import pickle
 from types import SimpleNamespace
 import time
 from .utils import print_stats
+from flax.training import checkpoints
 
 def init_recorder():
   rec = SimpleNamespace()
@@ -99,3 +100,7 @@ def save_checkpoint(save_dir, step, state, rec, save=True):
     checkpoints.save_checkpoint(save_dir + '/ckpts', target = state, step = step, keep=1)
   rec = record_ckpt(rec, step)
   return rec
+
+# 定义加载检查点的函数
+def load_checkpoint(checkpoint_dir):
+    return checkpoints.restore_checkpoint(checkpoint_dir, target=None)
