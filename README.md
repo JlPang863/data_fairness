@@ -1,4 +1,5 @@
-# This is the working repo for data fairness project
+# Fairness Without Harm:
+An Influence-Guided Active Sampling Approach
 
 
 ## Training
