@@ -1,5 +1,4 @@
-# Fairness Without Harm:
-An Influence-Guided Active Sampling Approach
+# Fairness Without Harm: An Influence-Guided Active Sampling Approach
 
 
 ## Training
