@@ -36,7 +36,6 @@ parser.add_argument('--save_model', default=False, action="store_true") # save t
 
 
 # arguments
-# args = SimpleNamespace()
 args = parser.parse_args()
 
 # setup
@@ -44,7 +43,7 @@ ROOT = '.'
 EXP = 'exps'
 RUN = args.runs
 META_MODEL_SEED, META_TRAIN_SEED, SEED_INCR = 42, 4242, 424242
-EP_STEPS = 1000  # 200
+EP_STEPS = 1000  
 DATA_DIR = '/data2/data'
 EXPS_DIR = ROOT + '/exps'
 
@@ -74,9 +73,6 @@ args.opt = OrderedDict(
 args.scheduler = None
 
 # training
-# default setting for training
-# args.num_epochs = 10 +  args.warm_epoch
-
 # default setting for analyzing the impact of label budget
 args.num_epochs = args.epoch +  args.warm_epoch
 
@@ -96,7 +92,6 @@ args.save_steps =  EP_STEPS
 args.num_classes = 2
 args.balance_batch = False
 
-#args.new_data_each_round = 1024 # 1024
 args.new_data_each_round = args.label_budget
 
 args.train_conf = False

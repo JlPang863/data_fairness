@@ -34,10 +34,8 @@ parser.add_argument('--ratio_org', type=float, default=0.5)
 parser.add_argument('--train_with_validation', type=bool, default=False) 
 parser.add_argument('--save_model', default=False, action="store_true") # save the model
 
-# Example: CUDA_VISIBLE_DEVICES=0 python3 run_celeba.py --method plain  --warm_epoch 0  --metric dp --label_ratio 0.05 --val_ratio 0.1 --strategy 2 
 
 # arguments
-# args = SimpleNamespace()
 args = parser.parse_args()
 
 # setup
@@ -45,7 +43,7 @@ ROOT = '.'
 EXP = 'exps'
 RUN = args.runs
 META_MODEL_SEED, META_TRAIN_SEED, SEED_INCR = 42, 4242, 424242
-EP_STEPS = 10  # 200
+EP_STEPS = 200  
 DATA_DIR = '/data2/data'
 EXPS_DIR = ROOT + '/exps'
 
@@ -76,29 +74,22 @@ args.scheduler = None
 
 
 # training
-# default setting for training
 args.num_epochs = args.epoch +  args.warm_epoch
 
-# default setting for analyzing the impact of label budget
-# args.num_epochs = 50 +  args.warm_epoch
-
-
 args.EP_STEPS = EP_STEPS
-# args.train_seed = META_TRAIN_SEED + RUN * SEED_INCR
-args.train_seed = META_TRAIN_SEED
+args.train_seed = META_TRAIN_SEED + RUN * SEED_INCR
 args.train_batch_size = 256
 args.test_batch_size = 4096
+
 # checkpoints
 args.log_steps = EP_STEPS
 args.save_steps =  EP_STEPS
 
 
 # experiment
-# args.datasize = 202599
 args.num_classes = 2
 args.balance_batch = False
-# args.new_data_each_round = 32 # 1024 
-args.new_data_each_round = 128 # 1024 
+args.new_data_each_round = 128 
 
 
 args.train_conf = False
@@ -118,12 +109,11 @@ if __name__ == "__main__":
         args.sel_layers = -args.sel_layers
     global_var.init()
     global_var.set_value('args', args)
-    #fair_train(args)
     
     train_compas(args)
     
-    ###using fairness constraint to train
-    args.train_with_validation =False
+    ###using validation data to train for analysis
+    args.train_with_validation = False
     if args.train_with_validation:
         args.method='dynamic_lmd'
         args.warm_step=0

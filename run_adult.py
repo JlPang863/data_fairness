@@ -26,7 +26,6 @@ parser.add_argument('--label_budget', type=int, default=128)
 parser.add_argument('--epoch', type=int, default=10)
 parser.add_argument('--label_ratio', type=float, default=0.05)
 parser.add_argument('--val_ratio', type=float, default=0.1)
-# parser.add_argument('--label_budget', type=int, default=128)
 parser.add_argument('--runs', type=int, default=0)
 parser.add_argument('--exp', type=int, default=1)
 
@@ -37,11 +36,9 @@ parser.add_argument('--train_with_validation', type=bool, default=False)
 
 parser.add_argument('--save_model', default=False, action="store_true") # save the model
 
-# Example: CUDA_VISIBLE_DEVICES=0 python3 run_celeba.py --method plain  --warm_epoch 0  --metric dp --label_ratio 0.05 --val_ratio 0.1 --strategy 2 
 
 
 # arguments
-# args = SimpleNamespace()
 args = parser.parse_args()
 
 # setup
@@ -62,27 +59,15 @@ args.data_dir = DATA_DIR
 args.dataset = 'adult'
 
 # model
-#args.model = 'simple_cnn_0'
 args.model_seed = META_MODEL_SEED + RUN * SEED_INCR
 args.load_dir = None
 args.ckpt = 0
 
 ## optimizer
-args.lr = 0.00001 #default0.00001
-
+args.lr = 0.00001
 args.momentum = 0.9
 args.weight_decay = 0.0005
 args.nesterov = True
-# SGD default
-# args.opt = OrderedDict(
-#     name="adam",
-#     config=OrderedDict(
-#         learning_rate = args.lr,
-#         # momentum = args.momentum,
-#         # nesterov = args.nesterov
-#     )
-# )
-
 args.scheduler = None
 
 
@@ -97,18 +82,9 @@ args.opt = OrderedDict(
 )
 
 # training
-# default setting for training
-# args.num_epochs = 10 +  args.warm_epoch
-
 args.num_epochs = args.epoch +  args.warm_epoch
-
-# default setting for analyzing the impact of label budget
-# args.num_epochs = 100 +  args.warm_epoch
-
 args.EP_STEPS = EP_STEPS
-# args.train_seed = META_TRAIN_SEED + RUN * SEED_INCR
-args.train_seed = META_TRAIN_SEED
-# args.train_batch_size = 64 # default
+args.train_seed = META_TRAIN_SEED + RUN * SEED_INCR
 args.train_batch_size = 64
 args.test_batch_size = 1024
 
@@ -121,35 +97,24 @@ args.save_steps =  EP_STEPS
 
 args.num_classes = 2
 args.balance_batch = False
-# args.new_data_each_round = args.label_budget # 1024 #default setting
 args.new_data_each_round = 1024
 
-
-
-
-
 # experiment
-
 args.train_conf = False
 args.remove_pos = True
 args.remove_posOrg = False
 
-# args.save_dir = EXPS_DIR + f'/{EXP}/{args.method}/run_{RUN}_warm{args.warm_epoch}_metric_{args.metric}'
 
 args.save_dir = EXPS_DIR + f'/{EXP}/{args.method}/{args.dataset}/run_{RUN}_metric_{args.metric}'
 
 if __name__ == "__main__":
 
 
-    # if 'mlp' in args.model:
-    #     args.sel_layers = -args.sel_layers
     global_var.init()
-    global_var.set_value('args', args)
-    #train(args)
-    
+    global_var.set_value('args', args)    
     train_adult(args)
 
-    ###using fairness constraint to train
+    ###using validation set to train for analysis
     args.train_with_validation = False
     if args.train_with_validation:
         args.method='dynamic_lmd'

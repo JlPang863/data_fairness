@@ -56,7 +56,7 @@ do
 for MTC in $metric
 do
 
-echo GPU: $i. Task: $j. Rrunning for ./logs/fair_sampling/adult-$group_key-runs$runs/label_s$STG\_$MTC\_$LAYER\_$type\_$val_ratio.log &
+echo GPU: $i. Task: $j. Running for ./logs/fair_sampling/adult-$group_key-runs$runs/label_s$STG\_$MTC\_$LAYER\_$type\_$val_ratio.log &
 
 # example
 #CUDA_VISIBLE_DEVICES=2 python3 run_adult.py --metric dp --label_ratio 0.1 --val_ratio 0.2 --strategy 8 --sel_layers 4 --warm_epoch 5 > ./logs/fair_sampling/adult/label_s1\_dp\_4.log 

@@ -101,6 +101,5 @@ def save_checkpoint(save_dir, step, state, rec, save=True):
   rec = record_ckpt(rec, step)
   return rec
 
-# 定义加载检查点的函数
 def load_checkpoint(checkpoint_dir):
     return checkpoints.restore_checkpoint(checkpoint_dir, target=None)

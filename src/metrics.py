@@ -58,9 +58,6 @@ def constraints_eop(logits, attributes, labels):
   group_a1 = jnp.sum((attributes == 0) * prob[:,1] * (labels == 1)) / jnp.sum( (labels == 1) * (attributes == 0) * 1.0 + EPS)
   group_b1 = jnp.sum((attributes == 1) * prob[:,1] * (labels == 1)) / jnp.sum( (labels == 1) * (attributes == 1) * 1.0 + EPS)
 
-  # group_a0 = jnp.sum((attributes == 0) * prob[:,1] * (labels == 0)) / jnp.sum( (labels == 0) * (attributes == 0) * 1.0 + EPS)
-  # group_b0 = jnp.sum((attributes == 1) * prob[:,1] * (labels == 0)) / jnp.sum( (labels == 0) * (attributes == 1) * 1.0 + EPS)
-
   return group_a1 - group_b1, (group_a1, group_b1)
 
 def constraints_dp_cov(logits, attributes, labels):
@@ -72,15 +69,12 @@ def constraints_dp_cov(logits, attributes, labels):
   ef = jnp.mean(prob[:,1])
   efz = jnp.mean( attributes * prob[:,1] )
 
-  # return efz - ez*ef, (efz, ez*ef)
   return (efz - ez*ef)*1.0, (prob[:,1], ef, ez, efz)
 
 
 def constraints_eod_cov(logits, attributes, labels):
   prob = jax.nn.softmax(logits) 
 
-  # loc0 = jnp.where(labels==0)
-  # loc1 = jnp.where(labels==1)
   EPS = 1e-8
   ez0 = jnp.sum(attributes * (labels==0)*1.0) / (jnp.sum((labels==0)*1.0)   + EPS)
   ef0 = jnp.sum(prob[:,1] * (labels==0)*1.0) / (jnp.sum((labels==0)*1.0)   + EPS)
@@ -91,52 +85,31 @@ def constraints_eod_cov(logits, attributes, labels):
   ef1 = jnp.sum(prob[:,1] * (labels==1)*1.0) / (jnp.sum((labels==1)*1.0)   + EPS)
   efz1 = jnp.sum(prob[:,1] * attributes * ((labels==1)*1.0)) / (jnp.sum((labels==1)*1.0)   + EPS)
 
-  # return efz - ez*ef, (efz, ez*ef)
   return jnp.array([(efz0 - ez0*ef0)*1.0,(efz1 - ez1*ef1)*1.0]), (prob[:,1], ef1, ez1, efz1)
 
 def constraints_eop_cov(logits, attributes, labels):
   prob = jax.nn.softmax(logits) 
-
-
   EPS = 1e-8
-
-
-
   ez1 = jnp.sum(attributes * (labels==1)*1.0) / (jnp.sum((labels==1)*1.0)   + EPS)
   ef1 = jnp.sum(prob[:,1] * (labels==1)*1.0) / (jnp.sum((labels==1)*1.0)   + EPS)
   efz1 = jnp.sum(prob[:,1] * attributes * ((labels==1)*1.0)) / (jnp.sum((labels==1)*1.0)   + EPS)
 
-  # return efz - ez*ef, (efz, ez*ef)
   return (efz1 - ez1*ef1)*1.0, (prob[:,1], ef1, ez1, efz1)
 
 def constraints_dp_ranking(logits, attributes, labels):
   EPS = 1e-8
   prob = jax.nn.softmax(logits) # 
-  # num_a, num_b = jnp.sum((attributes == 0) * 1.0), jnp.sum((attributes == 1) * 1.0)
-  # pdb.set_trace()
-  # min_num = min(num_a, num_b)
-  # if min_num > 0:
-  # group_a = jnp.where(attributes == 0, prob[:,1], 0)
-  # group_b = jnp.where(attributes == 1, prob[:,1], 0)
   group_a = prob[len(prob)//2:,1]
   group_b = prob[:len(prob)//2,1]
-  # group_a = prob[len(logits)//2:,1]
-  # group_b = prob[:len(logits)//2,1]  
 
   loss_reg_detail = jnp.abs(jnp.sort(group_a) - jnp.sort(group_b))
-  # return jnp.mean(jnp.sort(loss_reg_detail)[len(prob)//4*3:]), (jnp.sort(group_a), jnp.sort(group_b))
-  # return jnp.mean(jnp.sort(loss_reg_detail)[100:]), (jnp.sort(group_a), jnp.sort(group_b))
   return jnp.sum(loss_reg_detail**2), (jnp.sort(group_a), jnp.sort(group_b))
-  # else:
-  #   group_a = jnp.sum((attributes == 0) * prob[:,1]) / jnp.sum((attributes == 0) * 1.0 + EPS)
-  #   group_b = jnp.sum((attributes == 1) * prob[:,1]) / jnp.sum((attributes == 1) * 1.0 + EPS)
-  #   return group_a - group_b 
+
 
 def constraints_dp(logits, attributes, labels, T = None, M=2, K=2):
   EPS = 1e-8
   prob = jax.nn.softmax(logits)
-  # M = len(np.unique(attributes))
-  # K = len(jnp.unique(labels))
+
   constraint = []
   H_noisy = jnp.zeros((M,K))
   H_cal = jnp.zeros_like(H_noisy)
@@ -144,13 +117,10 @@ def constraints_dp(logits, attributes, labels, T = None, M=2, K=2):
     for i in range(M):
       H_noisy = H_noisy.at[i,k].set(jnp.sum((attributes == i) * prob[:,k]) / jnp.sum((attributes == i) * 1.0 + EPS)) 
     if T is not None:
-      # pdb.set_trace()
 
       H_cal = H_cal.at[:,k].set(jnp.dot(T[k], H_noisy[:,k].reshape(-1,1)).reshape(-1))
-      # H_cal[:,k] = jnp.matmul(T[k], H_noisy[:,k].reshape(-1,1))
     else:
       H_cal = H_cal.at[:,k].set(H_noisy[:,k])
-      # H_cal[:,k] = H_noisy[:,k]
   H_cal_clip = jnp.clip(H_cal, 1e-3, 1)
   H_cal_clip_final = H_cal_clip / jnp.sum(H_cal_clip,1).reshape(-1,1)
   for i in range(M):
@@ -203,7 +173,6 @@ def accuracy(logits, labels):
 
 
 def fairness(logits, labels, attributes):
-  # return jnp.where((attributes.squeeze() > 0) & (logits.squeeze() > 0), 1, 0).sum(), jnp.where((attributes.squeeze() == 0) & (logits.squeeze() > 0), 1, 0).sum()
   return jnp.where((attributes.squeeze() > 0) & (logits[:,0] > logits[:,1]), 1, 0).sum(), jnp.where((attributes.squeeze() == 0) & (logits[:,0] > logits[:,1]), 1, 0).sum()
 
 
@@ -254,12 +223,6 @@ def compute_metrics_fair(logits, labels, groups = None):
   fpr0 = jnp.sum( (jnp.argmax(logits, -1) == 1) * (groups == 0) * (labels==0) * 1.0) / jnp.sum( (groups == 0) * (labels==0) * 1.0)
   fpr1 = jnp.sum( (jnp.argmax(logits, -1) == 1) * (groups == 1) * (labels==0) * 1.0) / jnp.sum( (groups == 1) * (labels==0) * 1.0)
 
-  # prob = jax.nn.softmax(logits)
-  # ar0 = jnp.sum( (prob[:,1] == 1) * (groups == 0) * 1.0) / jnp.sum( (groups == 0) * 1.0) # only for controlled test
-  # ar1 = jnp.sum( (prob[:,1] == 1) * (groups == 1) * 1.0) / jnp.sum( (groups == 1) * 1.0) # only for controlled test
-
-  # op0 = jnp.sum( (jnp.argmax(logits, -1) == 1) * (labels == 1) * (groups == 0) * 1.0) / jnp.sum( (labels == 1) * (groups == 0) * 1.0)
-  # op1 = jnp.sum( (jnp.argmax(logits, -1) == 1) * (labels == 1) * (groups == 1) * 1.0) / jnp.sum( (labels == 1) * (groups == 1) * 1.0)
   acc0 = jnp.sum( (jnp.argmax(logits, -1) == labels) * (groups == 0) * 1.0) / jnp.sum( (groups == 0) * 1.0)
   acc1 = jnp.sum( (jnp.argmax(logits, -1) == labels) * (groups == 1) * 1.0) / jnp.sum( (groups == 1) * 1.0)
 

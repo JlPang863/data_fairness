@@ -20,8 +20,6 @@ class MLP(nn.Module):
 
   @nn.compact
   def __call__(self, x, train=False):
-    # import pdb
-    # pdb.set_trace()
     x = x.reshape(x.shape[0], -1)
     for feat in self.features:
       x = nn.Dense(feat, dtype=self.dtype)(x)
@@ -53,7 +51,6 @@ class SimpleCNN(nn.Module):
 ########################################################################################################################
 
 ModuleDef = Any
-
 
 class ResNetBlock(nn.Module):
   """ResNet block."""
@@ -120,7 +117,6 @@ class ResNet(nn.Module):
   @nn.compact
   def __call__(self, x, train: bool = True):
     conv = partial(nn.Conv, use_bias=False, dtype=self.dtype)
-    # norm = partial(nn.LayerNorm, epsilon=1e-5, dtype=self.dtype)
     norm = partial(nn.BatchNorm, use_running_average=not train, momentum=0.9, epsilon=1e-5, dtype=self.dtype)
 
     x = conv(self.num_filters,
@@ -393,30 +389,6 @@ class VisionTransformer(nn.Module):
       return logits, x # logits, embedding
     else:
       return x # logits
-
-
-# class ViT_last(nn.Module):
-#   """VisionTransformer."""
-
-#   num_classes: int
-#   hidden_size: int
-#   head_bias_init: float = 0.
-  
-
-
-#   @nn.compact
-#   def __call__(self, inputs, *, train=True):
-
-#     x = inputs
-#     if self.num_classes:
-#       x = nn.Dense(
-#           features=self.num_classes,
-#           name='head',
-#           kernel_init=nn.initializers.zeros,
-#           bias_init=nn.initializers.constant(self.head_bias_init))(x)
-#       return x # logits
-#     else:
-#       raise ValueError('num_class invalid')
 
 ViT_S8 = partial(
   VisionTransformer, 

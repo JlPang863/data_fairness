@@ -1,8 +1,4 @@
-# from . import global_var
 import numpy as np
-# import jax.numpy as jnp
-# import jax
-import pdb
 import torchvision
 import torchvision.transforms as transforms
 import torch
@@ -19,7 +15,6 @@ import tensorflow as tf
 import tensorflow_datasets as tfds
 from torch.utils.data import Dataset, DataLoader, Subset
 import pandas as pd
-from transformers import BertTokenizer
 from collections import Counter
 
 def preprocess_func_compas_torch(example, args, noisy_attribute = None, num_groups = 2):
@@ -28,17 +23,13 @@ def preprocess_func_compas_torch(example, args, noisy_attribute = None, num_grou
 
   feature, group, label = example[0].numpy(), example[2].numpy().astype(np.uint8), example[1].numpy().astype(np.uint8)
   
-  # group[group >= num_groups] = num_groups - 1
 
-  #set group
   for i in range(len(group)):
     if group[i] >=1:
       group[i] = 1
     else:
       group[i] = 0
-  # use str to avoid error in Jax tree
-  # args.feature_key, args.label_key, args.group_key = f'{args.feature_key}', f'{args.label_key}', f'{args.group_key}' 
-  
+
   if noisy_attribute is None:
     data = {
       'feature': feature,
@@ -54,59 +45,6 @@ def preprocess_func_compas_torch(example, args, noisy_attribute = None, num_grou
       'group': noisy_attribute,
       'index': example[3].numpy()
     }
-    # print(np.mean((noisy_attribute==group)*1.0))
-  # global_var.set_value('args', args)
-  return data
-
-
-def preprocess_func_imgnet_torch(example, args, noisy_attribute = None, new_labels = {}):
-  """ preprocess the data
-  """
-
-  image, group, label, idx = example[0].numpy(), None, example[1].numpy().astype(np.uint8),  example[2].numpy()
-
-  image = image.transpose((0, 2, 3, 1)) 
-
-  if len(new_labels) > 0:
-    label = np.asarray([new_labels[idx[i]] if idx[i] in new_labels else label[i]  for i in range(len(idx))])
-  if noisy_attribute is None:
-    data = {
-      'feature': image,
-      'label': label,
-      'group': group,
-      'index': idx
-    }
-  else:
-    noisy_attribute = noisy_attribute[:,0]
-    data = {
-      'feature': image,
-      'label': label,
-      'group': noisy_attribute,
-      'index': idx
-    }
-
-  return data
-
-
-def preprocess_func_scut_torch(example, args, noisy_attribute = None, new_labels = {}):
-  """ preprocess the data
-  """
-
-  image, group, label, idx = example[0].numpy(), None, example[1].numpy().astype(np.uint8),  example[2].numpy()
-
-  image = image.transpose((0, 2, 3, 1)) 
-
-  if len(new_labels) > 0:
-    label = np.asarray([new_labels[idx[i]] if idx[i] in new_labels else label[i]  for i in range(len(idx))])
-
-  data = {
-    'feature': image,
-    'label': label,
-    'group': group,
-    'index': idx
-  }
-
-
   return data
 
 def preprocess_func_celeba_torch(example, args, noisy_attribute = None, new_labels = {}):
@@ -117,8 +55,6 @@ def preprocess_func_celeba_torch(example, args, noisy_attribute = None, new_labe
   idx = example[args.idx_key].numpy()
 
   image = image.transpose((0, 2, 3, 1)) 
-  # use str to avoid error in Jax tree
-  # args.feature_key, args.label_key, args.group_key = f'{args.feature_key}', f'{args.label_key}', f'{args.group_key}' 
   
   if len(new_labels) > 0:
     label = np.asarray([new_labels[idx[i]] if idx[i] in new_labels else label[i]  for i in range(len(idx))])
@@ -137,8 +73,6 @@ def preprocess_func_celeba_torch(example, args, noisy_attribute = None, new_labe
       'group': noisy_attribute,
       'index': idx
     }
-    # print(np.mean((noisy_attribute==group)*1.0))
-  # global_var.set_value('args', args)
   return data
 
 def preprocess_func_adult_torch(example, args, noisy_attribute = None, num_groups = 2):
@@ -147,11 +81,8 @@ def preprocess_func_adult_torch(example, args, noisy_attribute = None, num_group
 
   feature, group, label = example[0].numpy(), example[2].numpy().astype(np.uint8), example[1].numpy().astype(np.uint8)
 
-
+  ## change to binary case
   if args.group_key == 'race':
-    # #match 0 or 1 binary variable
-    #  race attributes
-
     for i in range(len(group)):
       if group[i] > 3:
         group[i] = 1
@@ -159,16 +90,13 @@ def preprocess_func_adult_torch(example, args, noisy_attribute = None, num_group
         group[i] = 0
   elif args.group_key == 'age':
     for i in range(len(group)):
-      if group[i] >= 35: #default 35
+      if group[i] >= 35: 
         group[i] = 1
       else:
         group[i] = 0
 
 
-  # print('group\'s information before transform: ' + str(group))
-  # use str to avoid error in Jax tree
-  # args.feature_key, args.label_key, args.group_key = f'{args.feature_key}', f'{args.label_key}', f'{args.group_key}' 
-  
+
   if noisy_attribute is None:
     data = {
       'feature': feature,
@@ -184,8 +112,6 @@ def preprocess_func_adult_torch(example, args, noisy_attribute = None, num_group
       'group': noisy_attribute,
       'index': example[3].numpy()
     }
-    # print(np.mean((noisy_attribute==group)*1.0))
-  # global_var.set_value('args', args)
   return data
 
 
@@ -196,9 +122,6 @@ def preprocess_func_jigsaw_torch(example, args, noisy_attribute = None, num_grou
   feature, group, label = example[0].numpy(), example[2].numpy().astype(np.uint8), example[1].numpy().astype(np.uint8)
   group[group >= num_groups] = num_groups - 1
 
-  # use str to avoid error in Jax tree
-  # args.feature_key, args.label_key, args.group_key = f'{args.feature_key}', f'{args.label_key}', f'{args.group_key}' 
-  
   if noisy_attribute is None:
     data = {
       'feature': feature,
@@ -214,8 +137,6 @@ def preprocess_func_jigsaw_torch(example, args, noisy_attribute = None, num_grou
       'group': noisy_attribute,
       'index': example[3].numpy()
     }
-    # print(np.mean((noisy_attribute==group)*1.0))
-  # global_var.set_value('args', args)
   return data
 
 def gen_preprocess_func_torch2jax(dataset):
@@ -223,10 +144,6 @@ def gen_preprocess_func_torch2jax(dataset):
     return preprocess_func_celeba_torch
   elif dataset == 'compas':
     return preprocess_func_compas_torch
-  elif dataset == 'imagenet':
-    return preprocess_func_imgnet_torch
-  elif dataset == 'scut':
-    return preprocess_func_scut_torch
   elif dataset == 'adult':
      return preprocess_func_adult_torch
   elif dataset == 'jigsaw':
@@ -346,7 +263,6 @@ class CompasDataset(torch.utils.data.Dataset):
 class my_scut(torch.utils.data.Dataset):
 
     def __init__(self, root, transform):
-        # super(scut_dataset, self).__init__(root, transform)
         data_dir = root + '/train_test_files/All_labels.txt'
         with open(data_dir, 'r') as f:
             lines = f.readlines()  
@@ -465,24 +381,18 @@ class InverseProportionalSampler(WeightedRandomSampler):
             1: 6
         }
         weights = np.array([label_to_weight[label] for label in labels])
-
-
-        # print('weights: ' + str(weights))
-        # weights = np.array(random.randint())
         super(InverseProportionalSampler, self).__init__(weights, len(labels), replacement)
 
 class InverseProportionalSampler_Adult(WeightedRandomSampler):
     def __init__(self, labels, replacement=True):
         unique_labels, counts = np.unique(labels, return_counts=True)
-        # (Pdb) unique_labels, counts
-        # array([0, 1]),array([1967,  637])
         proportions = counts / len(labels)
         
         label_to_weight = {label: 1.0/proportion for label, proportion in zip(unique_labels, proportions)}
 
         label_to_weight = {
             0: 1,
-            1: 1, #default counting proportions: 3.2
+            1: 1, 
         }
         weights = np.array([label_to_weight[label] for label in labels])
         super(InverseProportionalSampler_Adult, self).__init__(weights, len(labels), replacement)
@@ -503,8 +413,6 @@ def load_celeba_dataset_torch(args, shuffle_files=False, split='train', batch_si
 
   train_transform = transforms.Compose([
       transforms.Resize((int(218 / 178 * args.img_size), args.img_size)),
-      # transforms.RandomCrop(32, padding=4), 
-      # transforms.RandomHorizontalFlip(),
       transforms.ToTensor(),
       transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
   ])
@@ -551,7 +459,6 @@ def load_celeba_dataset_torch(args, shuffle_files=False, split='train', batch_si
 
   if aux_dataset is None:
     if len(sampled_idx) > 0:
-      # part1 += sampled_idx
       ds_new = torch.utils.data.Subset(ds, sampled_idx)
       part2 = list(set(part2) - set(sampled_idx))
     
@@ -562,7 +469,7 @@ def load_celeba_dataset_torch(args, shuffle_files=False, split='train', batch_si
     if len(part2) > 0:
       ds_2 = torch.utils.data.Subset(ds, part2)
     else:
-      ds_2 = torch.utils.data.Subset(ds, part1) # just a placeholder
+      ds_2 = torch.utils.data.Subset(ds, part1) 
 
 
   else:
@@ -595,7 +502,7 @@ def load_celeba_dataset_torch(args, shuffle_files=False, split='train', batch_si
 
   if fair_train:
     dataloader_1 = torch.utils.data.DataLoader(ds_1,
-                                              batch_size=batch_size if split == 'train' else 256, # val loader: 256
+                                              batch_size=batch_size if split == 'train' else 256, 
                                               shuffle=shuffle_files,
                                               num_workers=1,
                                               drop_last=True)
@@ -606,17 +513,15 @@ def load_celeba_dataset_torch(args, shuffle_files=False, split='train', batch_si
                                             drop_last=False)
   else:
     dataloader_1 = torch.utils.data.DataLoader(ds_1,
-                                              batch_size=batch_size if split == 'train' else 256, # val loader: 512
+                                              batch_size=batch_size if split == 'train' else 256, 
                                               shuffle=shuffle_files,
                                               num_workers=1,
                                               drop_last=True)
-                                              # sampler= sampler_1)
     dataloader_2 = torch.utils.data.DataLoader(ds_2,
-                                            batch_size=batch_size if split == 'test' else 32, # unlabeled loader: 32
+                                            batch_size=batch_size if split == 'test' else 32, 
                                             shuffle=shuffle_files,
                                             num_workers=1,
                                             drop_last=False)
-                                            # sampler = sampler_2)
     if len(sampled_idx) > 0:
       dataloader_new = torch.utils.data.DataLoader(ds_new,
                                               batch_size=min(len(ds_new), batch_size),
@@ -646,12 +551,7 @@ def load_compas_dataset_torch(args, shuffle_files=False, split='train', batch_si
   args.input_shape = (1, ds.feature.shape[1])
   if split == 'train':
     args.datasize = len(ds)
-
-  #print(f'ds_type:{type(ds)}')
         
-  # data split
-  # train --> train_labeled (1) + train_unlabeled (2), ratio is for train_labeled
-  # test --> val (1) + test (2), ratio is for val
   idx = list(range(len(ds)))
   random.Random(args.train_seed).shuffle(idx)
   num = int(len(ds) * ratio)
@@ -672,7 +572,7 @@ def load_compas_dataset_torch(args, shuffle_files=False, split='train', batch_si
 
   if fair_train:
     dataloader_1 = torch.utils.data.DataLoader(ds_1,
-                                              batch_size=batch_size if split == 'train' else 256, # val loader: 256
+                                              batch_size=batch_size if split == 'train' else 256, 
                                               shuffle=shuffle_files,
                                               num_workers=0,
                                               drop_last=True)
@@ -683,12 +583,12 @@ def load_compas_dataset_torch(args, shuffle_files=False, split='train', batch_si
                                             drop_last=False)
   else:
     dataloader_1 = torch.utils.data.DataLoader(ds_1,
-                                              batch_size=batch_size if split == 'train' else 512, # val loader: 512
+                                              batch_size=batch_size if split == 'train' else 512, 
                                               shuffle=shuffle_files,
                                               num_workers=0,
                                               drop_last=False)
     dataloader_2 = torch.utils.data.DataLoader(ds_2,
-                                            batch_size=batch_size if split == 'test' else 32, # unlabeled loader: 32
+                                            batch_size=batch_size if split == 'test' else 32, 
                                             shuffle=shuffle_files,
                                             num_workers=0,
                                             drop_last=False)
@@ -704,7 +604,7 @@ def load_jigsaw_dataset_torch(args, shuffle_files=False, split='train', batch_si
   if split == 'train':
     with open(os.path.join(path, 'Jigsaw_train.npy'), 'rb') as f:
       X, Y, A = np.load(f), np.load(f), np.load(f)
-      # # shuffle training data
+
       from sklearn import utils
       X, Y, A = utils.shuffle(X, Y, A, random_state=args.train_seed)
 
@@ -716,7 +616,6 @@ def load_jigsaw_dataset_torch(args, shuffle_files=False, split='train', batch_si
   args.input_shape = (1, X.shape[1])
 
   args.datasize = X.shape[0]
-  # Splitting the data
   index = np.arange(X.shape[0])
   random.Random(args.train_seed).shuffle(index)
 
@@ -741,12 +640,10 @@ def load_jigsaw_dataset_torch(args, shuffle_files=False, split='train', batch_si
 
   labeled_dataset = JigsawDataset(labeled_dataset_index)
   unlabeled_dataset = JigsawDataset(unlabeled_dataset_index)
+  
   # Create PyTorch Dataloaders
-
-
   labels_1 = labeled_dataset.labels.tolist()
   labels_2 = unlabeled_dataset.labels.tolist()
-  # Create a random subset sampler for training
 
   # for label balance
   if split == 'train':
