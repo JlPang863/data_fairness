@@ -1,7 +1,14 @@
 # Fairness Without Harm: An Influence-Guided Active Sampling Approach
 
+This code is a PyTorch implementation of our paper "[Fairness Without Harm: An Influence-Guided Active Sampling Approach]" accepted by NeurIPS 2024. - [Jinlong Pang](https://jlpang863.github.io/), [Jialu Wang](https://people.ucsc.edu/~jwang470/), [Zhaowei Zhu](https://users.soe.ucsc.edu/~zhaoweizhu/), [Yuanshun Yao](https://www.kevyao.com/), [Chen Qian](https://users.soe.ucsc.edu/~qian/), [Yang Liu](http://www.yliuu.com/).
 
-## Training
+## Prerequisites
+You can install the replicable Python environment by using
+```
+pip install -r requirements.txt
+```
+
+## Guideline
 
 Here is the main code for executing our methods on different datasets:
 
@@ -34,12 +41,3 @@ Here is the main code for executing our methods on different datasets:
 
 
 
-<!-- ## Update
-02/04/2024 update for ICML subsmission 
-
-- Add arguments for all datasets
-- Disparity mitigation with our algorithm
-  - Check code: `train(args)` in `./fair_learn/run_celeba.py` is uncommented. 
-  - `LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4 run --cpu 8 --type v100-32g -- python3 run_celeba.py --method dynamic_lmd  --lmd 0.0 --mu 1.0  --warm_epoch 0 --conf entropy  --metric dp --fe_sel 3` (MLX lab)
-  - `LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4 python3 run_celeba.py --method dynamic_lmd  --lmd 0.0 --mu 1.0  --warm_epoch 0 --conf entropy  --metric dp --fe_sel 3` (plain)
-  - Recommend to check a cleaner version at `fair_learn (active-sampling)` -->
