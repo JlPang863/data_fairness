@@ -9,8 +9,6 @@ import random
 from .data import  load_celeba_dataset_torch, preprocess_func_celeba_torch, load_data, gen_preprocess_func_torch2jax
 from .models import get_model
 from .recorder import init_recorder, record_train_stats, save_recorder, record_test, save_checkpoint,load_checkpoint
-
-from .hoc_fairlearn import *
 from .train_state import test_step, get_train_step, create_train_state, infl_step, infl_step_fair, infl_step_per_sample, train_plain
 from .metrics import compute_metrics, compute_metrics_fair
 from .utils import set_global_seed, make_dirs, log_and_save_args

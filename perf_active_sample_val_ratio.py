@@ -17,14 +17,13 @@ Dataset option
 # 4: celeba
 
 dataset_type = 'adult'
-### random seed ###
-runs=0
+runs=0  #random seed
 
 
 if dataset_type == 'adult':
 
     tol = 0.05
-    avg_cnt = 3 #default 30
+    avg_cnt = 3 
     suffix = ''
     senstive_attrbutes = 'age' #sex
     root = f'./logs/fair_sampling/{dataset_type}-{senstive_attrbutes}-runs{runs}/'

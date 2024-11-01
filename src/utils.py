@@ -107,10 +107,14 @@ def preprocess_compas(filename="compas-scores-two-years.csv"):
         df['length_of_stay'] = (df['c_jail_out'].apply(date_from_str) - df['c_jail_in'].apply(date_from_str)).dt.total_seconds()
 
     selected_columns = [
-        'age', 'age_cat', 'race', 'sex', 'decile_score', 'is_recid',
+        'age', 'age_cat', 'race', 'sex', 'decile_score', 'is_recid', 'c_charge_degree',
         'two_year_recid', 'priors_count', 'days_b_screening_arrest', 'length_of_stay'
     ]
     return df[selected_columns]
+
+
+
+
 
 def race_encode(df):
     """Encodes race using COMPAS-specific mapping."""

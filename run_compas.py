@@ -1,4 +1,4 @@
-from src import train, fair_train, train_compas, global_var
+from src import train, train_compas, global_var
 from src.fair_train import fair_train_validation
 from collections import OrderedDict
 import argparse
@@ -98,9 +98,6 @@ args.remove_posOrg = False
 
 
 args.save_dir = EXPS_DIR + f'/{EXP}/{args.method}/{args.dataset}/run_{RUN}_metric_{args.metric}'
-
-
-
 
 if __name__ == "__main__":
 

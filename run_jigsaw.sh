@@ -1,31 +1,16 @@
 
 
-# sel_layers="4"
-# #strategy="1 2 5 6"
-# strategy="7"
-# metric="dp eop eod"
-# # label_ratio="0.05" #default setting 
-# warm_epoch="50"
-# new_prob="0.5"
-# gpu_index="0"
-# i=$gpu_index
-# j=0
 
-
-####JTT
 sel_layers="4"
 strategy="1 6 8 7 2"
 metric="dp eop eod"
-# label_ratio="0.05" #default setting 
-label_ratio="0.1" # JTT
+label_ratio="0.05" #default setting 
 warm_epoch="10"
 epoch="50"
 new_prob="0.9"
-# new_prob="0.5"
-runs="2"
+runs="0"
 
 type='default'
-# type='budget'
 #start point
 gpu_start_index="2"
 gpu_final_index="8"
