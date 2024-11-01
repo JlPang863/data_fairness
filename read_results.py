@@ -19,7 +19,6 @@ dataset_type = 'adult'
 runs=0 ##random seed
 
 if dataset_type == 'adult':
-
     tol = 0.05
     avg_cnt = 3 #30
     suffix = ''
@@ -246,7 +245,7 @@ def get_table(focus):
                             rec.append(result_dict[file_name][result_dict[file_name][2]])
             result.append(rec)
     
-    file_path = f'result_{dataset}_{focus}_focused_{suffix}.csv'
+    file_path = f'result_{dataset_type}_{focus}_focused_{suffix}.csv'
 
     print_result(result, file_path)
 
@@ -313,9 +312,7 @@ for layer in sel_layers:
     for stg in strategy:
         for label in label_key:
             for metric in metrics:
-                # if stg == 1:
-                #     file_name = f'{label}_s{stg}_{metric}_2'
-                # else:
+     
                 if stg > 0:
                     file_name = f'{label}_s{stg}_{metric}_{layer}' + '_'+ label_tag
                     if 'res18' in root:
