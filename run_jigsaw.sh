@@ -33,7 +33,7 @@ do
 
 echo GPU: $i. Task: $j. Running for ./logs/fair_sampling/jigsaw-runs$runs/label_s$STG\_$MTC\_$LAYER\_$type.log
 
-CUDA_VISIBLE_DEVICES=$i nohup python3 run_jigsaw.py --metric $MTC --epoch $epoch --runs $runs --label_ratio $label_ratio --val_ratio 0.2 --new_prob $new_prob --warm_epoch $warm_epoch --strategy $STG --sel_layers $LAYER > ./logs/fair_sampling/jigsaw-runs$runs/label_s$STG\_$MTC\_$LAYER\_$type.log  &
+CUDA_VISIBLE_DEVICES=$i nohup python3 src/run_jigsaw.py --metric $MTC --epoch $epoch --runs $runs --label_ratio $label_ratio --val_ratio 0.2 --new_prob $new_prob --warm_epoch $warm_epoch --strategy $STG --sel_layers $LAYER > ./logs/fair_sampling/jigsaw-runs$runs/label_s$STG\_$MTC\_$LAYER\_$type.log  &
 
 
 
