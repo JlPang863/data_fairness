@@ -13,29 +13,42 @@ pip install -r requirements.txt
 The main code for executing our methods on different datasets are provided as follows.
 
 ### CelebA Dataset: 
-  You can use `bash run_celeba.sh` to directly train a new model on the CelebA dataset. Here is an example with detailed settings:
+  You can use `bash run_celeba.sh` to directly train a new model on the CelebA dataset. For a custom configuration, you can use the following example:
 
   ```
   $ python3 src/run_celeba.py --runs 0 --warm_epoch 0 --epoch 10 --metric dp --label_ratio 0.05 --val_ratio 0.1 --strategy 2
   ```
 
 ### Adult Dataset: 
-  You can use `bash run_adult.sh` to directly train a new model on the Adult dataset. Here is an example with detailed settings:
+  You can use `bash run_adult.sh` to directly train a new model on the Adult dataset.  Alternatively, you can use the following command to specify settings:
   ```
   $python3 src/run_adult.py --group_key age  --warm_epoch 0  --metric dp --label_ratio 0.2 --val_ratio 0.1 --strategy 2 
   ```
 
 ### Compas Dataset:
-  You can use `bash run_compas.sh` to directly train a new model on the Compas dataset. Here is an example with detailed settings:
+  To train a new model on the Compas dataset, you can run `bash run_compas.sh`. Or specify settings with the following command:
+
   ```
   $python3 src/run_compas.py --runs 0 --epoch 50 --metric dp --label_ratio 0.2  --val_ratio 0.2 --strategy 2 --warm_epoch 50
   ```
 
 ### Experimental Results
 
-The experimental results can be formulated by using
+You can access the experimental results by running:
+
 ```
 python read_results.py
 ```
 
 
+### Citation
+
+If you used this repository, please cite our work:
+```
+@article{pang2024fair,
+  title={Fair Classifiers Without Fair Training: An Influence-Guided Data Sampling Approach},
+  author={Pang, Jinlong and Wang, Jialu and Zhu, Zhaowei and Yao, Yuanshun and Qian, Chen and Liu, Yang},
+  journal={arXiv preprint arXiv:2402.12789},
+  year={2024}
+}
+```
