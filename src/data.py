@@ -429,7 +429,7 @@ def load_celeba_dataset_torch(args, shuffle_files=False, split='train', batch_si
   else:
     transform = test_transform
 
-  ds = my_celeba(root = args.data_dir, split = split, target_type = 'attr', transform = transform, download = True)
+  ds = my_celeba(root = args.data_dir, target_type = 'attr', transform = transform, download = True)
   
   args.datasize = len(ds)
   
@@ -451,50 +451,18 @@ def load_celeba_dataset_torch(args, shuffle_files=False, split='train', batch_si
   part1 = idx[:num]
   part2 = idx[num:]
 
-  # for half data ablation study
-  if args.half_ablation and split == 'train':
-    part2 = part1[len(part1)//2:].copy()
-    part1 = part1[:len(part1)//2].copy()
-
-
-  if aux_dataset is None:
-    if len(sampled_idx) > 0:
-      ds_new = torch.utils.data.Subset(ds, sampled_idx)
-      part2 = list(set(part2) - set(sampled_idx))
-    
-      print(f'{len(part1)} originally labeled samples, {len(sampled_idx)} new samples, and {len(part2)} unlabeled samples. Total: {len(part1) + len(part2) + len(sampled_idx)}')
-    else:
-      print(f'{len(part1)} originally labeled samples, 0 new samples, and {len(part2)} unlabeled samples. Total: {len(part1) + len(part2)}')
-
-    if len(part2) > 0:
-      ds_2 = torch.utils.data.Subset(ds, part2)
-    else:
-      ds_2 = torch.utils.data.Subset(ds, part1) 
-
-
+  if len(sampled_idx) > 0:
+    ds_new = torch.utils.data.Subset(ds, sampled_idx)
+    part2 = list(set(part2) - set(sampled_idx))
+  
+    print(f'{len(part1)} originally labeled samples, {len(sampled_idx)} new samples, and {len(part2)} unlabeled samples. Total: {len(part1) + len(part2) + len(sampled_idx)}')
   else:
-    if aux_dataset == 'imagenet':
-      ds_aux = my_imagenet(root = args.data_dir + '/imgnet/', split='train', transform=train_transform,
-                                      target_transform=None)
-      idx_aux = list(range(len(ds_aux)))
-      part2 = list(set(idx_aux) - set(sampled_idx))
-      ds_2 = torch.utils.data.Subset(ds_aux, part2)
-      if len(sampled_idx) > 0:
-        ds_new = torch.utils.data.Subset(ds_aux, sampled_idx)
-      print(f'{len(part1)} originally labeled samples, {len(sampled_idx)} new samples, and {len(part2)} unlabeled samples. Total: {len(part1) + len(part2) + len(sampled_idx)}')
-    
-    elif aux_dataset == 'scut':
-      ds_aux = my_scut(root = args.data_dir + '/scut_fbp5500/SCUT-FBP5500_v2/', transform=train_transform)
-      idx_aux = list(range(len(ds_aux)))
-      part2 = list(set(idx_aux) - set(sampled_idx))
-      ds_2 = torch.utils.data.Subset(ds_aux, part2)
-      if len(sampled_idx) > 0:
-        ds_new = torch.utils.data.Subset(ds_aux, sampled_idx)
-      print(f'{len(part1)} originally labeled samples, {len(sampled_idx)} new samples, and {len(part2)} unlabeled samples. Total: {len(part1) + len(part2) + len(sampled_idx)}')
+    print(f'{len(part1)} originally labeled samples, 0 new samples, and {len(part2)} unlabeled samples. Total: {len(part1) + len(part2)}')
 
-    else:      
-        raise NameError(f'Undefined dataset {aux_dataset}')
-
+  if len(part2) > 0:
+    ds_2 = torch.utils.data.Subset(ds, part2)
+  else:
+    ds_2 = torch.utils.data.Subset(ds, part1) 
 
 
   ds_1 = torch.utils.data.Subset(ds, part1)

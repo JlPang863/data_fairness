@@ -505,10 +505,6 @@ def get_model(args):
   else:
     raise NotImplementedError
   return model
-  # if linear_flag:
-  # return model, model_linear
-  # else:
-  #   raise NotImplementedError
 
 
 def get_num_params(params):
